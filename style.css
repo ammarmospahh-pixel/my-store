@@ -1,0 +1,490 @@
+/* --- 1. إعدادات عامة واتجاه الصفحة --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    direction: rtl; /* اتجاه الصفحة من اليمين للشمال */
+}
+
+/* --- 2. الهيدر والقائمة العلويّة --- */
+header {
+    background-color: #0f172a; /* كحلي داكن */
+    color: #ffffff;
+    padding: 16px 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* تجميع اللوجو مع النص على اليمين */
+.header-top-pro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-top-pro img {
+    height: 42px;
+    border-radius: 8px;
+}
+
+.header-top-pro h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+}
+
+/* زر الـ 3 شرط على الشمال */
+.headermenu {
+    background-color: #1e293b;
+    color: #cbd5e1;
+    border: 1px solid #334155;
+    padding: 8px 16px;
+    font-size: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.headermenu:hover {
+    background-color: #334155;
+    color: #ffffff;
+}
+
+/* القائمة المنسدلة */
+.menu-total {
+    display: none;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+    background-color: #1e293b;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.menu-total.active {
+    display: flex !important;
+}
+
+.menu-total button {
+    background-color: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 10px 18px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.menu-total button:hover {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+/* --- 3. السكاشن العامة --- */
+section {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+section h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 24px;
+}
+
+/* --- 4. كروت الصفحة الرئيسية (Home) --- */
+#home-clian {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.home-1, .home-2 {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-1:hover, .home-2:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+}
+
+.home-1 {
+    flex-direction: row; /* الصورة يمين */
+}
+
+.home-2 {
+    flex-direction: row-reverse; /* الصورة شمال */
+}
+
+.home-pag1 {
+    width: 50%;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 12px;
+    background-color: #f8fafc;
+    border: 1px solid #f1f5f9;
+    padding: 10px;
+}
+
+.dishome {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.home-script1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.home-but1 {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+.home-but1:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+/* --- 5. كروت قسم المتجر (data-market) --- */
+.data-market-cardgrop {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.data-market-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.data-market-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.data-market-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background-color: #f8fafc;
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.incard {
+    padding: 18px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.incard h2 {
+    font-size: 18px;
+    color: #0f172a;
+    margin: 0;
+}
+
+.incard .price {
+    font-size: 16px;
+    color: #2563eb;
+    font-weight: 700;
+    margin: 0;
+}
+
+.butmarket {
+    background-color: #0f172a;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.butmarket:hover {
+    background-color: #2563eb;
+}
+
+/* --- 6. بيانات العميل --- */
+#data-clian {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.show-data {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    background-color: #f8fafc;
+    border-radius: 10px;
+    border-right: 4px solid #2563eb;
+}
+
+.show-data label {
+    font-weight: 600;
+    color: #64748b;
+}
+
+.show-data span {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+/* أنيميشن التظليل للأنظمة */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 650px) {
+    .home-1, .home-2 {
+        flex-direction: column !important;
+    }
+    .home-pag1, .dishome {
+        width: 100%;
+    }
+    .home-pag1 {
+        height: 150px;
+    }
+}
+/* --- تنسيق قسم السلة (data-basket) --- */
+#data-basket {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+#basket-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* الحاوية التي تنزل فيها كروت المنتجات بالـ JavaScript */
+#basket-inmarkrt {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* كارت المنتج الداخلي داخل السلة */
+.basket-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.basket-card img {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 5px;
+    border: 1px solid #e2e8f0;
+}
+
+.basket-card-details {
+    flex: 1;
+    min-width: 120px;
+}
+
+.basket-card-details h3 {
+    font-size: 16px;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.basket-card-details p {
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* أزرار زيادة ونقصان الكمية */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+}
+
+.btn-qty {
+    background: #e2e8f0;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    color: #0f172a;
+    transition: background 0.2s;
+}
+
+.btn-qty:hover {
+    background: #cbd5e1;
+}
+
+.qty-input {
+    width: 35px;
+    text-align: center;
+    border: none;
+    font-weight: bold;
+    font-size: 15px;
+    outline: none;
+    background: transparent;
+}
+
+/* إجمالي الصنف وزر الحذف */
+.item-total-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.item-total {
+    font-weight: bold;
+    color: #2563eb;
+    font-size: 15px;
+}
+
+.btn-remove {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-remove:hover {
+    text-decoration: underline;
+}
+
+/* ملخص الطلب وإجمالي الحساب */
+.basket-total {
+    border-top: 2px dashed #e2e8f0;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.basket-total h3 {
+    font-size: 18px;
+    color: #0f172a;
+    margin: 0;
+}
+
+.basket-total2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8fafc;
+    padding: 14px 18px;
+    border-radius: 10px;
+    border-right: 4px solid #2563eb;
+    font-size: 16px;
+    font-weight: bold;
+    color: #0f172a;
+}
+
+#basket-span {
+    color: #2563eb;
+    font-size: 18px;
+}
+
+/* زر تأكيد الشراء */
+.but-checkout {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+.but-checkout:hover {
+    background-color: #1d4ed8;
+}
+
+.but-checkout:active {
+    transform: scale(0.99);
+}
