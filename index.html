@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول - نظام إدارة المبيعات</title>
+  
+  <!-- مكتبة الأيقونات -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- خط Cairo -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- ملف التنسيقات -->
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+  <!-- زر تغيير الثيم -->
+  <button class="theme-toggle" id="themeToggleBtn" title="تغيير المظهر">
+    <i class="fa-solid fa-moon"></i>
+  </button>
+
+  <!-- خلفية الأشكال -->
+  <div class="bg-shape shape-1"></div>
+  <div class="bg-shape shape-2"></div>
+
+  <!-- الحاوية الرئيسية -->
+  <main class="auth-container">
+    <div class="brand-header">
+      <i class="fa-solid fa-store brand-icon"></i>
+      <h1 class="form-title">تسجيل الدخول</h1>
+      <p class="form-subtitle">أدخل بيانات الحساب المسلمة لك من الإدارة</p>
+    </div>
+
+    <div class="notification-box" id="notificationBox"></div>
+
+    <form id="loginForm" novalidate>
+      <label class="section-label">نوع المستخدم:</label>
+      <div class="role-selector">
+        <div class="role-card active" id="roleClient" onclick="selectRole('client')">
+          <i class="fa-solid fa-user-tag role-icon"></i>
+          <span>عميل</span>
+        </div>
+        <div class="role-card" id="roleAdmin" onclick="selectRole('admin')">
+          <i class="fa-solid fa-user-shield role-icon"></i>
+          <span>مدير نظام</span>
+        </div>
+      </div>
+      <input type="hidden" id="selectedRole" value="client">
+
+      <div class="input-group">
+        <i class="fa-solid fa-id-card input-icon"></i>
+        <input type="text" id="userId" placeholder="الرقم التعريفي / الـ ID" required>
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-lock input-icon"></i>
+        <input type="password" id="userPassword" placeholder="كلمة السر" required>
+        <i class="fa-solid fa-eye toggle-password" onclick="togglePassVisibility('userPassword', this)"></i>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <span>تسجيل الدخول</span>
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+    </form>
+
+    <div class="admin-notice">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>إنشاء الحسابات وتعيين كلمة السر يتم حصريًا عن طريق مدير النظام.</span>
+    </div>
+  </main>
+
+  <!-- ملف الجافاسكريبت -->
+  <script src="login.js"></script>
+</body>
+</html>
