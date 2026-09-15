@@ -146,7 +146,7 @@
         </div>
       </form>
     </section>
- <script>
+<script>
   // 1. القوائم والتنقل
   function togglemenu() {
     var menu = document.getElementById("menu-totaltop");
@@ -274,7 +274,7 @@
     updateBasketUI();
   }
 
-  // 6. دالة تأكيد الشراء وإرسال الفاتورة إلى Google Sheets والواتساب
+  // 6. دالة تأكيد الشراء وإرسال الفاتورة إلى Google Sheets والواتساب (معدلة ومضمونة للموبايل)
   function sendInvoiceToWhatsApp() {
     if (cart.length === 0) {
       alert("السلة فارغة!");
@@ -313,23 +313,7 @@
 
     const googleScriptUrl = "https://script.google.com/macros/s/AKfycbwcneFnCPG_fCnAQp8RLoyWfobM9SW2bzARjSqf4duSJjhgsL3QaZVsa5rT6FbhDA7K2A/exec";
 
-    // 1. إرسال البيانات عبر sendBeacon (الأضمن عبر كافة المتصفحات والموبايل) أو fetch كبديل
-    const dataBlob = new Blob([JSON.stringify(invoicePayload)], { type: 'text/plain;charset=utf-8' });
-
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(googleScriptUrl, dataBlob);
-    } else {
-      fetch(googleScriptUrl, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify(invoicePayload)
-      }).catch(err => console.error("خطأ أثناء الإرسال لـ Google Sheets:", err));
-    }
-
-    // 2. تجهيز وتنسيق رسالة الواتساب
+    // تجهيز وتنسيق رسالة الواتساب
     let message = `*طلب جديد من الويب سايت 🛒*\n\n`;
     message += `*رقم الفاتورة:* ${invNum}\n`;
     message += `*التاريخ:* ${dateStr}\n`;
@@ -341,12 +325,23 @@
 
     const whatsappUrl = `https://wa.me/${managerPhone}?text=${encodeURIComponent(message)}`;
 
-    // 3. تفريغ السلة وتحديث الواجهة
-    cart = [];
-    saveAndRefresh();
+    // إرسال البيانات أولاً لـ Google Sheets ثم الانتقال للواتساب
+    fetch(googleScriptUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(invoicePayload)
+    })
+    .finally(() => {
+      // تفريغ السلة وتحديث الواجهة
+      cart = [];
+      saveAndRefresh();
 
-    // 4. فتح الواتساب
-    window.open(whatsappUrl, "_blank");
+      // فتح الواتساب بضمان خروج طلب الشيت أولاً
+      window.location.href = whatsappUrl;
+    });
   }
 </script>
   </body>
