@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>شاشة العميل</title>
+    <title>شاشة العميل / النظام</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -11,61 +11,47 @@
       <div class="header-top">
         <div class="header-top-pro">
           <img src="img/logo.png" alt="logo" />
-          <h2>شاشة العميل</h2>
+          <h2>لوحة التحكم</h2>
         </div>
         <button class="headermenu" onclick="togglemenu()">☰</button>
       </div>
       <nav class="menu-total" id="menu-totaltop">
-        <button onclick="showsection('home-clian')">HOME</button>
+        <button onclick="showsection('home-clian')">الرئيسية</button>
         <button onclick="showsection('data-clian')">بيانات العميل</button>
         <button onclick="showsection('data-market')">المتجر</button>
         <button onclick="showsection('data-basket')">السلة</button>
-        <button onclick="showsection('')">فواتير سابقة</button>
         <button onclick="logoutClient()">تسجيل خروج</button>
       </nav>
     </header>
 
     <section id="home-clian">
-      <h2>مرحبا بكم</h2>
+      <h2>مرحباً بكم</h2>
       <div class="home-1">
         <img src="img/logo.png" alt="صورة اعلان عروض" class="home-pag1" />
         <div class="dishome">
           <h3 class="home-script1">إعلان عروض</h3>
-          <button class="home-but1" onclick="showsection('')">دخول</button>
+          <button class="home-but1" onclick="showsection('data-market')">دخول للمتجر</button>
         </div>
       </div>
       <div class="home-2">
-        <img src="img/logo.png" alt="صورة اعلان عروض" class="home-pag1" />
+        <img src="img/logo.png" alt="صورة المتجر" class="home-pag1" />
         <div class="dishome">
-          <h3 class="home-script1">للمتجر</h3>
-          <button class="home-but1" onclick="showsection('data-market')">
-            دخول
-          </button>
+          <h3 class="home-script1">المتجر</h3>
+          <button class="home-but1" onclick="showsection('data-market')">دخول</button>
         </div>
       </div>
       <div class="home-1">
-        <img src="img/logo.png" alt="صورة اعلان عروض" class="home-pag1" />
+        <img src="img/logo.png" alt="صورة العميل" class="home-pag1" />
         <div class="dishome">
-          <h3 class="home-script1">العميل</h3>
-          <button class="home-but1" onclick="showsection('data-clian')">
-            دخول
-          </button>
+          <h3 class="home-script1">بيانات العميل</h3>
+          <button class="home-but1" onclick="showsection('data-clian')">دخول</button>
         </div>
       </div>
       <div class="home-2">
-        <img src="img/logo.png" alt="صورة اعلان عروض" class="home-pag1" />
+        <img src="img/logo.png" alt="صورة السلة" class="home-pag1" />
         <div class="dishome">
           <h3 class="home-script1">السلة</h3>
-          <button class="home-but1" onclick="showsection('data-basket')">
-            دخول
-          </button>
-        </div>
-      </div>
-      <div class="home-1">
-        <img src="img/logo.png" alt="صورة اعلان عروض" class="home-pag1" />
-        <div class="dishome">
-          <h3 class="home-script1">فواتير</h3>
-          <button class="home-but1" onclick="showsection('')">دخول</button>
+          <button class="home-but1" onclick="showsection('data-basket')">دخول</button>
         </div>
       </div>
     </section>
@@ -73,23 +59,23 @@
     <section id="data-clian" style="display: none">
       <h2>بيانات العميل</h2>
       <div class="show-data">
-        <label for="">الاسم</label>
+        <label>الاسم</label>
         <span id="data-name">جاري التحميل...</span>
       </div>
       <div class="show-data">
-        <label for="">رقم الهاتف</label>
+        <label>رقم الهاتف</label>
         <span id="data-namber">جاري التحميل...</span>
       </div>
       <div class="show-data">
-        <label for="">بريد الكتروني</label>
+        <label>بريد إلكتروني</label>
         <span id="data-email">جاري التحميل...</span>
       </div>
       <div class="show-data">
-        <label for="">العنوان</label>
+        <label>العنوان</label>
         <span id="data-addres">جاري التحميل...</span>
       </div>
       <div class="show-data">
-        <label for="">الرقم الخاص (ID)</label>
+        <label>الرقم الخاص (ID)</label>
         <span id="data-id">جاري التحميل...</span>
       </div>
     </section>
@@ -98,33 +84,27 @@
       <h2>المتجر</h2>
       <div class="data-market-cardgrop">
         <article class="data-market-card" data-id="A1001">
-          <img src="img/logo.png" alt="صنف1 جديد" />
+          <img src="img/logo.png" alt="صنف 1" />
           <div class="incard">
             <h2>صنف 1</h2>
             <p class="price">150 جنيه</p>
-            <button class="butmarket" onclick="addToCart(this)">
-              اضافه للسلة
-            </button>
+            <button class="butmarket" onclick="addToCart(this)">إضافة للسلة</button>
           </div>
         </article>
         <article class="data-market-card" data-id="A1002">
-          <img src="img/logo.png" alt="صنف جديد" />
+          <img src="img/logo.png" alt="صنف 2" />
           <div class="incard">
             <h2>صنف 2</h2>
-            <p class="price">200 جنيه</p>
-            <button class="butmarket" onclick="addToCart(this)">
-              اضافه للسلة
-            </button>
+            <p class="price">150 جنيه</p>
+            <button class="butmarket" onclick="addToCart(this)">إضافة للسلة</button>
           </div>
         </article>
         <article class="data-market-card" data-id="A1003">
-          <img src="img/logo.png" alt="صنف2 جديد" />
+          <img src="img/logo.png" alt="صنف 3" />
           <div class="incard">
             <h2>صنف 3</h2>
-            <p class="price">250 جنيه</p>
-            <button class="butmarket" onclick="addToCart(this)">
-              اضافه للسلة
-            </button>
+            <p class="price">150 جنيه</p>
+            <button class="butmarket" onclick="addToCart(this)">إضافة للسلة</button>
           </div>
         </article>
       </div>
@@ -132,46 +112,39 @@
 
     <section id="data-basket" style="display: none">
       <h2>السلة</h2>
-      <form action="" id="basket-form" onsubmit="event.preventDefault()">
+      <form id="basket-form" onsubmit="event.preventDefault()">
         <div id="basket-inmarkrt"></div>
         <div class="basket-total">
           <h3>ملخص الطلب</h3>
           <div class="basket-total2">
-            <span>اجمالي الحساب: </span>
+            <span>إجمالي الحساب</span>
             <span id="basket-span">0 جنيه</span>
           </div>
-          <button
-            type="button"
-            class="but-checkout"
-            onclick="sendInvoiceToWhatsApp()"
-          >
-            تاكيد الشراء
+          <button type="button" class="but-checkout" onclick="sendInvoiceToWhatsApp()">
+            تأكيد الشراء
           </button>
         </div>
       </form>
     </section>
 
     <script>
-      // ==========================================
-      // 1. حماية الوصول لصفحة العميل
-      // ==========================================
+      // 🔗 ضع رابط الـ Web App الصحيح هنا (الذي ينتهي بـ /exec)
+      const GOOGLE_SCRIPT_URL = "ضع_رابط_الـ_Web_App_هنا";
+
+      // 1. التحقق من تسجيل الدخول
       (function enforceClientAuth() {
         const userRole = (localStorage.getItem("userRole") || "").toLowerCase().trim();
         const userId = localStorage.getItem("userId");
 
-        // إذا لم يكن مسجلاً كعميل يتم التوجيه لصفحة تسجيل الدخول فوراً
-        if (!userId || userRole !== "client") {
-          alert("يرجى تسجيل الدخول أولاً للوصول إلى هذه الصفحة!");
+        if (!userId) {
+          alert("عذراً، يجب تسجيل الدخول أولاً للوصول إلى هذه الصفحة!");
           window.location.replace("../login/index.html");
         }
       })();
 
-      // ==========================================
-      // 2. التحميل الأولي للبيانات والسلة
-      // ==========================================
+      // 2. جلب البيانات وتحديث السلة بعد تحميل الصفحة
       document.addEventListener("DOMContentLoaded", function () {
         const userId = localStorage.getItem("userId");
-
         updateBasketUI();
 
         if (userId) {
@@ -179,36 +152,38 @@
         }
       });
 
-      // دالة جلب البيانات الخاصة بالعميل من Google Apps Script
+      // دالة جلب بيانات العميل المتوافقة مع أسماء الـ IDs في الـ HTML
       async function fetchUserProfile(id) {
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzllkAlRUE4tciAvkkLbK3RHXpZDWGgjHQyORN3D736Z4nmLJcjjaz_w-adumZsKyeT/exec";
-
         try {
-          const response = await fetch(`${SCRIPT_URL}?id=${encodeURIComponent(id)}`);
+          const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getUser&id=${encodeURIComponent(id)}`, {
+            method: "GET",
+            redirect: "follow"
+          });
           const data = await response.json();
 
-          if (data.status === "success") {
-            if (document.getElementById("data-name")) document.getElementById("data-name").innerText = data.name || "غير محدد";
-            if (document.getElementById("data-namber")) document.getElementById("data-namber").innerText = data.phone || data.mobile || "غير محدد";
-            if (document.getElementById("data-email")) document.getElementById("data-email").innerText = data.email || "غير محدد";
-            if (document.getElementById("data-addres")) document.getElementById("data-addres").innerText = data.address || "غير محدد";
-            if (document.getElementById("data-id")) document.getElementById("data-id").innerText = id;
+          if (data.success) {
+            document.getElementById("data-name").innerText = data.name || "غير محدد";
+            document.getElementById("data-namber").innerText = data.phone || data.mobile || "غير محدد";
+            document.getElementById("data-email").innerText = data.email || "غير محدد";
+            document.getElementById("data-addres").innerText = data.address || "غير محدد";
+            document.getElementById("data-id").innerText = id;
+          } else {
+            document.getElementById("data-name").innerText = "تعذر العثور على البيانات";
           }
         } catch (error) {
           console.error("خطأ في جلب بيانات العميل:", error);
+          document.getElementById("data-name").innerText = "خطأ في الاتصال";
         }
       }
 
-      // دالة تسجيل الخروج للعميل
+      // دالة تسجيل الخروج
       function logoutClient() {
         localStorage.removeItem("userRole");
         localStorage.removeItem("userId");
         window.location.replace("../login/index.html");
       }
 
-      // ==========================================
       // 3. التحكم في القوائم والتنقل
-      // ==========================================
       function togglemenu() {
         var menu = document.getElementById("menu-totaltop");
         if (menu) menu.classList.toggle("active");
@@ -233,9 +208,7 @@
         }
       }
 
-      // ==========================================
       // 4. إدارة السلة والتسوق
-      // ==========================================
       let cart = JSON.parse(localStorage.getItem("my_app_cart")) || [];
 
       function addToCart(btn) {
@@ -251,13 +224,7 @@
         if (existingItem) {
           existingItem.qty += 1;
         } else {
-          cart.push({
-            id: id,
-            title: title,
-            price: price,
-            img: imgSrc,
-            qty: 1,
-          });
+          cart.push({ id: id, title: title, price: price, img: imgSrc, qty: 1 });
         }
 
         saveAndRefresh();
@@ -284,20 +251,20 @@
           totalSum += itemTotal;
 
           container.innerHTML += `
-            <div class="basket-card">
-                <img src="${item.img}" alt="${item.title}">
+            <div class="basket-card" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #ddd; padding-bottom:10px;">
+                <img src="${item.img}" alt="${item.title}" style="width:50px; height:50px; object-fit:cover;">
                 <div class="basket-card-details">
                     <h3>${item.title}</h3>
                     <p>السعر: ${item.price} جنيه</p>
                 </div>
                 <div class="quantity-control">
                     <button type="button" class="btn-qty" onclick="changeQuantity(${index}, -1)">-</button>
-                    <input type="number" class="qty-input" value="${item.qty}" readonly>
+                    <input type="number" class="qty-input" value="${item.qty}" readonly style="width:40px; text-align:center;">
                     <button type="button" class="btn-qty" onclick="changeQuantity(${index}, 1)">+</button>
                 </div>
                 <div class="item-total-group">
                     <p class="item-total">${itemTotal} جنيه</p>
-                    <button type="button" class="btn-remove" onclick="removeCartItem(${index})">حذف 🗑️</button>
+                    <button type="button" class="btn-remove" onclick="removeCartItem(${index})" style="background:red; color:white; border:none; padding:5px;">حذف</button>
                 </div>
             </div>
           `;
@@ -324,9 +291,7 @@
         updateBasketUI();
       }
 
-      // ==========================================
-      // 5. تأكيد الشراء وإرسال الفاتورة
-      // ==========================================
+      // 5. تأكيد الشراء وإرسال الطلب للواتساب
       function sendInvoiceToWhatsApp() {
         if (cart.length === 0) {
           alert("السلة فارغة!");
@@ -340,57 +305,28 @@
 
         let itemsText = "";
         let totalSum = 0;
-        let sheetItems = [];
 
         cart.forEach((item, index) => {
           let itemTotal = item.price * item.qty;
           totalSum += itemTotal;
-          itemsText += `${index + 1}. ${item.title} (كود: ${item.id}) - الكمية: ${item.qty} - السعر: ${itemTotal} جنيه\n`;
-
-          sheetItems.push({
-            id: item.id,
-            title: item.title,
-            qty: item.qty,
-            price: item.price,
-            itemTotal: itemTotal
-          });
+          itemsText += `${index + 1}. ${item.title} (كود: ${item.id}) - الكمية: ${item.qty} - الإجمالي: ${itemTotal} جنيه\n`;
         });
 
-        const invoicePayload = {
-          invNum: invNum,
-          dateStr: dateStr,
-          totalSum: totalSum,
-          items: sheetItems,
-          clientId: currentUserId
-        };
-
-        const googleScriptUrl = "https://script.google.com/macros/s/AKfycbwcneFnCPG_fCnAQp8RLoyWfobM9SW2bzARjSqf4duSJjhgsL3QaZVsa5rT6FbhDA7K2A/exec";
-
-        let message = `*طلب جديد من الويب سايت 🛒*\n\n`;
-        message += `*رقم العميل:* ${currentUserId}\n`;
+        let message = `*طلب جديد من الموقع 🛒*\n\n`;
+        message += `*رقم العميل (ID):* ${currentUserId}\n`;
         message += `*رقم الفاتورة:* ${invNum}\n`;
         message += `*التاريخ:* ${dateStr}\n`;
         message += `-------------------------\n`;
         message += `*المنتجات:*\n${itemsText}`;
         message += `-------------------------\n`;
-        message += `*الإجمالي:* ${totalSum} جنيه\n\n`;
-        message += `برجاء تأكيد الطلب.`;
+        message += `*الإجمالي الكلي:* ${totalSum} جنيه\n\n`;
+        message += `يرجى تأكيد الطلب.`;
 
         const whatsappUrl = `https://wa.me/${managerPhone}?text=${encodeURIComponent(message)}`;
 
-        fetch(googleScriptUrl, {
-          method: "POST",
-          mode: "no-cors",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8"
-          },
-          body: JSON.stringify(invoicePayload)
-        })
-        .finally(() => {
-          cart = [];
-          saveAndRefresh();
-          window.location.href = whatsappUrl;
-        });
+        cart = [];
+        saveAndRefresh();
+        window.location.href = whatsappUrl;
       }
     </script>
   </body>
