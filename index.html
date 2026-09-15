@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>شاشه العميل</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="header-top">
+        <div class="header-top-pro">
+          <img src="img/logo.png" alt="logo" />
+          <h2>شاشه العميل</h2>
+        </div>
+        <button class="headermenu" onclick="togglemenu()">☰</button>
+      </div>
+      <nav class="menu-total" id="menu-totaltop">
+        <button onclick="showsection('home-clian')">HOME</button>
+        <button onclick="showsection('data-clian')">بيانات العميل</button>
+        <button onclick="showsection('data-market')">المتجر</button>
+        <button onclick="showsection('data-basket')">السله</button>
+        <button onclick="showsection('')">فواتير سابقه</button>
+        <button onclick="showsection('')">تسجيل خروج</button>
+      </nav>
+    </header>
+    <section id="home-clian">
+      <h2>مرحبا بكم</h2>
+      <div class="home-1">
+        <img src="img/logo.png" alt="صوره اعلان عروض" class="home-pag1" />
+        <div class="dishome">
+          <h3 class="home-script1">اعلان عروض</h3>
+          <button class="home-but1" onclick="showsection('')">دخول</button>
+        </div>
+      </div>
+      <div class="home-2">
+        <img src="img/logo.png" alt="صوره اعلان عروض" class="home-pag1" />
+        <div class="dishome">
+          <h3 class="home-script1">للمتجر</h3>
+          <button class="home-but1" onclick="showsection('data-market')">
+            دخول
+          </button>
+        </div>
+      </div>
+      <div class="home-1">
+        <img src="img/logo.png" alt="صوره اعلان عروض" class="home-pag1" />
+        <div class="dishome">
+          <h3 class="home-script1">العميل</h3>
+          <button class="home-but1" onclick="showsection('data-clian')">
+            دخول
+          </button>
+        </div>
+      </div>
+      <div class="home-2">
+        <img src="img/logo.png" alt="صوره اعلان عروض" class="home-pag1" />
+        <div class="dishome">
+          <h3 class="home-script1">السله</h3>
+          <button class="home-but1" onclick="showsection('data-basket')">
+            دخول
+          </button>
+        </div>
+      </div>
+      <div class="home-1">
+        <img src="img/logo.png" alt="صوره اعلان عروض" class="home-pag1" />
+        <div class="dishome">
+          <h3 class="home-script1">فواتير</h3>
+          <button class="home-but1" onclick="showsection('')">دخول</button>
+        </div>
+      </div>
+    </section>
+    <section id="data-clian" style="display: none">
+      <h2>بيانات العميل</h2>
+      <div class="show-data">
+        <label for="">الاسم</label>
+        <span id="data-name">جاري التحميل...</span>
+      </div>
+      <div class="show-data">
+        <label for="">رقم الهاتف</label>
+        <span id="data-namber">جاري التحميل...</span>
+      </div>
+      <div class="show-data">
+        <label for="">بريد الكتروني</label>
+        <span id="data-email">جاري التحميل...</span>
+      </div>
+      <div class="show-data">
+        <label for="">العنوان</label>
+        <span id="data-addres">جاري التحميل...</span>
+      </div>
+      <div class="show-data">
+        <label for="">رقم الخاص</label>
+        <span id="data-id">جاري التحميل...</span>
+      </div>
+    </section>
+    <section id="data-market" style="display: none">
+      <h2>المتجر</h2>
+      <div class="data-market-cardgrop">
+        <article class="data-market-card" data-id="A1001">
+          <img src="img/logo.png" alt="صنف1 جديد" />
+          <div class="incard">
+            <h2>صنف 1</h2>
+            <p class="price">150 جنيه</p>
+            <button class="butmarket" onclick="addToCart(this)">
+              اضافه للسه
+            </button>
+          </div>
+        </article>
+        <article class="data-market-card" data-id="A1002">
+          <img src="img/logo.png" alt="صنف جديد" />
+          <div class="incard">
+            <h2>صنف 1</h2>
+            <p class="price">150 جنيه</p>
+            <button class="butmarket" onclick="addToCart(this)">
+              اضافه للسه
+            </button>
+          </div>
+        </article>
+        <article class="data-market-card" data-id="A1003">
+          <img src="img/logo.png" alt="صنف2 جديد" />
+          <div class="incard">
+            <h2>صنف 1</h2>
+            <p class="price">150 جنيه</p>
+            <button class="butmarket" onclick="addToCart(this)">
+              اضافه للسه
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section id="data-basket" style="display: none">
+      <h2>السلة</h2>
+      <form action="" id="basket-form" onsubmit="event.preventDefault()">
+        <div id="basket-inmarkrt"></div>
+        <div class="basket-total">
+          <h3>ملخص الطلب</h3>
+          <div class="basket-total2">
+            <span>اجمالي الحساب </span>
+            <span id="basket-span">0جنيه</span>
+          </div>
+          <button
+            type="button"
+            class="but-checkout"
+            onclick="sendInvoiceToWhatsApp()"
+          >
+            تاكيد الشراء
+          </button>
+        </div>
+      </form>
+    </section>
+ <script>
+  // 1. القوائم والتنقل
+  function togglemenu() {
+    var menu = document.getElementById("menu-totaltop");
+    if (menu) menu.classList.toggle("active");
+  }
+
+  function showsection(sectionId) {
+    if (!sectionId) return;
+
+    var sections = document.querySelectorAll("section");
+    sections.forEach(function (sec) {
+      sec.style.display = "none";
+    });
+
+    var targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+      targetSection.style.display = "block";
+    }
+
+    var menu = document.getElementById("menu-totaltop");
+    if (menu) {
+      menu.classList.remove("active");
+    }
+  }
+
+  // 2. إدارة السلة وتخزينها
+  let cart = JSON.parse(localStorage.getItem("my_app_cart")) || [];
+
+  document.addEventListener("DOMContentLoaded", function () {
+    updateBasketUI();
+  });
+
+  // 3. إضافة منتج للسلة
+  function addToCart(btn) {
+    const card = btn.closest(".data-market-card") || btn.closest("article");
+    const id =
+      card.getAttribute("data-id") ||
+      card.querySelector("h2").innerText.trim();
+    const title = card.querySelector("h2").innerText;
+    const priceText = card.querySelector(".price").innerText;
+    const price = parseFloat(priceText.replace(/[^0-9.]/g, "")) || 0;
+    const imgSrc = card.querySelector("img").src;
+
+    let existingItem = cart.find((item) => item.id === id);
+
+    if (existingItem) {
+      existingItem.qty += 1;
+    } else {
+      cart.push({
+        id: id,
+        title: title,
+        price: price,
+        img: imgSrc,
+        qty: 1,
+      });
+    }
+
+    saveAndRefresh();
+    alert('تمت إضافة "' + title + '" إلى السلة بنجاح!');
+  }
+
+  // 4. تحديث واجهة السلة
+  function updateBasketUI() {
+    const container = document.getElementById("basket-inmarkrt");
+    const totalSpan = document.getElementById("basket-span");
+
+    if (!container || !totalSpan) return;
+
+    container.innerHTML = "";
+    let totalSum = 0;
+
+    if (cart.length === 0) {
+      container.innerHTML =
+        '<p style="text-align:center; color:#64748b; padding:20px;">السلة فارغة حالياً</p>';
+      totalSpan.innerText = "0 جنيه";
+      return;
+    }
+
+    cart.forEach((item, index) => {
+      let itemTotal = item.price * item.qty;
+      totalSum += itemTotal;
+
+      container.innerHTML += `
+        <div class="basket-card">
+            <img src="${item.img}" alt="${item.title}">
+            
+            <div class="basket-card-details">
+                <h3>${item.title}</h3>
+                <p>السعر: ${item.price} جنيه</p>
+            </div>
+
+            <div class="quantity-control">
+                <button type="button" class="btn-qty" onclick="changeQuantity(${index}, -1)">-</button>
+                <input type="number" class="qty-input" value="${item.qty}" readonly>
+                <button type="button" class="btn-qty" onclick="changeQuantity(${index}, 1)">+</button>
+            </div>
+
+            <div class="item-total-group">
+                <p class="item-total">${itemTotal} جنيه</p>
+                <button type="button" class="btn-remove" onclick="removeCartItem(${index})">حذف 🗑️</button>
+            </div>
+        </div>
+      `;
+    });
+
+    totalSpan.innerText = totalSum + " جنيه";
+  }
+
+  // 5. تعديل الكمية وحذف العناصر
+  function changeQuantity(index, change) {
+    cart[index].qty += change;
+    if (cart[index].qty <= 0) {
+      cart.splice(index, 1);
+    }
+    saveAndRefresh();
+  }
+
+  function removeCartItem(index) {
+    cart.splice(index, 1);
+    saveAndRefresh();
+  }
+
+  function saveAndRefresh() {
+    localStorage.setItem("my_app_cart", JSON.stringify(cart));
+    updateBasketUI();
+  }
+
+  // 6. دالة تأكيد الشراء وإرسال الفاتورة إلى Google Sheets والواتساب
+  function sendInvoiceToWhatsApp() {
+    if (cart.length === 0) {
+      alert("السلة فارغة!");
+      return;
+    }
+
+    const managerPhone = "201501893345";
+    const invNum = "WEB-" + Math.floor(100000 + Math.random() * 900000);
+    const dateStr = new Date().toLocaleDateString("ar-EG");
+
+    let itemsText = "";
+    let totalSum = 0;
+    let sheetItems = [];
+
+    cart.forEach((item, index) => {
+      let itemTotal = item.price * item.qty;
+      totalSum += itemTotal;
+      itemsText += `${index + 1}. ${item.title} (كود: ${item.id}) - الكمية: ${item.qty} - السعر: ${itemTotal} جنيه\n`;
+
+      sheetItems.push({
+        id: item.id,
+        title: item.title,
+        qty: item.qty,
+        price: item.price,
+        itemTotal: itemTotal
+      });
+    });
+
+    // تجهيز البيانات لـ Google Sheets
+    const invoicePayload = {
+      invNum: invNum,
+      dateStr: dateStr,
+      totalSum: totalSum,
+      items: sheetItems
+    };
+
+    const googleScriptUrl = "https://script.google.com/macros/s/AKfycbwcneFnCPG_fCnAQp8RLoyWfobM9SW2bzARjSqf4duSJjhgsL3QaZVsa5rT6FbhDA7K2A/exec";
+
+    // 1. إرسال البيانات عبر sendBeacon (الأضمن عبر كافة المتصفحات والموبايل) أو fetch كبديل
+    const dataBlob = new Blob([JSON.stringify(invoicePayload)], { type: 'text/plain;charset=utf-8' });
+
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(googleScriptUrl, dataBlob);
+    } else {
+      fetch(googleScriptUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(invoicePayload)
+      }).catch(err => console.error("خطأ أثناء الإرسال لـ Google Sheets:", err));
+    }
+
+    // 2. تجهيز وتنسيق رسالة الواتساب
+    let message = `*طلب جديد من الويب سايت 🛒*\n\n`;
+    message += `*رقم الفاتورة:* ${invNum}\n`;
+    message += `*التاريخ:* ${dateStr}\n`;
+    message += `-------------------------\n`;
+    message += `*المنتجات:*\n${itemsText}`;
+    message += `-------------------------\n`;
+    message += `*الإجمالي:* ${totalSum} جنيه\n\n`;
+    message += `برجاء تأكيد الطلب.`;
+
+    const whatsappUrl = `https://wa.me/${managerPhone}?text=${encodeURIComponent(message)}`;
+
+    // 3. تفريغ السلة وتحديث الواجهة
+    cart = [];
+    saveAndRefresh();
+
+    // 4. فتح الواتساب
+    window.open(whatsappUrl, "_blank");
+  }
+</script>
+  </body>
+</html>
