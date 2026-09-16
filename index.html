@@ -949,7 +949,6 @@
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzllkAlRUE4tciAvkkLbK3RHXpZDWGgjHQyORN3D736Z4nmLJcjjaz_w-adumZsKyeT/exec";
         const INVOICE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynFt6gZtOLQDI6Mt5ZuZX1LoMpEWq07GNhm0djhudTW3N8TLQBehNeT5GFHALK4q16HQ/exec";
 
-        // تم تفريغ الأصناف تماماً بناءً على طلبك
         let defaultItems = [];
         let defaultCategories = ["أدوات كهربائية", "إضاءة", "كابلات وأسلاك", "إكسسوارات ومستلزمات", "أخرى"];
 
@@ -961,7 +960,10 @@
             const savedTheme = localStorage.getItem("theme") || "dark";
             if (savedTheme === "light") {
                 document.documentElement.setAttribute("data-theme", "light");
-                document.getElementById("themeToggleBtn").querySelector("i").classList.replace("fa-moon", "fa-sun");
+                const themeBtn = document.getElementById("themeToggleBtn");
+                if (themeBtn && themeBtn.querySelector("i")) {
+                    themeBtn.querySelector("i").classList.replace("fa-moon", "fa-sun");
+                }
             } else {
                 document.documentElement.setAttribute("data-theme", "dark");
             }
@@ -990,6 +992,7 @@
 
         function previewUserGreeting(val) {
             const msgBox = document.getElementById("loginGreetingMsg");
+            if (!msgBox) return;
             const trimmed = val.trim();
             if (!trimmed) {
                 msgBox.innerText = "";
@@ -1005,6 +1008,7 @@
         function populateCategoryDropdowns() {
             const filterSelect = document.getElementById("marketCategoryFilter");
             const itemSelect = document.getElementById("newItemCategory");
+            if (!filterSelect || !itemSelect) return;
 
             let currentFilterVal = filterSelect.value;
             let currentItemVal = itemSelect.value;
@@ -1023,6 +1027,7 @@
 
         function addNewCategoryFromAdmin() {
             const input = document.getElementById("newCategoryInput");
+            if (!input) return;
             const catName = input.value.trim();
             if (!catName) {
                 alert("يرجى كتابة اسم التصنيف الجديد!");
@@ -1034,7 +1039,11 @@
             }
 
             marketCategories.push(catName);
-            localStorage.setItem("custom_market_categories", JSON.stringify(marketCategories));
+            try {
+                localStorage.setItem("custom_market_categories", JSON.stringify(marketCategories));
+            } catch (e) {
+                console.error("Storage error:", e);
+            }
             input.value = "";
             populateCategoryDropdowns();
             renderAdminCategoriesList();
@@ -1063,7 +1072,11 @@
             }
             if (confirm(`هل أنت متأكد من حذف التصنيف "${catName}"؟`)) {
                 marketCategories = marketCategories.filter(c => c !== catName);
-                localStorage.setItem("custom_market_categories", JSON.stringify(marketCategories));
+                try {
+                    localStorage.setItem("custom_market_categories", JSON.stringify(marketCategories));
+                } catch (e) {
+                    console.error("Storage error:", e);
+                }
                 populateCategoryDropdowns();
                 renderAdminCategoriesList();
                 alert("تم حذف التصنيف بنجاح.");
@@ -1071,8 +1084,12 @@
         }
 
         function filterMarketItems() {
-            const query = document.getElementById("marketSearchInput").value.trim().toLowerCase();
-            const selectedCat = document.getElementById("marketCategoryFilter").value;
+            const searchInput = document.getElementById("marketSearchInput");
+            const categoryFilter = document.getElementById("marketCategoryFilter");
+            if (!searchInput || !categoryFilter) return;
+
+            const query = searchInput.value.trim().toLowerCase();
+            const selectedCat = categoryFilter.value;
 
             const filtered = marketItems.filter(item => {
                 const matchQuery = 
@@ -1089,49 +1106,80 @@
         }
 
         function toggleBrandingInput(target, type) {
-            if (target === 'logo') {
-                document.getElementById('logoUrlBox').style.display = type === 'url' ? 'block' : 'none';
-                document.getElementById('logoFileBox').style.display = type === 'file' ? 'block' : 'none';
-            } else if (target === 'b1') {
-                document.getElementById('b1UrlBox').style.display = type === 'url' ? 'block' : 'none';
-                document.getElementById('b1FileBox').style.display = type === 'file' ? 'block' : 'none';
-            } else if (target === 'b2') {
-                document.getElementById('b2UrlBox').style.display = type === 'url' ? 'block' : 'none';
-                document.getElementById('b2FileBox').style.display = type === 'file' ? 'block' : 'none';
+            const urlBox = document.getElementById(target === 'logo' ? 'logoUrlBox' : (target === 'b1' ? 'b1UrlBox' : 'b2UrlBox'));
+            const fileBox = document.getElementById(target === 'logo' ? 'logoFileBox' : (target === 'b1' ? 'b1FileBox' : 'b2FileBox'));
+            if (urlBox && fileBox) {
+                urlBox.style.display = type === 'url' ? 'block' : 'none';
+                fileBox.style.display = type === 'file' ? 'block' : 'none';
             }
         }
 
         function applyBrandingSettings() {
-            const settings = JSON.parse(localStorage.getItem("store_branding_settings")) || {
-                logo: "https://via.placeholder.com/42",
-                banner1Text: "إعلان عروض",
-                banner1Img: "https://via.placeholder.com/150",
-                banner2Text: "المتجر",
-                banner2Img: "https://via.placeholder.com/150"
-            };
+            let settings;
+            try {
+                settings = JSON.parse(localStorage.getItem("store_branding_settings")) || {
+                    logo: "https://via.placeholder.com/42",
+                    banner1Text: "إعلان عروض",
+                    banner1Img: "https://via.placeholder.com/150",
+                    banner2Text: "المتجر",
+                    banner2Img: "https://via.placeholder.com/150"
+                };
+            } catch (e) {
+                settings = {
+                    logo: "https://via.placeholder.com/42",
+                    banner1Text: "إعلان عروض",
+                    banner1Img: "https://via.placeholder.com/150",
+                    banner2Text: "المتجر",
+                    banner2Img: "https://via.placeholder.com/150"
+                };
+            }
 
-            document.getElementById("headerLogoImg").src = settings.logo;
-            document.getElementById("homeBanner1").src = settings.banner1Img;
-            document.getElementById("homeText1").innerText = settings.banner1Text;
-            document.getElementById("homeBanner2").src = settings.banner2Img;
-            document.getElementById("homeText2").innerText = settings.banner2Text;
+            const headerLogoImg = document.getElementById("headerLogoImg");
+            const homeBanner1 = document.getElementById("homeBanner1");
+            const homeText1 = document.getElementById("homeText1");
+            const homeBanner2 = document.getElementById("homeBanner2");
+            const homeText2 = document.getElementById("homeText2");
 
-            document.getElementById("adminCompanyLogo").value = settings.logo;
-            document.getElementById("adminBanner1Text").value = settings.banner1Text;
-            document.getElementById("adminBanner1Img").value = settings.banner1Img;
-            document.getElementById("adminBanner2Text").value = settings.banner2Text;
-            document.getElementById("adminBanner2Img").value = settings.banner2Img;
+            if (headerLogoImg) headerLogoImg.src = settings.logo;
+            if (homeBanner1) homeBanner1.src = settings.banner1Img;
+            if (homeText1) homeText1.innerText = settings.banner1Text;
+            if (homeBanner2) homeBanner2.src = settings.banner2Img;
+            if (homeText2) homeText2.innerText = settings.banner2Text;
+
+            const adminCompanyLogo = document.getElementById("adminCompanyLogo");
+            const adminBanner1Text = document.getElementById("adminBanner1Text");
+            const adminBanner1Img = document.getElementById("adminBanner1Img");
+            const adminBanner2Text = document.getElementById("adminBanner2Text");
+            const adminBanner2Img = document.getElementById("adminBanner2Img");
+
+            if (adminCompanyLogo) adminCompanyLogo.value = settings.logo;
+            if (adminBanner1Text) adminBanner1Text.value = settings.banner1Text;
+            if (adminBanner1Img) adminBanner1Img.value = settings.banner1Img;
+            if (adminBanner2Text) adminBanner2Text.value = settings.banner2Text;
+            if (adminBanner2Img) adminBanner2Img.value = settings.banner2Img;
         }
 
         function saveBrandingSettings(e) {
             e.preventDefault();
-            const savedSettings = JSON.parse(localStorage.getItem("store_branding_settings")) || {};
-            const banner1Text = document.getElementById("adminBanner1Text").value.trim() || "إعلان عروض";
-            const banner2Text = document.getElementById("adminBanner2Text").value.trim() || "المتجر";
+            let savedSettings;
+            try {
+                savedSettings = JSON.parse(localStorage.getItem("store_branding_settings")) || {};
+            } catch (err) {
+                savedSettings = {};
+            }
 
-            const logoType = document.querySelector('input[name="brandLogoType"]:checked').value;
-            const b1Type = document.querySelector('input[name="brandB1Type"]:checked').value;
-            const b2Type = document.querySelector('input[name="brandB2Type"]:checked').value;
+            const b1TxtEl = document.getElementById("adminBanner1Text");
+            const b2TxtEl = document.getElementById("adminBanner2Text");
+            const banner1Text = b1TxtEl ? b1TxtEl.value.trim() || "إعلان عروض" : "إعلان عروض";
+            const banner2Text = b2TxtEl ? b2TxtEl.value.trim() || "المتجر" : "المتجر";
+
+            const brandLogoTypeEl = document.querySelector('input[name="brandLogoType"]:checked');
+            const brandB1TypeEl = document.querySelector('input[name="brandB1Type"]:checked');
+            const brandB2TypeEl = document.querySelector('input[name="brandB2Type"]:checked');
+
+            const logoType = brandLogoTypeEl ? brandLogoTypeEl.value : 'url';
+            const b1Type = brandB1TypeEl ? brandB1TypeEl.value : 'url';
+            const b2Type = brandB2TypeEl ? brandB2TypeEl.value : 'url';
 
             let processingCount = 0;
             let newLogo = savedSettings.logo || "https://via.placeholder.com/42";
@@ -1140,17 +1188,22 @@
 
             function finalizeSave() {
                 const finalSettings = { logo: newLogo, banner1Text, banner1Img: newB1Img, banner2Text, banner2Img: newB2Img };
-                localStorage.setItem("store_branding_settings", JSON.stringify(finalSettings));
+                try {
+                    localStorage.setItem("store_branding_settings", JSON.stringify(finalSettings));
+                } catch (err) {
+                    console.error("Storage error:", err);
+                }
                 applyBrandingSettings();
                 alert("تم حفظ وتحديث إعدادات الواجهة واللوجو بنجاح!");
             }
 
             if (logoType === 'url') {
-                newLogo = document.getElementById("adminCompanyLogo").value.trim() || newLogo;
+                const logoInput = document.getElementById("adminCompanyLogo");
+                if (logoInput) newLogo = logoInput.value.trim() || newLogo;
                 checkDone();
             } else {
                 const fileInput = document.getElementById("adminCompanyLogoFile");
-                if (fileInput.files && fileInput.files[0]) {
+                if (fileInput && fileInput.files && fileInput.files[0]) {
                     const reader = new FileReader();
                     reader.onload = function(evt) { newLogo = evt.target.result; checkDone(); };
                     reader.readAsDataURL(fileInput.files[0]);
@@ -1158,11 +1211,12 @@
             }
 
             if (b1Type === 'url') {
-                newB1Img = document.getElementById("adminBanner1Img").value.trim() || newB1Img;
+                const b1Input = document.getElementById("adminBanner1Img");
+                if (b1Input) newB1Img = b1Input.value.trim() || newB1Img;
                 checkDone();
             } else {
                 const fileInput = document.getElementById("adminBanner1ImgFile");
-                if (fileInput.files && fileInput.files[0]) {
+                if (fileInput && fileInput.files && fileInput.files[0]) {
                     const reader = new FileReader();
                     reader.onload = function(evt) { newB1Img = evt.target.result; checkDone(); };
                     reader.readAsDataURL(fileInput.files[0]);
@@ -1170,11 +1224,12 @@
             }
 
             if (b2Type === 'url') {
-                newB2Img = document.getElementById("adminBanner2Img").value.trim() || newB2Img;
+                const b2Input = document.getElementById("adminBanner2Img");
+                if (b2Input) newB2Img = b2Input.value.trim() || newB2Img;
                 checkDone();
             } else {
                 const fileInput = document.getElementById("adminBanner2ImgFile");
-                if (fileInput.files && fileInput.files[0]) {
+                if (fileInput && fileInput.files && fileInput.files[0]) {
                     const reader = new FileReader();
                     reader.onload = function(evt) { newB2Img = evt.target.result; checkDone(); };
                     reader.readAsDataURL(fileInput.files[0]);
@@ -1187,118 +1242,142 @@
             }
         }
 
-        document.getElementById("themeToggleBtn").addEventListener("click", () => {
-            const currentTheme = document.documentElement.getAttribute("data-theme");
-            const themeIcon = document.getElementById("themeToggleBtn").querySelector("i");
-            if (currentTheme === "light") {
-                document.documentElement.setAttribute("data-theme", "dark");
-                themeIcon.classList.replace("fa-sun", "fa-moon");
-                localStorage.setItem("theme", "dark");
-            } else {
-                document.documentElement.setAttribute("data-theme", "light");
-                themeIcon.classList.replace("fa-moon", "fa-sun");
-                localStorage.setItem("theme", "light");
-            }
-        });
+        const themeToggleBtn = document.getElementById("themeToggleBtn");
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener("click", () => {
+                const currentTheme = document.documentElement.getAttribute("data-theme");
+                const themeIcon = themeToggleBtn.querySelector("i");
+                if (currentTheme === "light") {
+                    document.documentElement.setAttribute("data-theme", "dark");
+                    if (themeIcon) themeIcon.classList.replace("fa-sun", "fa-moon");
+                    try { localStorage.setItem("theme", "dark"); } catch (e) {}
+                } else {
+                    document.documentElement.setAttribute("data-theme", "light");
+                    if (themeIcon) themeIcon.classList.replace("fa-moon", "fa-sun");
+                    try { localStorage.setItem("theme", "light"); } catch (e) {}
+                }
+            });
+        }
 
         function checkAuthStatus() {
             const userId = sessionStorage.getItem("userId");
             const userRole = sessionStorage.getItem("userRole");
             const userName = sessionStorage.getItem("userName") || (userRole === "admin" ? "مدير النظام" : `عميل (${userId})`);
 
+            const loginScreen = document.getElementById("loginScreen");
+            const mainBody = document.getElementById("mainBody");
+            const appInterface = document.getElementById("appInterface");
+
             if (userId && userRole) {
-                document.getElementById("loginScreen").style.display = "none";
-                document.getElementById("mainBody").classList.remove("auth-body");
-                document.getElementById("appInterface").style.display = "block";
+                if (loginScreen) loginScreen.style.display = "none";
+                if (mainBody) mainBody.classList.remove("auth-body");
+                if (appInterface) appInterface.style.display = "block";
 
                 if (userRole !== 'admin') {
                     updateLivePresence(userId, userName);
                 }
 
+                const adminMenuBtn = document.getElementById("adminMenuBtn");
+                const headerTitle = document.getElementById("headerTitle");
+                const welcomeHeaderTitle = document.getElementById("welcomeHeaderTitle");
+
                 if (userRole === "admin") {
-                    document.getElementById("adminMenuBtn").style.display = "inline-block";
-                    document.getElementById("headerTitle").innerText = "أهلاً بك يا مدير النظام 👑";
-                    document.getElementById("welcomeHeaderTitle").innerText = "أهلاً بك يا مدير النظام في لوحة التحكم";
+                    if (adminMenuBtn) adminMenuBtn.style.display = "inline-block";
+                    if (headerTitle) headerTitle.innerText = "أهلاً بك يا مدير النظام 👑";
+                    if (welcomeHeaderTitle) welcomeHeaderTitle.innerText = "أهلاً بك يا مدير النظام في لوحة التحكم";
                     loadAdminDashboardData();
                 } else {
-                    document.getElementById("headerTitle").innerText = `أهلاً بك يا ${userName} ✨`;
-                    document.getElementById("welcomeHeaderTitle").innerText = `مرحباً بك يا ${userName}`;
+                    if (adminMenuBtn) adminMenuBtn.style.display = "none";
+                    if (headerTitle) headerTitle.innerText = `أهلاً بك يا ${userName} ✨`;
+                    if (welcomeHeaderTitle) welcomeHeaderTitle.innerText = `مرحباً بك يا ${userName}`;
                 }
 
                 fetchUserProfile(userId);
                 fetchClientInvoices(userId);
             } else {
-                document.getElementById("loginScreen").style.display = "block";
-                document.getElementById("mainBody").classList.add("auth-body");
-                document.getElementById("appInterface").style.display = "none";
+                if (loginScreen) loginScreen.style.display = "block";
+                if (mainBody) mainBody.classList.add("auth-body");
+                if (appInterface) appInterface.style.display = "none";
             }
         }
 
         function updateLivePresence(id, name) {
-            let activePool = JSON.parse(localStorage.getItem("live_active_clients")) || {};
-            activePool[id] = { id, name: name || ("عميل (" + id + ")"), lastSeen: Date.now() };
-            localStorage.setItem("live_active_clients", JSON.stringify(activePool));
+            try {
+                let activePool = JSON.parse(localStorage.getItem("live_active_clients")) || {};
+                activePool[id] = { id, name: name || ("عميل (" + id + ")"), lastSeen: Date.now() };
+                localStorage.setItem("live_active_clients", JSON.stringify(activePool));
+            } catch (e) {}
         }
 
         function togglePassVisibility(inputId, iconElement) {
             const input = document.getElementById(inputId);
+            if (!input) return;
             if (input.type === "password") {
                 input.type = "text";
-                iconElement.classList.replace("fa-eye", "fa-eye-slash");
+                if (iconElement) iconElement.classList.replace("fa-eye", "fa-eye-slash");
             } else {
                 input.type = "password";
-                iconElement.classList.replace("fa-eye-slash", "fa-eye");
+                if (iconElement) iconElement.classList.replace("fa-eye-slash", "fa-eye");
             }
         }
 
-        document.getElementById("loginForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
-            const id = document.getElementById("userId").value.trim();
-            const password = document.getElementById("userPassword").value.trim();
+        const loginForm = document.getElementById("loginForm");
+        if (loginForm) {
+            loginForm.addEventListener("submit", async function(e) {
+                e.preventDefault();
+                const userIdEl = document.getElementById("userId");
+                const userPassEl = document.getElementById("userPassword");
+                if (!userIdEl || !userPassEl) return;
 
-            if (!id || !password) {
-                showNotification("يرجى ملء جميع الحقول!", "error");
-                return;
-            }
+                const id = userIdEl.value.trim();
+                const password = userPassEl.value.trim();
 
-            let resolvedRole = (id.toLowerCase() === "admin" || id === "1") ? "admin" : "client";
-            let resolvedName = resolvedRole === "admin" ? "مدير النظام" : `عميل (${id})`;
-
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ id, password, role: resolvedRole })
-                });
-                const result = await response.json();
-
-                if (result.status === "success" || result.success) {
-                    resolvedRole = result.role || resolvedRole;
-                    if (result.name) resolvedName = result.name;
-                    sessionStorage.setItem("userRole", resolvedRole);
-                    sessionStorage.setItem("userId", id);
-                    sessionStorage.setItem("userName", resolvedName);
-                    checkAuthStatus();
-                } else {
-                    showNotification("الرقم التعريفي (ID) أو كلمة المرور غير صحيحة!", "error");
+                if (!id || !password) {
+                    showNotification("يرجى ملء جميع الحقول!", "error");
+                    return;
                 }
-            } catch (err) {
-                if (resolvedRole === "admin") {
-                    sessionStorage.setItem("userRole", resolvedRole);
-                    sessionStorage.setItem("userId", id);
-                    sessionStorage.setItem("userName", resolvedName);
-                    checkAuthStatus();
-                } else {
-                    showNotification("تعذر التحقق من الـ ID مع شيت الاكسل أو السيرفر.", "error");
+
+                let resolvedRole = (id.toLowerCase() === "admin" || id === "1") ? "admin" : "client";
+                let resolvedName = resolvedRole === "admin" ? "مدير النظام" : `عميل (${id})`;
+
+                try {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: "POST",
+                        body: JSON.stringify({ id, password, role: resolvedRole })
+                    });
+                    const result = await response.json();
+
+                    if (result.status === "success" || result.success) {
+                        resolvedRole = result.role || resolvedRole;
+                        if (result.name) resolvedName = result.name;
+                        sessionStorage.setItem("userRole", resolvedRole);
+                        sessionStorage.setItem("userId", id);
+                        sessionStorage.setItem("userName", resolvedName);
+                        checkAuthStatus();
+                    } else {
+                        showNotification("الرقم التعريفي (ID) أو كلمة المرور غير صحيحة!", "error");
+                    }
+                } catch (err) {
+                    if (resolvedRole === "admin") {
+                        sessionStorage.setItem("userRole", resolvedRole);
+                        sessionStorage.setItem("userId", id);
+                        sessionStorage.setItem("userName", resolvedName);
+                        checkAuthStatus();
+                    } else {
+                        showNotification("تعذر التحقق من الـ ID مع شيت الاكسل أو السيرفر.", "error");
+                    }
                 }
-            }
-        });
+            });
+        }
 
         function logoutClient() {
             const userId = sessionStorage.getItem("userId");
             if (userId) {
-                let activePool = JSON.parse(localStorage.getItem("live_active_clients")) || {};
-                delete activePool[userId];
-                localStorage.setItem("live_active_clients", JSON.stringify(activePool));
+                try {
+                    let activePool = JSON.parse(localStorage.getItem("live_active_clients")) || {};
+                    delete activePool[userId];
+                    localStorage.setItem("live_active_clients", JSON.stringify(activePool));
+                } catch (e) {}
             }
             sessionStorage.removeItem("userRole");
             sessionStorage.removeItem("userId");
@@ -1308,20 +1387,23 @@
 
         function showNotification(msg, type) {
             const box = document.getElementById("notificationBox");
+            if (!box) return;
             box.style.display = "block";
             box.innerText = msg;
             box.className = `notification-box ${type}`;
         }
 
         function togglemenu() {
-            document.getElementById("menu-totaltop").classList.toggle("active");
+            const menu = document.getElementById("menu-totaltop");
+            if (menu) menu.classList.toggle("active");
         }
 
         function showsection(sectionId) {
             document.querySelectorAll("#appInterface section").forEach(sec => sec.style.display = "none");
             const target = document.getElementById(sectionId);
             if (target) target.style.display = "block";
-            document.getElementById("menu-totaltop").classList.remove("active");
+            const menu = document.getElementById("menu-totaltop");
+            if (menu) menu.classList.remove("active");
             if (sectionId === 'admin-section') loadAdminDashboardData();
         }
 
@@ -1330,7 +1412,7 @@
             if (!container) return;
             container.innerHTML = "";
 
-            if (itemsList.length === 0) {
+            if (!itemsList || itemsList.length === 0) {
                 container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 30px;">لا توجد أصناف مسجلة في المتجر حالياً</p>`;
                 return;
             }
@@ -1352,17 +1434,17 @@
         }
 
         function toggleImgInputType(type) {
-            if (type === 'url') {
-                document.getElementById('urlInputContainer').style.display = 'block';
-                document.getElementById('fileInputContainer').style.display = 'none';
-            } else {
-                document.getElementById('urlInputContainer').style.display = 'none';
-                document.getElementById('fileInputContainer').style.display = 'block';
+            const urlContainer = document.getElementById('urlInputContainer');
+            const fileContainer = document.getElementById('fileInputContainer');
+            if (urlContainer && fileContainer) {
+                urlContainer.style.display = type === 'url' ? 'block' : 'none';
+                fileContainer.style.display = type === 'file' ? 'block' : 'none';
             }
         }
 
         function populateAdminDropdown() {
             const select = document.getElementById("selectItemToEdit");
+            if (!select) return;
             select.innerHTML = '<option value="new">-- إضافة صنف جديد تماماً --</option>';
             marketItems.forEach(item => {
                 select.innerHTML += `<option value="${item.id}">${item.title} (كود: ${item.id})</option>`;
@@ -1370,43 +1452,59 @@
         }
 
         function loadItemDataForEdit() {
-            const val = document.getElementById("selectItemToEdit").value;
+            const selectEl = document.getElementById("selectItemToEdit");
+            if (!selectEl) return;
+            const val = selectEl.value;
             const formMode = document.getElementById("formMode");
             const saveBtnText = document.getElementById("saveBtnText");
             const deleteItemBtn = document.getElementById("deleteItemBtn");
 
             if (val === "new") {
-                formMode.value = "add";
-                saveBtnText.innerText = "حفظ وإضافة البند";
-                deleteItemBtn.style.display = "none";
-                document.getElementById("newItemId").value = "";
-                document.getElementById("newItemTitle").value = "";
-                document.getElementById("newItemCategory").value = "";
-                document.getElementById("newItemPrice").value = "";
-                document.getElementById("newItemImgUrl").value = "";
+                if (formMode) formMode.value = "add";
+                if (saveBtnText) saveBtnText.innerText = "حفظ وإضافة البند";
+                if (deleteItemBtn) deleteItemBtn.style.display = "none";
+                const fields = ["newItemId", "newItemTitle", "newItemCategory", "newItemPrice", "newItemImgUrl"];
+                fields.forEach(f => {
+                    const el = document.getElementById(f);
+                    if (el) el.value = "";
+                });
             } else {
-                formMode.value = "edit";
-                saveBtnText.innerText = "تعديل وحفظ التغييرات";
-                deleteItemBtn.style.display = "block";
+                if (formMode) formMode.value = "edit";
+                if (saveBtnText) saveBtnText.innerText = "تعديل وحفظ التغييرات";
+                if (deleteItemBtn) deleteItemBtn.style.display = "block";
                 
                 const item = marketItems.find(i => i.id === val);
                 if (item) {
-                    document.getElementById("newItemId").value = item.id;
-                    document.getElementById("newItemTitle").value = item.title;
-                    document.getElementById("newItemCategory").value = item.category || "";
-                    document.getElementById("newItemPrice").value = item.price;
-                    document.getElementById("newItemImgUrl").value = item.img;
+                    const idEl = document.getElementById("newItemId");
+                    const titleEl = document.getElementById("newItemTitle");
+                    const catEl = document.getElementById("newItemCategory");
+                    const priceEl = document.getElementById("newItemPrice");
+                    const imgUrlEl = document.getElementById("newItemImgUrl");
+
+                    if (idEl) idEl.value = item.id;
+                    if (titleEl) titleEl.value = item.title;
+                    if (catEl) catEl.value = item.category || "";
+                    if (priceEl) priceEl.value = item.price;
+                    if (imgUrlEl) imgUrlEl.value = item.img;
                 }
             }
         }
 
         function saveItemData(e) {
             e.preventDefault();
-            const formMode = document.getElementById("formMode").value;
-            const id = document.getElementById("newItemId").value.trim();
-            const title = document.getElementById("newItemTitle").value.trim();
-            const category = document.getElementById("newItemCategory").value;
-            const price = parseFloat(document.getElementById("newItemPrice").value) || 0;
+            const formModeEl = document.getElementById("formMode");
+            const newItemIdEl = document.getElementById("newItemId");
+            const newItemTitleEl = document.getElementById("newItemTitle");
+            const newItemCategoryEl = document.getElementById("newItemCategory");
+            const newItemPriceEl = document.getElementById("newItemPrice");
+
+            if (!newItemIdEl || !newItemTitleEl || !newItemCategoryEl || !newItemPriceEl) return;
+
+            const formMode = formModeEl ? formModeEl.value : "add";
+            const id = newItemIdEl.value.trim();
+            const title = newItemTitleEl.value.trim();
+            const category = newItemCategoryEl.value;
+            const price = parseFloat(newItemPriceEl.value) || 0;
 
             if (!category) {
                 alert("يجب اختيار تصنيف الصنف قبل الحفظ!");
@@ -1415,16 +1513,19 @@
 
             if (!marketCategories.includes(category)) {
                 marketCategories.push(category);
-                localStorage.setItem("custom_market_categories", JSON.stringify(marketCategories));
+                try {
+                    localStorage.setItem("custom_market_categories", JSON.stringify(marketCategories));
+                } catch (err) {}
                 populateCategoryDropdowns();
                 renderAdminCategoriesList();
             }
             
-            const imgSourceType = document.querySelector('input[name="imgSourceType"]:checked').value;
+            const checkedImgType = document.querySelector('input[name="imgSourceType"]:checked');
+            const imgSourceType = checkedImgType ? checkedImgType.value : 'url';
 
             if (imgSourceType === 'file') {
                 const fileInput = document.getElementById("newItemImgFile");
-                if (fileInput.files && fileInput.files[0]) {
+                if (fileInput && fileInput.files && fileInput.files[0]) {
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         processItemSave(id, title, category, price, event.target.result, formMode);
@@ -1436,7 +1537,9 @@
                     processItemSave(id, title, category, price, fallbackImg, formMode);
                 }
             } else {
-                let imgUrl = document.getElementById("newItemImgUrl").value.trim() || "https://via.placeholder.com/150";
+                const imgUrlInput = document.getElementById("newItemImgUrl");
+                let imgUrl = imgUrlInput ? imgUrlInput.value.trim() : "";
+                if (!imgUrl) imgUrl = "https://via.placeholder.com/150";
                 processItemSave(id, title, category, price, imgUrl, formMode);
             }
         }
@@ -1460,29 +1563,50 @@
                 }
             }
 
-            localStorage.setItem("custom_market_items", JSON.stringify(marketItems));
+            try {
+                localStorage.setItem("custom_market_items", JSON.stringify(marketItems));
+            } catch (e) {}
+
             renderMarket(marketItems);
             populateAdminDropdown();
-            document.getElementById("addItemForm").reset();
-            document.getElementById("formMode").value = "add";
-            document.getElementById("saveBtnText").innerText = "حفظ وإضافة البند";
-            document.getElementById("deleteItemBtn").style.display = "none";
+            
+            const addItemForm = document.getElementById("addItemForm");
+            if (addItemForm) addItemForm.reset();
+
+            const formMode = document.getElementById("formMode");
+            const saveBtnText = document.getElementById("saveBtnText");
+            const deleteItemBtn = document.getElementById("deleteItemBtn");
+
+            if (formMode) formMode.value = "add";
+            if (saveBtnText) saveBtnText.innerText = "حفظ وإضافة البند";
+            if (deleteItemBtn) deleteItemBtn.style.display = "none";
             showsection('data-market');
         }
 
         function deleteCurrentItem() {
-            const id = document.getElementById("newItemId").value.trim();
+            const newItemIdEl = document.getElementById("newItemId");
+            if (!newItemIdEl) return;
+            const id = newItemIdEl.value.trim();
             if (!id) return;
 
             if (confirm("هل أنت متأكد من حذف هذا الصنف نهائياً؟")) {
                 marketItems = marketItems.filter(i => i.id !== id);
-                localStorage.setItem("custom_market_items", JSON.stringify(marketItems));
+                try {
+                    localStorage.setItem("custom_market_items", JSON.stringify(marketItems));
+                } catch (e) {}
                 renderMarket(marketItems);
                 populateAdminDropdown();
-                document.getElementById("addItemForm").reset();
-                document.getElementById("formMode").value = "add";
-                document.getElementById("saveBtnText").innerText = "حفظ وإضافة البند";
-                document.getElementById("deleteItemBtn").style.display = "none";
+
+                const addItemForm = document.getElementById("addItemForm");
+                if (addItemForm) addItemForm.reset();
+
+                const formMode = document.getElementById("formMode");
+                const saveBtnText = document.getElementById("saveBtnText");
+                const deleteItemBtn = document.getElementById("deleteItemBtn");
+
+                if (formMode) formMode.value = "add";
+                if (saveBtnText) saveBtnText.innerText = "حفظ وإضافة البند";
+                if (deleteItemBtn) deleteItemBtn.style.display = "none";
                 alert("تم حذف الصنف بنجاح.");
                 showsection('data-market');
             }
@@ -1491,8 +1615,9 @@
         function openAllProductsPrintModal() {
             const modal = document.getElementById("invoiceModal");
             const inner = document.getElementById("invoiceModalInner");
+            if (!modal || !inner) return;
 
-            if (marketItems.length === 0) {
+            if (!marketItems || marketItems.length === 0) {
                 alert("لا توجد منتجات مطبوعة حالياً لأن المتجر فارغ.");
                 return;
             }
@@ -1556,7 +1681,7 @@
             container.innerHTML = "";
             let totalSum = 0;
 
-            if (cart.length === 0) {
+            if (!cart || cart.length === 0) {
                 container.innerHTML = '<p style="text-align:center; color:var(--text-sub); padding:20px;">السلة فارغة حالياً</p>';
                 totalSpan.innerText = "0 جنيه";
                 return;
@@ -1588,6 +1713,7 @@
         }
 
         function changeQty(index, delta) {
+            if (!cart[index]) return;
             cart[index].qty += delta;
             if (cart[index].qty <= 0) cart.splice(index, 1);
             saveAndRefreshCart();
@@ -1599,12 +1725,14 @@
         }
 
         function saveAndRefreshCart() {
-            localStorage.setItem("my_app_cart", JSON.stringify(cart));
+            try {
+                localStorage.setItem("my_app_cart", JSON.stringify(cart));
+            } catch (e) {}
             updateBasketUI();
         }
 
         function sendInvoiceToWhatsApp() {
-            if (cart.length === 0) {
+            if (!cart || cart.length === 0) {
                 alert("السلة فارغة!");
                 return;
             }
@@ -1623,14 +1751,24 @@
                 itemTotal: item.price * item.qty
             }));
 
-            let clientInvoices = JSON.parse(localStorage.getItem(`invoices_${currentUserId}`)) || [];
+            let clientInvoices = [];
+            try {
+                clientInvoices = JSON.parse(localStorage.getItem(`invoices_${currentUserId}`)) || [];
+            } catch (e) {}
             const newInvoice = { invNum, clientId: currentUserId, clientName: currentUserName, dateStr, totalSum, items: formattedItems };
             clientInvoices.unshift(newInvoice);
-            localStorage.setItem(`invoices_${currentUserId}`, JSON.stringify(clientInvoices));
+            try {
+                localStorage.setItem(`invoices_${currentUserId}`, JSON.stringify(clientInvoices));
+            } catch (e) {}
 
-            let allGlobalInvoices = JSON.parse(localStorage.getItem("global_store_invoices")) || [];
+            let allGlobalInvoices = [];
+            try {
+                allGlobalInvoices = JSON.parse(localStorage.getItem("global_store_invoices")) || [];
+            } catch (e) {}
             allGlobalInvoices.unshift(newInvoice);
-            localStorage.setItem("global_store_invoices", JSON.stringify(allGlobalInvoices));
+            try {
+                localStorage.setItem("global_store_invoices", JSON.stringify(allGlobalInvoices));
+            } catch (e) {}
 
             fetch(INVOICE_SCRIPT_URL, {
                 method: "POST",
@@ -1657,19 +1795,28 @@
                     const realName = data.name || id;
                     sessionStorage.setItem("userName", realName);
                     
-                    document.getElementById("data-name").innerText = realName;
-                    document.getElementById("data-namber").innerText = data.phone || "غير محدد";
-                    document.getElementById("data-email").innerText = data.email || "غير محدد";
-                    document.getElementById("data-addres").innerText = data.address || "غير محدد";
-                    document.getElementById("data-id").innerText = id;
+                    const nameEl = document.getElementById("data-name");
+                    const phoneEl = document.getElementById("data-namber");
+                    const emailEl = document.getElementById("data-email");
+                    const addresEl = document.getElementById("data-addres");
+                    const idEl = document.getElementById("data-id");
+
+                    if (nameEl) nameEl.innerText = realName;
+                    if (phoneEl) phoneEl.innerText = data.phone || "غير محدد";
+                    if (emailEl) emailEl.innerText = data.email || "غير محدد";
+                    if (addresEl) addresEl.innerText = data.address || "غير محدد";
+                    if (idEl) idEl.innerText = id;
 
                     const userRole = sessionStorage.getItem("userRole");
+                    const headerTitle = document.getElementById("headerTitle");
+                    const welcomeHeaderTitle = document.getElementById("welcomeHeaderTitle");
+
                     if (userRole === "admin") {
-                        document.getElementById("headerTitle").innerText = "أهلاً بك يا مدير النظام 👑";
-                        document.getElementById("welcomeHeaderTitle").innerText = "أهلاً بك يا مدير النظام في لوحة التحكم";
+                        if (headerTitle) headerTitle.innerText = "أهلاً بك يا مدير النظام 👑";
+                        if (welcomeHeaderTitle) welcomeHeaderTitle.innerText = "أهلاً بك يا مدير النظام في لوحة التحكم";
                     } else {
-                        document.getElementById("headerTitle").innerText = `أهلاً بك يا ${realName} ✨`;
-                        document.getElementById("welcomeHeaderTitle").innerText = `مرحباً بك يا ${realName}`;
+                        if (headerTitle) headerTitle.innerText = `أهلاً بك يا ${realName} ✨`;
+                        if (welcomeHeaderTitle) welcomeHeaderTitle.innerText = `مرحباً بك يا ${realName}`;
                     }
                 } else {
                     setMockUserData(id);
@@ -1684,24 +1831,37 @@
             const realName = isAdm ? "مدير النظام" : `عميل (${id})`;
             sessionStorage.setItem("userName", realName);
 
-            document.getElementById("data-name").innerText = realName;
-            document.getElementById("data-namber").innerText = "01501893345";
-            document.getElementById("data-email").innerText = "user@domain.com";
-            document.getElementById("data-addres").innerText = "العبور، القليوبية";
-            document.getElementById("data-id").innerText = id;
+            const nameEl = document.getElementById("data-name");
+            const phoneEl = document.getElementById("data-namber");
+            const emailEl = document.getElementById("data-email");
+            const addresEl = document.getElementById("data-addres");
+            const idEl = document.getElementById("data-id");
+
+            if (nameEl) nameEl.innerText = realName;
+            if (phoneEl) phoneEl.innerText = "01501893345";
+            if (emailEl) emailEl.innerText = "user@domain.com";
+            if (addresEl) addresEl.innerText = "العبور، القليوبية";
+            if (idEl) idEl.innerText = id;
+
+            const headerTitle = document.getElementById("headerTitle");
+            const welcomeHeaderTitle = document.getElementById("welcomeHeaderTitle");
 
             if (isAdm) {
-                document.getElementById("headerTitle").innerText = "أهلاً بك يا مدير النظام 👑";
-                document.getElementById("welcomeHeaderTitle").innerText = "أهلاً بك يا مدير النظام في لوحة التحكم";
+                if (headerTitle) headerTitle.innerText = "أهلاً بك يا مدير النظام 👑";
+                if (welcomeHeaderTitle) welcomeHeaderTitle.innerText = "أهلاً بك يا مدير النظام في لوحة التحكم";
             } else {
-                document.getElementById("headerTitle").innerText = `أهلاً بك يا ${realName} ✨`;
-                document.getElementById("welcomeHeaderTitle").innerText = `مرحباً بك يا ${realName}`;
+                if (headerTitle) headerTitle.innerText = `أهلاً بك يا ${realName} ✨`;
+                if (welcomeHeaderTitle) welcomeHeaderTitle.innerText = `مرحباً بك يا ${realName}`;
             }
         }
 
         function fetchClientInvoices(userId) {
             const tbody = document.getElementById("invoicesTableBody");
-            const invoices = JSON.parse(localStorage.getItem(`invoices_${userId}`)) || [];
+            if (!tbody) return;
+            let invoices = [];
+            try {
+                invoices = JSON.parse(localStorage.getItem(`invoices_${userId}`)) || [];
+            } catch (e) {}
 
             if (invoices.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-sub);">لا توجد فواتير سابقة مسجلة</td></tr>`;
@@ -1723,22 +1883,20 @@
             });
         }
 
-        // --- صلاحية المدير لحذف أي فاتورة قديمة لأي عميل ---
         function adminDeleteGlobalInvoice(invNum, clientId) {
             if (confirm(`هل أنت متأكد من حذف الفاتورة برقم (${invNum}) نهائياً؟`)) {
-                // 1. حذف من القائمة العامة لفواتير المتجر
-                let globalInvoices = JSON.parse(localStorage.getItem("global_store_invoices")) || [];
-                globalInvoices = globalInvoices.filter(inv => inv.invNum !== invNum);
-                localStorage.setItem("global_store_invoices", JSON.stringify(globalInvoices));
+                try {
+                    let globalInvoices = JSON.parse(localStorage.getItem("global_store_invoices")) || [];
+                    globalInvoices = globalInvoices.filter(inv => inv.invNum !== invNum);
+                    localStorage.setItem("global_store_invoices", JSON.stringify(globalInvoices));
 
-                // 2. حذف من سجل فواتير العميل المخصص إذا وجد
-                if (clientId) {
-                    let clientInvoices = JSON.parse(localStorage.getItem(`invoices_${clientId}`)) || [];
-                    clientInvoices = clientInvoices.filter(inv => inv.invNum !== invNum);
-                    localStorage.setItem(`invoices_${clientId}`, JSON.stringify(clientInvoices));
-                }
+                    if (clientId) {
+                        let clientInvoices = JSON.parse(localStorage.getItem(`invoices_${clientId}`)) || [];
+                        clientInvoices = clientInvoices.filter(inv => inv.invNum !== invNum);
+                        localStorage.setItem(`invoices_${clientId}`, JSON.stringify(clientInvoices));
+                    }
+                } catch (e) {}
 
-                // تحديث لوحة التحكم
                 loadAdminDashboardData();
                 alert("تم حذف الفاتورة بنجاح.");
             }
@@ -1747,6 +1905,7 @@
         function openInvoicePreview(inv) {
             const modal = document.getElementById("invoiceModal");
             const inner = document.getElementById("invoiceModalInner");
+            if (!modal || !inner) return;
             
             let itemsHtml = inv.items.map(i => `
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding: 8px 0; font-size: 14px;">
@@ -1783,65 +1942,78 @@
         }
 
         function closeInvoiceModal() {
-            document.getElementById("invoiceModal").style.display = "none";
+            const modal = document.getElementById("invoiceModal");
+            if (modal) modal.style.display = "none";
         }
 
         function loadAdminDashboardData() {
             const liveUsersTbody = document.getElementById("adminLiveUsersBody");
-            let activePool = JSON.parse(localStorage.getItem("live_active_clients")) || {};
-            const currentTime = Date.now();
-            
-            let activeLiveList = [];
-            for (let key in activePool) {
-                if (currentTime - activePool[key].lastSeen < 15000) {
-                    activeLiveList.push(activePool[key]);
-                } else {
-                    delete activePool[key];
+            if (liveUsersTbody) {
+                let activePool = {};
+                try {
+                    activePool = JSON.parse(localStorage.getItem("live_active_clients")) || {};
+                } catch (e) {}
+                const currentTime = Date.now();
+                
+                let activeLiveList = [];
+                for (let key in activePool) {
+                    if (currentTime - activePool[key].lastSeen < 15000) {
+                        activeLiveList.push(activePool[key]);
+                    } else {
+                        delete activePool[key];
+                    }
                 }
-            }
-            localStorage.setItem("live_active_clients", JSON.stringify(activePool));
+                try {
+                    localStorage.setItem("live_active_clients", JSON.stringify(activePool));
+                } catch (e) {}
 
-            if (activeLiveList.length === 0) {
-                liveUsersTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-sub);">لا يوجد عملاء متواجدون الآن في الموقع</td></tr>`;
-            } else {
-                liveUsersTbody.innerHTML = "";
-                activeLiveList.forEach(u => {
-                    liveUsersTbody.innerHTML += `
-                        <tr>
-                            <td><b>${u.id}</b></td>
-                            <td>${u.name}</td>
-                            <td>الآن</td>
-                            <td><span style="color: #4ade80; font-weight: bold;">● متواجد Live</span></td>
-                        </tr>
-                    `;
-                });
+                if (activeLiveList.length === 0) {
+                    liveUsersTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-sub);">لا يوجد عملاء متواجدون الآن في الموقع</td></tr>`;
+                } else {
+                    liveUsersTbody.innerHTML = "";
+                    activeLiveList.forEach(u => {
+                        liveUsersTbody.innerHTML += `
+                            <tr>
+                                <td><b>${u.id}</b></td>
+                                <td>${u.name}</td>
+                                <td>الآن</td>
+                                <td><span style="color: #4ade80; font-weight: bold;">● متواجد Live</span></td>
+                            </tr>
+                        `;
+                    });
+                }
             }
 
             const allInvoicesTbody = document.getElementById("adminAllInvoicesBody");
-            const globalInvoices = JSON.parse(localStorage.getItem("global_store_invoices")) || [];
+            if (allInvoicesTbody) {
+                let globalInvoices = [];
+                try {
+                    globalInvoices = JSON.parse(localStorage.getItem("global_store_invoices")) || [];
+                } catch (e) {}
 
-            if (globalInvoices.length === 0) {
-                allInvoicesTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-sub);">لا توجد فواتير أو أوردرات مسجلة حتى الآن</td></tr>`;
-            } else {
-                allInvoicesTbody.innerHTML = "";
-                globalInvoices.forEach(inv => {
-                    let itemsSummary = inv.items.map(i => `${i.title} (${i.qty})`).join(', ');
-                    allInvoicesTbody.innerHTML += `
-                        <tr>
-                            <td><b>${inv.invNum}</b></td>
-                            <td>${inv.clientName || inv.clientId || 'غير معروف'}</td>
-                            <td>${inv.dateStr}</td>
-                            <td style="color: var(--accent-color); font-weight: bold;">${inv.totalSum} جنيه</td>
-                            <td>${itemsSummary}</td>
-                            <td>
-                                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                                    <button class="butmarket" style="padding: 5px 10px; font-size: 12px; width: auto;" onclick='openInvoicePreview(${JSON.stringify(inv)})'><i class="fa-solid fa-file-invoice"></i> معاينة</button>
-                                    <button class="butmarket" style="padding: 5px 10px; font-size: 12px; width: auto; background-color: #ef4444;" onclick="adminDeleteGlobalInvoice('${inv.invNum}', '${inv.clientId}')"><i class="fa-solid fa-trash"></i> حذف</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
+                if (globalInvoices.length === 0) {
+                    allInvoicesTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-sub);">لا توجد فواتير أو أوردرات مسجلة حتى الآن</td></tr>`;
+                } else {
+                    allInvoicesTbody.innerHTML = "";
+                    globalInvoices.forEach(inv => {
+                        let itemsSummary = inv.items.map(i => `${i.title} (${i.qty})`).join(', ');
+                        allInvoicesTbody.innerHTML += `
+                            <tr>
+                                <td><b>${inv.invNum}</b></td>
+                                <td>${inv.clientName || inv.clientId || 'غير معروف'}</td>
+                                <td>${inv.dateStr}</td>
+                                <td style="color: var(--accent-color); font-weight: bold;">${inv.totalSum} جنيه</td>
+                                <td>${itemsSummary}</td>
+                                <td>
+                                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                        <button class="butmarket" style="padding: 5px 10px; font-size: 12px; width: auto;" onclick='openInvoicePreview(${JSON.stringify(inv)})'><i class="fa-solid fa-file-invoice"></i> معاينة</button>
+                                        <button class="butmarket" style="padding: 5px 10px; font-size: 12px; width: auto; background-color: #ef4444;" onclick="adminDeleteGlobalInvoice('${inv.invNum}', '${inv.clientId}')"><i class="fa-solid fa-trash"></i> حذف</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
             }
         }
     </script>
