@@ -852,10 +852,10 @@
                 </div>
             </div>
 
-            <!-- 3. جميع فواتير وأوردرات العملاء -->
+            <!-- 3. جميع فواتير وأوردرات العملاء (مع صلاحية المدير الحذف الكامل) -->
             <div class="admin-box">
                 <h3 style="margin-bottom: 15px; color: var(--accent-color); font-size: 18px;">
-                    <i class="fa-solid fa-file-invoice-dollar"></i> أوردرات وفواتير العملاء الواردة
+                    <i class="fa-solid fa-file-invoice-dollar"></i> أوردرات وفواتير العملاء الواردة (صلاحية الحذف للمدير)
                 </h3>
                 <div class="table-responsive">
                     <table class="invoice-table">
@@ -866,7 +866,7 @@
                                 <th>التاريخ</th>
                                 <th>الإجمالي</th>
                                 <th>الأصناف المطلوبة</th>
-                                <th>معاينة الفاتورة</th>
+                                <th>الإجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="adminAllInvoicesBody">
@@ -946,18 +946,11 @@
 
     <!-- الجافاسكريبت -->
     <script>
-        // رابط تسجيل الدخول (الرابط الأصلي الخاص بك)
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzllkAlRUE4tciAvkkLbK3RHXpZDWGgjHQyORN3D736Z4nmLJcjjaz_w-adumZsKyeT/exec";
-        
-        // رابط إرسال الفواتير الجديد الذي أرسلته
         const INVOICE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynFt6gZtOLQDI6Mt5ZuZX1LoMpEWq07GNhm0djhudTW3N8TLQBehNeT5GFHALK4q16HQ/exec";
 
-        let defaultItems = [
-            { id: "A1001", title: "مفتاح ليد مفرد", category: "أدوات كهربائية", price: 150, img: "https://via.placeholder.com/150" },
-            { id: "A1002", title: "لمبة ليد 12 وات", category: "إضاءة", price: 200, img: "https://via.placeholder.com/150" },
-            { id: "A1003", title: "سلك نحاس 3 ملي", category: "كابلات وأسلاك", price: 250, img: "https://via.placeholder.com/150" }
-        ];
-
+        // تم تفريغ الأصناف تماماً بناءً على طلبك
+        let defaultItems = [];
         let defaultCategories = ["أدوات كهربائية", "إضاءة", "كابلات وأسلاك", "إكسسوارات ومستلزمات", "أخرى"];
 
         let marketItems = JSON.parse(localStorage.getItem("custom_market_items")) || defaultItems;
@@ -1338,7 +1331,7 @@
             container.innerHTML = "";
 
             if (itemsList.length === 0) {
-                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 30px;">لا توجد أصناف مطابقة للبحث</p>`;
+                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 30px;">لا توجد أصناف مسجلة في المتجر حالياً</p>`;
                 return;
             }
 
@@ -1499,6 +1492,11 @@
             const modal = document.getElementById("invoiceModal");
             const inner = document.getElementById("invoiceModalInner");
 
+            if (marketItems.length === 0) {
+                alert("لا توجد منتجات مطبوعة حالياً لأن المتجر فارغ.");
+                return;
+            }
+
             let rowsHtml = marketItems.map((item, idx) => `
                 <tr>
                     <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">${idx + 1}</td>
@@ -1617,7 +1615,6 @@
             const dateStr = new Date().toLocaleDateString("ar-EG");
             let totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-            // تجهيز الأصناف مع إرسال itemTotal لتتوافق مع الشيت الثاني
             let formattedItems = cart.map(item => ({
                 id: item.id,
                 title: item.title,
@@ -1635,7 +1632,6 @@
             allGlobalInvoices.unshift(newInvoice);
             localStorage.setItem("global_store_invoices", JSON.stringify(allGlobalInvoices));
 
-            // إرسال البيانات إلى رابط الفواتير الجديد
             fetch(INVOICE_SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
@@ -1727,6 +1723,27 @@
             });
         }
 
+        // --- صلاحية المدير لحذف أي فاتورة قديمة لأي عميل ---
+        function adminDeleteGlobalInvoice(invNum, clientId) {
+            if (confirm(`هل أنت متأكد من حذف الفاتورة برقم (${invNum}) نهائياً؟`)) {
+                // 1. حذف من القائمة العامة لفواتير المتجر
+                let globalInvoices = JSON.parse(localStorage.getItem("global_store_invoices")) || [];
+                globalInvoices = globalInvoices.filter(inv => inv.invNum !== invNum);
+                localStorage.setItem("global_store_invoices", JSON.stringify(globalInvoices));
+
+                // 2. حذف من سجل فواتير العميل المخصص إذا وجد
+                if (clientId) {
+                    let clientInvoices = JSON.parse(localStorage.getItem(`invoices_${clientId}`)) || [];
+                    clientInvoices = clientInvoices.filter(inv => inv.invNum !== invNum);
+                    localStorage.setItem(`invoices_${clientId}`, JSON.stringify(clientInvoices));
+                }
+
+                // تحديث لوحة التحكم
+                loadAdminDashboardData();
+                alert("تم حذف الفاتورة بنجاح.");
+            }
+        }
+
         function openInvoicePreview(inv) {
             const modal = document.getElementById("invoiceModal");
             const inner = document.getElementById("invoiceModalInner");
@@ -1816,7 +1833,12 @@
                             <td>${inv.dateStr}</td>
                             <td style="color: var(--accent-color); font-weight: bold;">${inv.totalSum} جنيه</td>
                             <td>${itemsSummary}</td>
-                            <td><button class="butmarket" style="padding: 6px 12px; font-size: 13px;" onclick='openInvoicePreview(${JSON.stringify(inv)})'><i class="fa-solid fa-file-invoice"></i> معاينة الفاتورة</button></td>
+                            <td>
+                                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                    <button class="butmarket" style="padding: 5px 10px; font-size: 12px; width: auto;" onclick='openInvoicePreview(${JSON.stringify(inv)})'><i class="fa-solid fa-file-invoice"></i> معاينة</button>
+                                    <button class="butmarket" style="padding: 5px 10px; font-size: 12px; width: auto; background-color: #ef4444;" onclick="adminDeleteGlobalInvoice('${inv.invNum}', '${inv.clientId}')"><i class="fa-solid fa-trash"></i> حذف</button>
+                                </div>
+                            </td>
                         </tr>
                     `;
                 });
