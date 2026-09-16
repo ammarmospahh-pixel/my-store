@@ -103,7 +103,7 @@
         }
 
         .header-top-pro h2 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #ffffff;
             margin: 0;
@@ -228,6 +228,25 @@
 
         .home-but1:hover { background-color: var(--accent-hover); }
 
+        /* شريط البحث وفلترة المتجر */
+        .market-search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .market-search-box input, .market-search-box select {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
         /* المتجر والكروت */
         .data-market-cardgrop {
             display: grid;
@@ -261,7 +280,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             text-align: center;
         }
 
@@ -269,6 +288,16 @@
             font-size: 18px;
             color: var(--text-main);
             margin: 0;
+        }
+
+        .incard .category-tag {
+            font-size: 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 3px 10px;
+            border-radius: 20px;
+            color: var(--text-sub);
+            font-weight: 600;
         }
 
         .incard .price {
@@ -438,25 +467,6 @@
         .brand-icon { font-size: 2.5rem; color: #6366f1; margin-bottom: 10px; }
         .form-title { color: #ffffff; font-size: 1.6rem; font-weight: 800; margin-bottom: 4px; }
         .form-subtitle { color: #94a3b8; font-size: 0.88rem; }
-        .section-label { display: block; color: #ffffff; font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
-
-        .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-        .role-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.12);
-            border-radius: 14px;
-            padding: 14px 10px;
-            text-align: center;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            color: #ffffff;
-        }
-        .role-card.active { border-color: #6366f1; background: rgba(99, 102, 241, 0.2); }
-        .role-card .role-icon { font-size: 1.5rem; color: #94a3b8; }
-        .role-card.active .role-icon { color: #6366f1; }
 
         .input-group { position: relative; margin-bottom: 20px; }
         .input-group input {
@@ -522,6 +532,74 @@
         .admin-form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-main); }
         .admin-form-group input, .admin-form-group select { width: 100%; padding: 10px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-main); border-radius: 8px; }
 
+        .admin-box {
+            background: var(--input-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        /* نافذة معاينة الفاتورة كصورة أو مستند (Modal) */
+        .invoice-modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .invoice-modal-content {
+            background: var(--card-bg);
+            color: var(--text-main);
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close-modal {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-sub);
+        }
+        .close-modal:hover { color: var(--text-main); }
+
+        /* تعديل نظام الطباعة ليعمل بكفاءة مطلقة مع النوافذ المنبثقة وتصدير PDF */
+        @media print {
+            body * { visibility: hidden; }
+            #invoiceModal, #invoiceModal * { visibility: visible; }
+            #invoiceModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                background: white !important;
+                display: block !important;
+            }
+            .invoice-modal-content {
+                box-shadow: none !important;
+                border: none !important;
+                max-height: none !important;
+                width: 100% !important;
+                padding: 0 !important;
+            }
+            .no-print { display: none !important; }
+        }
+
         @media (max-width: 650px) {
             .home-1, .home-2 { flex-direction: column !important; }
             .home-pag1, .dishome { width: 100%; }
@@ -540,29 +618,18 @@
         <div class="brand-header">
             <i class="fa-solid fa-store brand-icon"></i>
             <h1 class="form-title">تسجيل الدخول</h1>
-            <p class="form-subtitle">أدخل بيانات الحساب المسلمة لك من الإدارة</p>
+            <p class="form-subtitle">أدخل الرقم التعريفي (ID) وكلمة المرور</p>
         </div>
 
         <div class="notification-box" id="notificationBox"></div>
 
         <form id="loginForm" novalidate>
-            <label class="section-label">نوع المستخدم:</label>
-            <div class="role-selector">
-                <div class="role-card active" id="roleClient" onclick="selectRole('client')">
-                    <i class="fa-solid fa-user-tag role-icon"></i>
-                    <span>عميل</span>
-                </div>
-                <div class="role-card" id="roleAdmin" onclick="selectRole('admin')">
-                    <i class="fa-solid fa-user-shield role-icon"></i>
-                    <span>مدير نظام</span>
-                </div>
-            </div>
-            <input type="hidden" id="selectedRole" value="client">
-
             <div class="input-group">
                 <i class="fa-solid fa-id-card input-icon"></i>
-                <input type="text" id="userId" placeholder="الرقم التعريفي / الـ ID" required>
+                <input type="text" id="userId" placeholder="الرقم التعريفي / الـ ID" required oninput="previewUserGreeting(this.value)">
             </div>
+
+            <div id="loginGreetingMsg" style="text-align: center; color: #4ade80; font-weight: bold; margin-bottom: 15px; font-size: 0.95rem; min-height: 24px;"></div>
 
             <div class="input-group">
                 <i class="fa-solid fa-lock input-icon"></i>
@@ -582,7 +649,7 @@
         <header>
             <div class="header-top">
                 <div class="header-top-pro">
-                    <img src="img/logo.png" alt="logo" id="headerLogoImg" />
+                    <img src="https://via.placeholder.com/42" alt="logo" id="headerLogoImg" />
                     <h2 id="headerTitle">لوحة التحكم</h2>
                 </div>
                 <button class="headermenu" onclick="togglemenu()">☰</button>
@@ -593,25 +660,25 @@
                 <button onclick="showsection('data-market')">المتجر</button>
                 <button onclick="showsection('data-basket')">السلة</button>
                 <button onclick="showsection('client-invoices')">فواتير سابقة</button>
-                <button id="adminMenuBtn" onclick="showsection('admin-section')" style="display:none;">إدارة البنود (أدمن)</button>
+                <button id="adminMenuBtn" onclick="showsection('admin-section')" style="display:none;">لوحة تحكم الأدمن</button>
                 <button onclick="logoutClient()">تسجيل خروج</button>
             </nav>
         </header>
 
         <!-- الرئيسية -->
         <section id="home-clian">
-            <h2>مرحباً بكم</h2>
+            <h2 id="welcomeHeaderTitle">مرحباً بكم</h2>
             <div class="home-1">
-                <img src="img/logo.png" alt="إعلان عروض" class="home-pag1" id="homeBanner1" />
+                <img src="https://via.placeholder.com/150" alt="إعلان عروض" class="home-pag1" id="homeBanner1" />
                 <div class="dishome">
-                    <h3 class="home-script1">إعلان عروض</h3>
+                    <h3 class="home-script1" id="homeText1">إعلان عروض</h3>
                     <button class="home-but1" onclick="showsection('data-market')">دخول للمتجر</button>
                 </div>
             </div>
             <div class="home-2">
-                <img src="img/logo.png" alt="المتجر" class="home-pag1" id="homeBanner2" />
+                <img src="https://via.placeholder.com/150" alt="المتجر" class="home-pag1" id="homeBanner2" />
                 <div class="dishome">
-                    <h3 class="home-script1">المتجر</h3>
+                    <h3 class="home-script1" id="homeText2">المتجر</h3>
                     <button class="home-but1" onclick="showsection('data-market')">دخول</button>
                 </div>
             </div>
@@ -630,6 +697,15 @@
         <!-- المتجر -->
         <section id="data-market" style="display: none">
             <h2>المتجر والبنود المتاحة</h2>
+            
+            <!-- شريط البحث الشامل وفلترة التصنيفات الديناميكية -->
+            <div class="market-search-box">
+                <input type="text" id="marketSearchInput" placeholder="🔍 ابحث في أي شيء للصنف (الاسم، الكود، السعر...)" oninput="filterMarketItems()">
+                <select id="marketCategoryFilter" onchange="filterMarketItems()">
+                    <option value="">جميع التصنيفات</option>
+                </select>
+            </div>
+
             <div class="data-market-cardgrop" id="marketContainer"></div>
         </section>
 
@@ -660,75 +736,232 @@
                             <th>التاريخ</th>
                             <th>الإجمالي</th>
                             <th>التفاصيل</th>
+                            <th>معاينة الفاتورة</th>
                         </tr>
                     </thead>
                     <tbody id="invoicesTableBody">
-                        <tr><td colspan="4" style="text-align: center;">جاري جلب الفواتير...</td></tr>
+                        <tr><td colspan="5" style="text-align: center;">جاري جلب الفواتير...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- لوحة تحكم الأدمن (إضافة / تعديل البنود) -->
+        <!-- لوحة تحكم الأدمن المتكاملة -->
         <section id="admin-section" style="display: none">
-            <h2>لوحة تحكم المدير - إدارة البنود</h2>
+            <h2>لوحة تحكم المدير</h2>
             
-            <div class="admin-form-group" style="background: var(--input-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-                <label style="color: var(--accent-color);">اختر صنفاً للتعديل أو أضف صنفاً جديداً:</label>
-                <select id="selectItemToEdit" onchange="loadItemDataForEdit()">
-                    <option value="new">-- إضافة صنف جديد تماماً --</option>
-                </select>
+            <!-- زر طباعة كل المنتجات في المتجر للأدمن -->
+            <div class="admin-box" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h3 style="color: var(--accent-color); font-size: 18px; margin-bottom: 5px;">
+                        <i class="fa-solid fa-print"></i> تقرير وطباعة المنتجات
+                    </h3>
+                    <p style="font-size: 13px; color: var(--text-sub);">استعراض وطباعة قائمة كاملة بجميع الأصناف المسجلة في المتجر حالياً.</p>
+                </div>
+                <button type="button" class="but-checkout" style="width: auto; padding: 10px 24px;" onclick="openAllProductsPrintModal()">
+                    <i class="fa-solid fa-file-pdf"></i> طباعة / حفظ كل منتجات المتجر PDF
+                </button>
             </div>
 
-            <form id="addItemForm" onsubmit="saveItemData(event)">
-                <input type="hidden" id="formMode" value="add">
+            <!-- أ. إدارة التصنيفات المستقلة (إضافة، تعديل، حذف التصنيفات) -->
+            <div class="admin-box">
+                <h3 style="margin-bottom: 15px; color: var(--accent-color); font-size: 18px;">
+                    <i class="fa-solid fa-tags"></i> إدارة التصنيفات (إضافة / تعديل / حذف)
+                </h3>
                 <div class="admin-form-group">
-                    <label>كود الصنف (ID)</label>
-                    <input type="text" id="newItemId" placeholder="مثال: A1004" required>
+                    <label>أضف تصنيفاً جديداً للـمتجر:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="newCategoryInput" placeholder="اكتب اسم التصنيف الجديد...">
+                        <button type="button" class="but-checkout" style="width: auto; padding: 10px 20px;" onclick="addNewCategoryFromAdmin()">إضافة تصنيف</button>
+                    </div>
                 </div>
-                <div class="admin-form-group">
-                    <label>اسم الصنف</label>
-                    <input type="text" id="newItemTitle" placeholder="مثال: صنف جديد" required>
+                <div class="admin-form-group" style="margin-top: 15px;">
+                    <label>التصنيفات الحالية المتاحة (يمكنك حذف تصنيف):</label>
+                    <div id="adminCategoriesListContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                        <!-- ستُعرض التصنيفات هنا ديناميكياً -->
+                    </div>
                 </div>
-                <div class="admin-form-group">
-                    <label>السعر (بالجنيه)</label>
-                    <input type="number" id="newItemPrice" placeholder="مثال: 300" required>
+            </div>
+
+            <!-- 1. تعديل صورة الشركة والواجهة والإعلانات -->
+            <div class="admin-box">
+                <h3 style="margin-bottom: 15px; color: var(--accent-color); font-size: 18px;">
+                    <i class="fa-solid fa-image"></i> إدارة الواجهة والبراند (الشعار والإعلانات)
+                </h3>
+                <form id="brandingForm" onsubmit="saveBrandingSettings(event)">
+                    <div class="admin-form-group">
+                        <label>لوجو الشركة (في الهيدر):</label>
+                        <div style="display: flex; gap: 15px; margin-bottom: 8px;">
+                            <label><input type="radio" name="brandLogoType" value="url" checked onclick="toggleBrandingInput('logo', 'url')"> رابط صورة</label>
+                            <label><input type="radio" name="brandLogoType" value="file" onclick="toggleBrandingInput('logo', 'file')"> رفع من الجهاز</label>
+                        </div>
+                        <div id="logoUrlBox"><input type="text" id="adminCompanyLogo" placeholder="https://..."></div>
+                        <div id="logoFileBox" style="display: none;"><input type="file" id="adminCompanyLogoFile" accept="image/*"></div>
+                    </div>
+                    <hr style="border:0; border-top:1px solid var(--border-color); margin:15px 0;">
+                    <div class="admin-form-group">
+                        <label>الإعلان الأول - عنوان السكربت:</label>
+                        <input type="text" id="adminBanner1Text" placeholder="مثال: إعلان عروض الشتاء الكبرى">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>الإعلان الأول - صورة الإعلان:</label>
+                        <div style="display: flex; gap: 15px; margin-bottom: 8px;">
+                            <label><input type="radio" name="brandB1Type" value="url" checked onclick="toggleBrandingInput('b1', 'url')"> رابط صورة</label>
+                            <label><input type="radio" name="brandB1Type" value="file" onclick="toggleBrandingInput('b1', 'file')"> رفع من الجهاز</label>
+                        </div>
+                        <div id="b1UrlBox"><input type="text" id="adminBanner1Img" placeholder="https://..."></div>
+                        <div id="b1FileBox" style="display: none;"><input type="file" id="adminBanner1ImgFile" accept="image/*"></div>
+                    </div>
+                    <hr style="border:0; border-top:1px solid var(--border-color); margin:15px 0;">
+                    <div class="admin-form-group">
+                        <label>الإعلان الثاني - عنوان السكربت:</label>
+                        <input type="text" id="adminBanner2Text" placeholder="مثال: قسم المنتجات المميزة">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>الإعلان الثاني - صورة الإعلان:</label>
+                        <div style="display: flex; gap: 15px; margin-bottom: 8px;">
+                            <label><input type="radio" name="brandB2Type" value="url" checked onclick="toggleBrandingInput('b2', 'url')"> رابط صورة</label>
+                            <label><input type="radio" name="brandB2Type" value="file" onclick="toggleBrandingInput('b2', 'file')"> رفع من الجهاز</label>
+                        </div>
+                        <div id="b2UrlBox"><input type="text" id="adminBanner2Img" placeholder="https://..."></div>
+                        <div id="b2FileBox" style="display: none;"><input type="file" id="adminBanner2ImgFile" accept="image/*"></div>
+                    </div>
+                    <button type="submit" class="but-checkout">حفظ وتطبيق تغييرات الواجهة</button>
+                </form>
+            </div>
+
+            <!-- 2. العملاء المتواجدون Live الآن في الموقع -->
+            <div class="admin-box">
+                <h3 style="margin-bottom: 15px; color: #4ade80; font-size: 18px;">
+                    <i class="fa-solid fa-signal"></i> العملاء المتواجدون الآن في المتجر (Live Active)
+                </h3>
+                <div class="table-responsive">
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>الرقم التعريفي (ID)</th>
+                                <th>اسم العميل</th>
+                                <th>آخر نشاط</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminLiveUsersBody">
+                            <tr><td colspan="4" style="text-align: center;">لا يوجد عملاء متواجدون الآن</td></tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+
+            <!-- 3. جميع فواتير وأوردرات العملاء -->
+            <div class="admin-box">
+                <h3 style="margin-bottom: 15px; color: var(--accent-color); font-size: 18px;">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> أوردرات وفواتير العملاء الواردة
+                </h3>
+                <div class="table-responsive">
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>رقم الفاتورة</th>
+                                <th>كود العميل</th>
+                                <th>التاريخ</th>
+                                <th>الإجمالي</th>
+                                <th>الأصناف المطلوبة</th>
+                                <th>معاينة الفاتورة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminAllInvoicesBody">
+                            <tr><td colspan="6" style="text-align: center;">لا توجد فواتير أو أوردرات مسجلة حتى الآن</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. إدارة البنود والتصنيفات (إضافة / تعديل / حذف بند) -->
+            <div class="admin-box">
+                <h3 style="margin-bottom: 15px; color: var(--accent-color); font-size: 18px;">
+                    <i class="fa-solid fa-boxes-stacked"></i> إدارة أصناف المتجر والبنود
+                </h3>
                 
                 <div class="admin-form-group">
-                    <label>طريقة إدراج الصورة:</label>
-                    <div style="display: flex; gap: 15px; margin-bottom: 10px;">
-                        <label><input type="radio" name="imgSourceType" value="url" checked onclick="toggleImgInputType('url')"> رابط صورة</label>
-                        <label><input type="radio" name="imgSourceType" value="file" onclick="toggleImgInputType('file')"> رفع من الجهاز</label>
-                    </div>
-                    
-                    <div id="urlInputContainer">
-                        <input type="text" id="newItemImgUrl" placeholder="ضع رابط الصورة هنا (https://...)">
-                    </div>
-                    <div id="fileInputContainer" style="display: none;">
-                        <input type="file" id="newItemImgFile" accept="image/*">
-                    </div>
+                    <label>اختر صنفاً للتعديل أو أضف صنفاً جديداً:</label>
+                    <select id="selectItemToEdit" onchange="loadItemDataForEdit()">
+                        <option value="new">-- إضافة صنف جديد تماماً --</option>
+                    </select>
                 </div>
 
-                <div style="display: flex; gap: 10px;">
-                    <button type="submit" class="but-checkout" id="saveBtnText">حفظ وإضافة البند</button>
-                    <button type="button" class="but-checkout" id="deleteItemBtn" style="background-color: #ef4444; display: none;" onclick="deleteCurrentItem()">حذف هذا الصنف</button>
-                </div>
-            </form>
+                <form id="addItemForm" onsubmit="saveItemData(event)">
+                    <input type="hidden" id="formMode" value="add">
+                    <div class="admin-form-group">
+                        <label>كود الصنف (ID)</label>
+                        <input type="text" id="newItemId" placeholder="مثال: A1004" required>
+                    </div>
+                    <div class="admin-form-group">
+                        <label>اسم الصنف</label>
+                        <input type="text" id="newItemTitle" placeholder="مثال: مفتاح كهرباء" required>
+                    </div>
+                    
+                    <!-- خانة التصنيف المرنة (تتضمن القوائم المتاحة مع إمكانية الكتابة أو الاختيار) -->
+                    <div class="admin-form-group">
+                        <label>تصنيف الصنف:</label>
+                        <select id="newItemCategory" required>
+                            <option value="">-- اختر التصنيف --</option>
+                        </select>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>السعر (بالجنيه)</label>
+                        <input type="number" id="newItemPrice" placeholder="مثال: 300" required>
+                    </div>
+                    
+                    <div class="admin-form-group">
+                        <label>طريقة إدراج الصورة:</label>
+                        <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                            <label><input type="radio" name="imgSourceType" value="url" checked onclick="toggleImgInputType('url')"> رابط صورة</label>
+                            <label><input type="radio" name="imgSourceType" value="file" onclick="toggleImgInputType('file')"> رفع من الجهاز</label>
+                        </div>
+                        <div id="urlInputContainer">
+                            <input type="text" id="newItemImgUrl" placeholder="ضع رابط الصورة هنا (https://...)">
+                        </div>
+                        <div id="fileInputContainer" style="display: none;">
+                            <input type="file" id="newItemImgFile" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="but-checkout" id="saveBtnText">حفظ وإضافة البند</button>
+                        <button type="button" class="but-checkout" id="deleteItemBtn" style="background-color: #ef4444; display: none;" onclick="deleteCurrentItem()">حذف هذا الصنف</button>
+                    </div>
+                </form>
+            </div>
         </section>
+    </div>
+
+    <!-- نافذة معاينة الفاتورة أو تقرير المنتجات (Modal) -->
+    <div class="invoice-modal" id="invoiceModal">
+        <div class="invoice-modal-content">
+            <span class="close-modal" onclick="closeInvoiceModal()">&times;</span>
+            <div id="invoiceModalInner" style="text-align: center;"></div>
+        </div>
     </div>
 
     <!-- الجافاسكريبت -->
     <script>
+        // رابط تسجيل الدخول (الرابط الأصلي الخاص بك)
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzllkAlRUE4tciAvkkLbK3RHXpZDWGgjHQyORN3D736Z4nmLJcjjaz_w-adumZsKyeT/exec";
+        
+        // رابط إرسال الفواتير الجديد الذي أرسلته
+        const INVOICE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynFt6gZtOLQDI6Mt5ZuZX1LoMpEWq07GNhm0djhudTW3N8TLQBehNeT5GFHALK4q16HQ/exec";
 
         let defaultItems = [
-            {  },
-            {},
-            { }
+            { id: "A1001", title: "مفتاح ليد مفرد", category: "أدوات كهربائية", price: 150, img: "https://via.placeholder.com/150" },
+            { id: "A1002", title: "لمبة ليد 12 وات", category: "إضاءة", price: 200, img: "https://via.placeholder.com/150" },
+            { id: "A1003", title: "سلك نحاس 3 ملي", category: "كابلات وأسلاك", price: 250, img: "https://via.placeholder.com/150" }
         ];
 
+        let defaultCategories = ["أدوات كهربائية", "إضاءة", "كابلات وأسلاك", "إكسسوارات ومستلزمات", "أخرى"];
+
         let marketItems = JSON.parse(localStorage.getItem("custom_market_items")) || defaultItems;
+        let marketCategories = JSON.parse(localStorage.getItem("custom_market_categories")) || defaultCategories;
         let cart = JSON.parse(localStorage.getItem("my_app_cart")) || [];
 
         window.addEventListener("DOMContentLoaded", () => {
@@ -740,17 +973,230 @@
                 document.documentElement.setAttribute("data-theme", "dark");
             }
 
+            applyBrandingSettings();
             checkAuthStatus();
-            renderMarket();
+            populateCategoryDropdowns();
+            renderMarket(marketItems);
             updateBasketUI();
             populateAdminDropdown();
+            loadAdminDashboardData();
+            renderAdminCategoriesList();
+
+            setInterval(() => {
+                const userRole = sessionStorage.getItem("userRole");
+                const userId = sessionStorage.getItem("userId");
+                const userName = sessionStorage.getItem("userName");
+                if (userId && userRole !== 'admin') {
+                    updateLivePresence(userId, userName);
+                }
+                if (userRole === 'admin') {
+                    loadAdminDashboardData();
+                }
+            }, 5000);
         });
 
-        // زر تبديل الثيم الشامل لكل الصفحات
+        function previewUserGreeting(val) {
+            const msgBox = document.getElementById("loginGreetingMsg");
+            const trimmed = val.trim();
+            if (!trimmed) {
+                msgBox.innerText = "";
+                return;
+            }
+            if (trimmed.toLowerCase() === "admin" || trimmed === "1") {
+                msgBox.innerText = "أهلاً بك يا مدير النظام 👑";
+            } else {
+                msgBox.innerText = `أهلاً بك يا عميلنا العزيز (${trimmed}) ✨`;
+            }
+        }
+
+        function populateCategoryDropdowns() {
+            const filterSelect = document.getElementById("marketCategoryFilter");
+            const itemSelect = document.getElementById("newItemCategory");
+
+            let currentFilterVal = filterSelect.value;
+            let currentItemVal = itemSelect.value;
+
+            filterSelect.innerHTML = '<option value="">جميع التصنيفات</option>';
+            itemSelect.innerHTML = '<option value="">-- اختر التصنيف --</option>';
+
+            marketCategories.forEach(cat => {
+                filterSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+                itemSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+
+            if (marketCategories.includes(currentFilterVal)) filterSelect.value = currentFilterVal;
+            if (marketCategories.includes(currentItemVal)) itemSelect.value = currentItemVal;
+        }
+
+        function addNewCategoryFromAdmin() {
+            const input = document.getElementById("newCategoryInput");
+            const catName = input.value.trim();
+            if (!catName) {
+                alert("يرجى كتابة اسم التصنيف الجديد!");
+                return;
+            }
+            if (marketCategories.includes(catName)) {
+                alert("هذا التصنيف موجود مسبقاً!");
+                return;
+            }
+
+            marketCategories.push(catName);
+            localStorage.setItem("custom_market_categories", JSON.stringify(marketCategories));
+            input.value = "";
+            populateCategoryDropdowns();
+            renderAdminCategoriesList();
+            alert(`تم إضافة التصنيف "${catName}" بنجاح!`);
+        }
+
+        function renderAdminCategoriesList() {
+            const container = document.getElementById("adminCategoriesListContainer");
+            if (!container) return;
+            container.innerHTML = "";
+
+            marketCategories.forEach(cat => {
+                container.innerHTML += `
+                    <span style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 5px 12px; border-radius: 8px; font-size: 13px; display: inline-flex; align-items: center; gap: 8px;">
+                        ${cat}
+                        <button type="button" onclick="deleteCategory('${cat}')" style="background: #ef4444; color: white; border: none; border-radius: 4px; width: 20px; height: 20px; cursor: pointer; font-size: 11px;">×</button>
+                    </span>
+                `;
+            });
+        }
+
+        function deleteCategory(catName) {
+            if (marketCategories.length <= 1) {
+                alert("يجب أن يبقى تصنيف واحد على الأقل في المتجر!");
+                return;
+            }
+            if (confirm(`هل أنت متأكد من حذف التصنيف "${catName}"؟`)) {
+                marketCategories = marketCategories.filter(c => c !== catName);
+                localStorage.setItem("custom_market_categories", JSON.stringify(marketCategories));
+                populateCategoryDropdowns();
+                renderAdminCategoriesList();
+                alert("تم حذف التصنيف بنجاح.");
+            }
+        }
+
+        function filterMarketItems() {
+            const query = document.getElementById("marketSearchInput").value.trim().toLowerCase();
+            const selectedCat = document.getElementById("marketCategoryFilter").value;
+
+            const filtered = marketItems.filter(item => {
+                const matchQuery = 
+                    item.title.toLowerCase().includes(query) ||
+                    item.id.toLowerCase().includes(query) ||
+                    item.price.toString().includes(query) ||
+                    (item.category && item.category.toLowerCase().includes(query));
+
+                const matchCat = selectedCat === "" || item.category === selectedCat;
+                return matchQuery && matchCat;
+            });
+
+            renderMarket(filtered);
+        }
+
+        function toggleBrandingInput(target, type) {
+            if (target === 'logo') {
+                document.getElementById('logoUrlBox').style.display = type === 'url' ? 'block' : 'none';
+                document.getElementById('logoFileBox').style.display = type === 'file' ? 'block' : 'none';
+            } else if (target === 'b1') {
+                document.getElementById('b1UrlBox').style.display = type === 'url' ? 'block' : 'none';
+                document.getElementById('b1FileBox').style.display = type === 'file' ? 'block' : 'none';
+            } else if (target === 'b2') {
+                document.getElementById('b2UrlBox').style.display = type === 'url' ? 'block' : 'none';
+                document.getElementById('b2FileBox').style.display = type === 'file' ? 'block' : 'none';
+            }
+        }
+
+        function applyBrandingSettings() {
+            const settings = JSON.parse(localStorage.getItem("store_branding_settings")) || {
+                logo: "https://via.placeholder.com/42",
+                banner1Text: "إعلان عروض",
+                banner1Img: "https://via.placeholder.com/150",
+                banner2Text: "المتجر",
+                banner2Img: "https://via.placeholder.com/150"
+            };
+
+            document.getElementById("headerLogoImg").src = settings.logo;
+            document.getElementById("homeBanner1").src = settings.banner1Img;
+            document.getElementById("homeText1").innerText = settings.banner1Text;
+            document.getElementById("homeBanner2").src = settings.banner2Img;
+            document.getElementById("homeText2").innerText = settings.banner2Text;
+
+            document.getElementById("adminCompanyLogo").value = settings.logo;
+            document.getElementById("adminBanner1Text").value = settings.banner1Text;
+            document.getElementById("adminBanner1Img").value = settings.banner1Img;
+            document.getElementById("adminBanner2Text").value = settings.banner2Text;
+            document.getElementById("adminBanner2Img").value = settings.banner2Img;
+        }
+
+        function saveBrandingSettings(e) {
+            e.preventDefault();
+            const savedSettings = JSON.parse(localStorage.getItem("store_branding_settings")) || {};
+            const banner1Text = document.getElementById("adminBanner1Text").value.trim() || "إعلان عروض";
+            const banner2Text = document.getElementById("adminBanner2Text").value.trim() || "المتجر";
+
+            const logoType = document.querySelector('input[name="brandLogoType"]:checked').value;
+            const b1Type = document.querySelector('input[name="brandB1Type"]:checked').value;
+            const b2Type = document.querySelector('input[name="brandB2Type"]:checked').value;
+
+            let processingCount = 0;
+            let newLogo = savedSettings.logo || "https://via.placeholder.com/42";
+            let newB1Img = savedSettings.banner1Img || "https://via.placeholder.com/150";
+            let newB2Img = savedSettings.banner2Img || "https://via.placeholder.com/150";
+
+            function finalizeSave() {
+                const finalSettings = { logo: newLogo, banner1Text, banner1Img: newB1Img, banner2Text, banner2Img: newB2Img };
+                localStorage.setItem("store_branding_settings", JSON.stringify(finalSettings));
+                applyBrandingSettings();
+                alert("تم حفظ وتحديث إعدادات الواجهة واللوجو بنجاح!");
+            }
+
+            if (logoType === 'url') {
+                newLogo = document.getElementById("adminCompanyLogo").value.trim() || newLogo;
+                checkDone();
+            } else {
+                const fileInput = document.getElementById("adminCompanyLogoFile");
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) { newLogo = evt.target.result; checkDone(); };
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else { checkDone(); }
+            }
+
+            if (b1Type === 'url') {
+                newB1Img = document.getElementById("adminBanner1Img").value.trim() || newB1Img;
+                checkDone();
+            } else {
+                const fileInput = document.getElementById("adminBanner1ImgFile");
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) { newB1Img = evt.target.result; checkDone(); };
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else { checkDone(); }
+            }
+
+            if (b2Type === 'url') {
+                newB2Img = document.getElementById("adminBanner2Img").value.trim() || newB2Img;
+                checkDone();
+            } else {
+                const fileInput = document.getElementById("adminBanner2ImgFile");
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) { newB2Img = evt.target.result; checkDone(); };
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else { checkDone(); }
+            }
+
+            function checkDone() {
+                processingCount++;
+                if (processingCount >= 3) { finalizeSave(); }
+            }
+        }
+
         document.getElementById("themeToggleBtn").addEventListener("click", () => {
             const currentTheme = document.documentElement.getAttribute("data-theme");
             const themeIcon = document.getElementById("themeToggleBtn").querySelector("i");
-            
             if (currentTheme === "light") {
                 document.documentElement.setAttribute("data-theme", "dark");
                 themeIcon.classList.replace("fa-sun", "fa-moon");
@@ -765,17 +1211,25 @@
         function checkAuthStatus() {
             const userId = sessionStorage.getItem("userId");
             const userRole = sessionStorage.getItem("userRole");
+            const userName = sessionStorage.getItem("userName") || (userRole === "admin" ? "مدير النظام" : `عميل (${userId})`);
 
             if (userId && userRole) {
                 document.getElementById("loginScreen").style.display = "none";
                 document.getElementById("mainBody").classList.remove("auth-body");
                 document.getElementById("appInterface").style.display = "block";
 
+                if (userRole !== 'admin') {
+                    updateLivePresence(userId, userName);
+                }
+
                 if (userRole === "admin") {
                     document.getElementById("adminMenuBtn").style.display = "inline-block";
-                    document.getElementById("headerTitle").innerText = "لوحة التحكم (مدير النظام)";
+                    document.getElementById("headerTitle").innerText = "أهلاً بك يا مدير النظام 👑";
+                    document.getElementById("welcomeHeaderTitle").innerText = "أهلاً بك يا مدير النظام في لوحة التحكم";
+                    loadAdminDashboardData();
                 } else {
-                    document.getElementById("headerTitle").innerText = "شاشة العميل";
+                    document.getElementById("headerTitle").innerText = `أهلاً بك يا ${userName} ✨`;
+                    document.getElementById("welcomeHeaderTitle").innerText = `مرحباً بك يا ${userName}`;
                 }
 
                 fetchUserProfile(userId);
@@ -787,15 +1241,10 @@
             }
         }
 
-        function selectRole(role) {
-            document.getElementById("selectedRole").value = role;
-            if (role === 'admin') {
-                document.getElementById("roleAdmin").classList.add("active");
-                document.getElementById("roleClient").classList.remove("active");
-            } else {
-                document.getElementById("roleClient").classList.add("active");
-                document.getElementById("roleAdmin").classList.remove("active");
-            }
+        function updateLivePresence(id, name) {
+            let activePool = JSON.parse(localStorage.getItem("live_active_clients")) || {};
+            activePool[id] = { id, name: name || ("عميل (" + id + ")"), lastSeen: Date.now() };
+            localStorage.setItem("live_active_clients", JSON.stringify(activePool));
         }
 
         function togglePassVisibility(inputId, iconElement) {
@@ -813,37 +1262,54 @@
             e.preventDefault();
             const id = document.getElementById("userId").value.trim();
             const password = document.getElementById("userPassword").value.trim();
-            const selectedRole = document.getElementById("selectedRole").value;
 
             if (!id || !password) {
                 showNotification("يرجى ملء جميع الحقول!", "error");
                 return;
             }
 
+            let resolvedRole = (id.toLowerCase() === "admin" || id === "1") ? "admin" : "client";
+            let resolvedName = resolvedRole === "admin" ? "مدير النظام" : `عميل (${id})`;
+
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
-                    body: JSON.stringify({ id, password, role: selectedRole })
+                    body: JSON.stringify({ id, password, role: resolvedRole })
                 });
                 const result = await response.json();
 
-                if (result.status === "success") {
-                    sessionStorage.setItem("userRole", result.role);
+                if (result.status === "success" || result.success) {
+                    resolvedRole = result.role || resolvedRole;
+                    if (result.name) resolvedName = result.name;
+                    sessionStorage.setItem("userRole", resolvedRole);
                     sessionStorage.setItem("userId", id);
+                    sessionStorage.setItem("userName", resolvedName);
                     checkAuthStatus();
                 } else {
-                    showNotification(result.message || "بيانات الدخول غير صحيحة", "error");
+                    showNotification("الرقم التعريفي (ID) أو كلمة المرور غير صحيحة!", "error");
                 }
             } catch (err) {
-                sessionStorage.setItem("userRole", selectedRole);
-                sessionStorage.setItem("userId", id);
-                checkAuthStatus();
+                if (resolvedRole === "admin") {
+                    sessionStorage.setItem("userRole", resolvedRole);
+                    sessionStorage.setItem("userId", id);
+                    sessionStorage.setItem("userName", resolvedName);
+                    checkAuthStatus();
+                } else {
+                    showNotification("تعذر التحقق من الـ ID مع شيت الاكسل أو السيرفر.", "error");
+                }
             }
         });
 
         function logoutClient() {
+            const userId = sessionStorage.getItem("userId");
+            if (userId) {
+                let activePool = JSON.parse(localStorage.getItem("live_active_clients")) || {};
+                delete activePool[userId];
+                localStorage.setItem("live_active_clients", JSON.stringify(activePool));
+            }
             sessionStorage.removeItem("userRole");
             sessionStorage.removeItem("userId");
+            sessionStorage.removeItem("userName");
             window.location.reload();
         }
 
@@ -863,18 +1329,27 @@
             const target = document.getElementById(sectionId);
             if (target) target.style.display = "block";
             document.getElementById("menu-totaltop").classList.remove("active");
+            if (sectionId === 'admin-section') loadAdminDashboardData();
         }
 
-        function renderMarket() {
+        function renderMarket(itemsList) {
             const container = document.getElementById("marketContainer");
             if (!container) return;
             container.innerHTML = "";
-            marketItems.forEach(item => {
+
+            if (itemsList.length === 0) {
+                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-sub); padding: 30px;">لا توجد أصناف مطابقة للبحث</p>`;
+                return;
+            }
+
+            itemsList.forEach(item => {
+                let categoryName = item.category || "أخرى";
                 container.innerHTML += `
                     <article class="data-market-card" data-id="${item.id}">
                         <img src="${item.img}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/150'">
                         <div class="incard">
                             <h2>${item.title}</h2>
+                            <span class="category-tag"><i class="fa-solid fa-tag"></i> ${categoryName}</span>
                             <p class="price">${item.price} جنيه</p>
                             <button class="butmarket" onclick="addToCart('${item.id}')">إضافة للسلة</button>
                         </div>
@@ -913,6 +1388,7 @@
                 deleteItemBtn.style.display = "none";
                 document.getElementById("newItemId").value = "";
                 document.getElementById("newItemTitle").value = "";
+                document.getElementById("newItemCategory").value = "";
                 document.getElementById("newItemPrice").value = "";
                 document.getElementById("newItemImgUrl").value = "";
             } else {
@@ -924,6 +1400,7 @@
                 if (item) {
                     document.getElementById("newItemId").value = item.id;
                     document.getElementById("newItemTitle").value = item.title;
+                    document.getElementById("newItemCategory").value = item.category || "";
                     document.getElementById("newItemPrice").value = item.price;
                     document.getElementById("newItemImgUrl").value = item.img;
                 }
@@ -935,7 +1412,20 @@
             const formMode = document.getElementById("formMode").value;
             const id = document.getElementById("newItemId").value.trim();
             const title = document.getElementById("newItemTitle").value.trim();
+            const category = document.getElementById("newItemCategory").value;
             const price = parseFloat(document.getElementById("newItemPrice").value) || 0;
+
+            if (!category) {
+                alert("يجب اختيار تصنيف الصنف قبل الحفظ!");
+                return;
+            }
+
+            if (!marketCategories.includes(category)) {
+                marketCategories.push(category);
+                localStorage.setItem("custom_market_categories", JSON.stringify(marketCategories));
+                populateCategoryDropdowns();
+                renderAdminCategoriesList();
+            }
             
             const imgSourceType = document.querySelector('input[name="imgSourceType"]:checked').value;
 
@@ -944,44 +1434,41 @@
                 if (fileInput.files && fileInput.files[0]) {
                     const reader = new FileReader();
                     reader.onload = function(event) {
-                        processItemSave(id, title, price, event.target.result, formMode);
+                        processItemSave(id, title, category, price, event.target.result, formMode);
                     };
                     reader.readAsDataURL(fileInput.files[0]);
                 } else {
-                    // إذا لم يقم برفع ملف جديد أثناء التعديل، يحافظ على الصورة القديمة
                     let existing = marketItems.find(i => i.id === id);
                     let fallbackImg = existing ? existing.img : "https://via.placeholder.com/150";
-                    processItemSave(id, title, price, fallbackImg, formMode);
+                    processItemSave(id, title, category, price, fallbackImg, formMode);
                 }
             } else {
                 let imgUrl = document.getElementById("newItemImgUrl").value.trim() || "https://via.placeholder.com/150";
-                processItemSave(id, title, price, imgUrl, formMode);
+                processItemSave(id, title, category, price, imgUrl, formMode);
             }
         }
 
-        function processItemSave(id, title, price, img, mode) {
+        function processItemSave(id, title, category, price, img, mode) {
             if (mode === "add") {
                 if (marketItems.some(i => i.id === id)) {
-                    alert("كود الصنف موجود مسبقاً، يجيب استخدام كود فريد!");
+                    alert("كود الصنف موجود مسبقاً، يجب استخدام كود فريد!");
                     return;
                 }
-                marketItems.push({ id, title, price, img });
-                alert("تم إضافة البند بنجاح!");
+                marketItems.push({ id, title, category, price, img });
+                alert("تم إضافة البند وتصنيفه بنجاح!");
             } else {
-                // تعديل صنف موجود
                 let index = marketItems.findIndex(i => i.id === id);
                 if (index !== -1) {
-                    marketItems[index] = { id, title, price, img };
+                    marketItems[index] = { id, title, category, price, img };
                     alert("تم تعديل الصنف بنجاح!");
                 } else {
-                    // في حال تم تغيير الـ ID أثناء التعديل
-                    marketItems.push({ id, title, price, img });
+                    marketItems.push({ id, title, category, price, img });
                     alert("تم حفظ الصنف بنجاح!");
                 }
             }
 
             localStorage.setItem("custom_market_items", JSON.stringify(marketItems));
-            renderMarket();
+            renderMarket(marketItems);
             populateAdminDropdown();
             document.getElementById("addItemForm").reset();
             document.getElementById("formMode").value = "add";
@@ -997,7 +1484,7 @@
             if (confirm("هل أنت متأكد من حذف هذا الصنف نهائياً؟")) {
                 marketItems = marketItems.filter(i => i.id !== id);
                 localStorage.setItem("custom_market_items", JSON.stringify(marketItems));
-                renderMarket();
+                renderMarket(marketItems);
                 populateAdminDropdown();
                 document.getElementById("addItemForm").reset();
                 document.getElementById("formMode").value = "add";
@@ -1006,6 +1493,47 @@
                 alert("تم حذف الصنف بنجاح.");
                 showsection('data-market');
             }
+        }
+
+        function openAllProductsPrintModal() {
+            const modal = document.getElementById("invoiceModal");
+            const inner = document.getElementById("invoiceModalInner");
+
+            let rowsHtml = marketItems.map((item, idx) => `
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">${idx + 1}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color); font-weight: bold;">${item.id}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">${item.title}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color);">${item.category || 'أخرى'}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid var(--border-color); color: var(--accent-color); font-weight: bold;">${item.price} جنيه</td>
+                </tr>
+            `).join('');
+
+            inner.innerHTML = `
+                <div id="printableArea" style="background: #ffffff; color: #000000; padding: 20px; text-align: right; border-radius: 12px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h3 style="margin-top: 8px;">قائمة منتجات المتجر بالكامل</h3>
+                        <p style="font-size: 13px; color: #555;">إجمالي عدد الأصناف المسجلة: ${marketItems.length}</p>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 14px;">
+                        <thead>
+                            <tr style="background: #f1f5f9;">
+                                <th style="padding: 10px; border-bottom: 2px solid #ccc;">#</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #ccc;">الكود</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #ccc;">اسم الصنف</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #ccc;">التصنيف</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #ccc;">السعر</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                </div>
+                <div class="no-print" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                    <button type="button" class="but-checkout" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة / حفظ كـ PDF</button>
+                    <button type="button" class="but-checkout" style="background-color: var(--text-sub);" onclick="closeInvoiceModal()">إغلاق</button>
+                </div>
+            `;
+            modal.style.display = "flex";
         }
 
         function addToCart(itemId) {
@@ -1084,24 +1612,39 @@
             }
 
             const currentUserId = sessionStorage.getItem("userId") || "guest";
+            const currentUserName = sessionStorage.getItem("userName") || currentUserId;
             const invNum = "INV-" + Math.floor(100000 + Math.random() * 900000);
             const dateStr = new Date().toLocaleDateString("ar-EG");
             let totalSum = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
+            // تجهيز الأصناف مع إرسال itemTotal لتتوافق مع الشيت الثاني
+            let formattedItems = cart.map(item => ({
+                id: item.id,
+                title: item.title,
+                qty: item.qty,
+                price: item.price,
+                itemTotal: item.price * item.qty
+            }));
+
             let clientInvoices = JSON.parse(localStorage.getItem(`invoices_${currentUserId}`)) || [];
-            const newInvoice = { invNum, dateStr, totalSum, items: [...cart] };
+            const newInvoice = { invNum, clientId: currentUserId, clientName: currentUserName, dateStr, totalSum, items: formattedItems };
             clientInvoices.unshift(newInvoice);
             localStorage.setItem(`invoices_${currentUserId}`, JSON.stringify(clientInvoices));
 
-            fetch(GOOGLE_SCRIPT_URL, {
+            let allGlobalInvoices = JSON.parse(localStorage.getItem("global_store_invoices")) || [];
+            allGlobalInvoices.unshift(newInvoice);
+            localStorage.setItem("global_store_invoices", JSON.stringify(allGlobalInvoices));
+
+            // إرسال البيانات إلى رابط الفواتير الجديد
+            fetch(INVOICE_SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ invNum, dateStr, totalSum, items: cart, clientId: currentUserId })
+                body: JSON.stringify({ invNum, dateStr, totalSum, items: formattedItems, clientId: currentUserId, clientName: currentUserName })
             }).catch(err => console.log(err));
 
-            let itemsText = cart.map((i, idx) => `${idx + 1}. ${i.title} - الكمية: ${i.qty} - الإجمالي: ${i.price * i.qty}ج`).join('\n');
-            let msg = `*طلب شراء جديد 🛒*\nرقم الفاتورة: ${invNum}\nالعميل: ${currentUserId}\nالتاريخ: ${dateStr}\n-----------------\n${itemsText}\n-----------------\n*الإجمالي الكلي: ${totalSum} جنيه*`;
+            let itemsText = formattedItems.map((i, idx) => `${idx + 1}. ${i.title} - الكمية: ${i.qty} - الإجمالي: ${i.itemTotal}ج`).join('\n');
+            let msg = `*طلب شراء جديد 🛒*\nرقم الفاتورة: ${invNum}\nالعميل: ${currentUserName} (${currentUserId})\nالتاريخ: ${dateStr}\n-----------------\n${itemsText}\n-----------------\n*الإجمالي الكلي: ${totalSum} جنيه*`;
             
             cart = [];
             saveAndRefreshCart();
@@ -1115,11 +1658,23 @@
                 const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getUser&id=${encodeURIComponent(id)}`);
                 const data = await res.json();
                 if (data.success || data.status === "success") {
-                    document.getElementById("data-name").innerText = data.name || "عمار";
+                    const realName = data.name || id;
+                    sessionStorage.setItem("userName", realName);
+                    
+                    document.getElementById("data-name").innerText = realName;
                     document.getElementById("data-namber").innerText = data.phone || "غير محدد";
                     document.getElementById("data-email").innerText = data.email || "غير محدد";
                     document.getElementById("data-addres").innerText = data.address || "غير محدد";
                     document.getElementById("data-id").innerText = id;
+
+                    const userRole = sessionStorage.getItem("userRole");
+                    if (userRole === "admin") {
+                        document.getElementById("headerTitle").innerText = "أهلاً بك يا مدير النظام 👑";
+                        document.getElementById("welcomeHeaderTitle").innerText = "أهلاً بك يا مدير النظام في لوحة التحكم";
+                    } else {
+                        document.getElementById("headerTitle").innerText = `أهلاً بك يا ${realName} ✨`;
+                        document.getElementById("welcomeHeaderTitle").innerText = `مرحباً بك يا ${realName}`;
+                    }
                 } else {
                     setMockUserData(id);
                 }
@@ -1129,11 +1684,23 @@
         }
 
         function setMockUserData(id) {
-            document.getElementById("data-name").innerText = "عمار";
+            const isAdm = id.toLowerCase() === "admin" || id === "1";
+            const realName = isAdm ? "مدير النظام" : `عميل (${id})`;
+            sessionStorage.setItem("userName", realName);
+
+            document.getElementById("data-name").innerText = realName;
             document.getElementById("data-namber").innerText = "01501893345";
-            document.getElementById("data-email").innerText = "ammar@domain.com";
+            document.getElementById("data-email").innerText = "user@domain.com";
             document.getElementById("data-addres").innerText = "العبور، القليوبية";
             document.getElementById("data-id").innerText = id;
+
+            if (isAdm) {
+                document.getElementById("headerTitle").innerText = "أهلاً بك يا مدير النظام 👑";
+                document.getElementById("welcomeHeaderTitle").innerText = "أهلاً بك يا مدير النظام في لوحة التحكم";
+            } else {
+                document.getElementById("headerTitle").innerText = `أهلاً بك يا ${realName} ✨`;
+                document.getElementById("welcomeHeaderTitle").innerText = `مرحباً بك يا ${realName}`;
+            }
         }
 
         function fetchClientInvoices(userId) {
@@ -1141,7 +1708,7 @@
             const invoices = JSON.parse(localStorage.getItem(`invoices_${userId}`)) || [];
 
             if (invoices.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-sub);">لا توجد فواتير سابقة مسجلة</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-sub);">لا توجد فواتير سابقة مسجلة</td></tr>`;
                 return;
             }
 
@@ -1154,9 +1721,106 @@
                         <td>${inv.dateStr}</td>
                         <td style="color: var(--accent-color); font-weight: bold;">${inv.totalSum} جنيه</td>
                         <td>${itemsSummary}</td>
+                        <td><button class="butmarket" style="padding: 6px 12px; font-size: 13px;" onclick='openInvoicePreview(${JSON.stringify(inv)})'><i class="fa-solid fa-file-invoice"></i> معاينة الفاتورة</button></td>
                     </tr>
                 `;
             });
+        }
+
+        function openInvoicePreview(inv) {
+            const modal = document.getElementById("invoiceModal");
+            const inner = document.getElementById("invoiceModalInner");
+            
+            let itemsHtml = inv.items.map(i => `
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding: 8px 0; font-size: 14px;">
+                    <span>${i.title} (×${i.qty})</span>
+                    <span style="font-weight: bold; color: #2563eb;">${i.itemTotal !== undefined ? i.itemTotal : (i.price * i.qty)} جنيه</span>
+                </div>
+            `).join('');
+
+            inner.innerHTML = `
+                <div id="printableArea" style="background: #ffffff; color: #000000; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; text-align: right; max-width: 100%;">
+                    <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #0f172a; padding-bottom: 10px;">
+                        <h3 style="margin: 0; font-size: 20px; color: #0f172a;">فاتورة مبيعات المتجر</h3>
+                        <p style="font-size: 13px; color: #64748b; margin-top: 4px;">التاريخ: ${inv.dateStr}</p>
+                    </div>
+                    <div style="margin-bottom: 15px; font-size: 14px; background: #f8fafc; padding: 10px; border-radius: 8px;">
+                        <p style="margin: 4px 0;"><b>رقم الفاتورة:</b> ${inv.invNum}</p>
+                        <p style="margin: 4px 0;"><b>العميل:</b> ${inv.clientName || inv.clientId}</p>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <p style="font-weight: bold; margin-bottom: 8px; color: #0f172a;">تفاصيل البنود:</p>
+                        ${itemsHtml}
+                    </div>
+                    <div style="border-top: 2px solid #0f172a; padding-top: 12px; display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; margin-top: 20px;">
+                        <span>الإجمالي الكلي:</span>
+                        <span style="color: #2563eb;">${inv.totalSum} جنيه</span>
+                    </div>
+                </div>
+                <div class="no-print" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                    <button type="button" class="but-checkout" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة / حفظ كـ PDF</button>
+                    <button type="button" class="but-checkout" style="background-color: #64748b;" onclick="closeInvoiceModal()">إغلاق</button>
+                </div>
+            `;
+            modal.style.display = "flex";
+        }
+
+        function closeInvoiceModal() {
+            document.getElementById("invoiceModal").style.display = "none";
+        }
+
+        function loadAdminDashboardData() {
+            const liveUsersTbody = document.getElementById("adminLiveUsersBody");
+            let activePool = JSON.parse(localStorage.getItem("live_active_clients")) || {};
+            const currentTime = Date.now();
+            
+            let activeLiveList = [];
+            for (let key in activePool) {
+                if (currentTime - activePool[key].lastSeen < 15000) {
+                    activeLiveList.push(activePool[key]);
+                } else {
+                    delete activePool[key];
+                }
+            }
+            localStorage.setItem("live_active_clients", JSON.stringify(activePool));
+
+            if (activeLiveList.length === 0) {
+                liveUsersTbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-sub);">لا يوجد عملاء متواجدون الآن في الموقع</td></tr>`;
+            } else {
+                liveUsersTbody.innerHTML = "";
+                activeLiveList.forEach(u => {
+                    liveUsersTbody.innerHTML += `
+                        <tr>
+                            <td><b>${u.id}</b></td>
+                            <td>${u.name}</td>
+                            <td>الآن</td>
+                            <td><span style="color: #4ade80; font-weight: bold;">● متواجد Live</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const allInvoicesTbody = document.getElementById("adminAllInvoicesBody");
+            const globalInvoices = JSON.parse(localStorage.getItem("global_store_invoices")) || [];
+
+            if (globalInvoices.length === 0) {
+                allInvoicesTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-sub);">لا توجد فواتير أو أوردرات مسجلة حتى الآن</td></tr>`;
+            } else {
+                allInvoicesTbody.innerHTML = "";
+                globalInvoices.forEach(inv => {
+                    let itemsSummary = inv.items.map(i => `${i.title} (${i.qty})`).join(', ');
+                    allInvoicesTbody.innerHTML += `
+                        <tr>
+                            <td><b>${inv.invNum}</b></td>
+                            <td>${inv.clientName || inv.clientId || 'غير معروف'}</td>
+                            <td>${inv.dateStr}</td>
+                            <td style="color: var(--accent-color); font-weight: bold;">${inv.totalSum} جنيه</td>
+                            <td>${itemsSummary}</td>
+                            <td><button class="butmarket" style="padding: 6px 12px; font-size: 13px;" onclick='openInvoicePreview(${JSON.stringify(inv)})'><i class="fa-solid fa-file-invoice"></i> معاينة الفاتورة</button></td>
+                        </tr>
+                    `;
+                });
+            }
         }
     </script>
 </body>
