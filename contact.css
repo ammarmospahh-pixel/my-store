@@ -1,0 +1,106 @@
+/* 1. إعدادات عامة للصفحة */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #e6ecf0; /* لون الخلفية الموحد لتأثير الـ 3D */
+}
+
+/* 2. تنسيق الهيدر الرئيسي */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 35px;
+  background-color: #e6ecf0;
+  /* بروز 3D ناعم للهيدر من الأسفل */
+  box-shadow: 0 8px 16px #c2c8cc, 
+              0 -4px 12px #ffffff;
+}
+
+/* 3. قسم اللوجو والترحيب وبيانات العميل */
+.longo-name {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.longo-name img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 4px 4px 8px #c2c8cc, 
+             -4px -4px 8px #ffffff;
+}
+
+.longo-name h3 {
+  color: #2b3a4e;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.name-clien {
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid #c2c8cc; /* خط فاصل بسيط بين الترحب وبيانات العميل */
+  padding-right: 12px;
+}
+
+.name-clien h2 {
+  color: #2b3a4e;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.clien-id {
+  font-size: 12px;
+  color: #8c98a4;
+  margin-top: 2px;
+}
+
+/* 4. شريط التنقل (الروابط) */
+.links {
+  display: flex;
+  gap: 20px;
+}
+
+.links a {
+  text-decoration: none;
+  color: #586574;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 8px 18px;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+/* تأثير الـ 3D المحفور عند الوقوف بالماوس أو على الصفحة النشطة */
+.links a:hover {
+  color: #2b82fb;
+  box-shadow: inset 3px 3px 6px #c2c8cc, 
+              inset -3px -3px 6px #ffffff;
+}
+
+/* 5. زر تسجيل الخروج */
+.longout a {
+  text-decoration: none;
+  color: #e63946; /* لون أحمر ناعم للتأكيد على إجراء الخروج */
+  font-weight: bold;
+  font-size: 14px;
+  padding: 8px 18px;
+  border-radius: 15px;
+  box-shadow: 4px 4px 8px #c2c8cc, 
+             -4px -4px 8px #ffffff;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.longout a:hover {
+  box-shadow: inset 3px 3px 6px #c2c8cc, 
+              inset -3px -3px 6px #ffffff;
+}
