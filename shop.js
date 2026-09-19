@@ -1,5 +1,17 @@
 // ==========================================
-// 0. متغيرات النطاق العام (Global Scope)
+// 0. دالة الخلط العشوائي (Fisher-Yates Shuffle)
+// ==========================================
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// ==========================================
+// 1. متغيرات النطاق العام (Global Scope)
 // ==========================================
 let productsArray = [];
 let activeProductId = null; // تخزين ID المنتج المفتوح حالياً
@@ -240,7 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return matchesSearch && matchesCategory;
     });
 
-    displayProducts(filtered);
+    // لخبطة الترتيب عشوائياً قبل العرض
+    const randomized = shuffleArray(filtered);
+
+    displayProducts(randomized);
   }
 
   function displayProducts(products) {
