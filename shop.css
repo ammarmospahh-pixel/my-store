@@ -608,3 +608,99 @@ main {
   color: #2b82fb;
   box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff;
 }
+/* ==========================================
+   تنسيق الموبايل: عرض كارتين جنب بعض (2 في كل صف)
+   ========================================== */
+@media (max-width: 768px) {
+  /* 1. ضبط الهيدر وشريط البحث */
+  header {
+    flex-direction: column;
+    padding: 12px 10px;
+    gap: 12px;
+  }
+
+  .longo-name {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .name-add {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    flex-direction: column;
+  }
+
+  .search-filter {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filter-cart {
+    flex: 1 0 100%;
+    width: 100%;
+  }
+
+  /* 2. جعل المنتجات كارتين جنب بعض */
+  .cards-container {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* تقشيم الشاشة لعمودين متساويين */
+    gap: 10px !important; /* مسافة صغيرة ومناسبة بين الكارتين */
+    padding: 0 8px !important;
+  }
+
+  .card {
+    width: 100% !important; /* يملأ نصف الشاشة المخصص له */
+    padding: 8px !important;
+  }
+
+  /* تصغير حجم صورة المنتجات للتناسب مع حجم الكارت الجديد */
+  .card img {
+    height: 120px !important;
+    object-fit: contain;
+  }
+
+  /* تصغير الخطوط والعناصر داخل الكارت ليظهر كل شيء بوضوح */
+  .card h3 {
+    font-size: 0.85rem !important;
+    height: 2.4em; /* حصر العنوان في سطرين */
+    overflow: hidden;
+  }
+
+  .card .price {
+    font-size: 0.8rem !important;
+  }
+
+  .card button {
+    font-size: 0.75rem !important;
+    padding: 6px 4px !important;
+  }
+
+  /* 3. ضبط نافذة التفاصيل (Modal) لتناسب الموبايل */
+  .propertes-cart-modal {
+    padding: 10px !important;
+  }
+
+  .propertes-cart-content {
+    width: 95% !important;
+    max-height: 90vh !important;
+    padding: 15px 10px !important;
+  }
+
+  .propertes-main-grid {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .pro-cart-img {
+    width: 100% !important;
+  }
+
+  .pro-cart-img img {
+    max-height: 180px !important;
+  }
+
+  .pro-card-pro {
+    width: 100% !important;
+  }
+}
