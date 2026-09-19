@@ -645,3 +645,57 @@ main {
 .related-card-item .show-details-btn:active {
   box-shadow: inset 2px 2px 4px #c2c8cc, inset -2px -2px 4px #ffffff;
 }
+/* ==========================================
+   تنسيق الموبايل للشاشات الصغيرة (Responsive Design)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  /* 1. ضبط الحاوية الرئيسية للمنتجات لتكون مرنة */
+  .cards-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; /* عرض منتجين بجانب بعض في السطر */
+    gap: 10px !important;
+    padding: 10px !important;
+  }
+
+  /* 2. ضبط كارت المنتج نفسه */
+  .card {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3. تصغير حجم الصور لتناسب الشاشة */
+  .card-img img {
+    width: 100% !important;
+    height: 130px !important;
+    object-fit: cover !important;
+  }
+
+  /* 4. ضبط حجم النصوص والأزرار داخل الكارت */
+  .name .name-name {
+    font-size: 13px !important;
+    margin: 5px 0 !important;
+  }
+
+  .name .name-prise {
+    font-size: 12px !important;
+  }
+
+  .card-properts button,
+  .card-cart button {
+    font-size: 11px !important;
+    padding: 6px 4px !important;
+    width: 100% !important;
+  }
+
+  /* 5. تحسين النافذة المنبثقة (Modal) على الشاشة الصغيرة */
+  #propertes-cart .modal-content,
+  #add-1 .modal-content {
+    width: 92% !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+  }
+}
