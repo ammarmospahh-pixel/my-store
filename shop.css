@@ -646,56 +646,48 @@ main {
   box-shadow: inset 2px 2px 4px #c2c8cc, inset -2px -2px 4px #ffffff;
 }
 /* ==========================================
-   تنسيق الموبايل للشاشات الصغيرة (Responsive Design)
+   تنسيق النافذة المنبثقة (Modal) للتليفون
    ========================================== */
 @media (max-width: 768px) {
-  
-  /* 1. ضبط الحاوية الرئيسية للمنتجات لتكون مرنة */
-  .cards-container {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; /* عرض منتجين بجانب بعض في السطر */
-    gap: 10px !important;
+  /* 1. جعل الخلفية المعتمة تغطي الشاشة بالكامل وتتوسط العناصر */
+  #propertes-cart {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 9999 !important;
     padding: 10px !important;
-  }
-
-  /* 2. ضبط كارت المنتج نفسه */
-  .card {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 8px !important;
     box-sizing: border-box !important;
   }
 
-  /* 3. تصغير حجم الصور لتناسب الشاشة */
-  .card-img img {
-    width: 100% !important;
-    height: 130px !important;
-    object-fit: cover !important;
-  }
-
-  /* 4. ضبط حجم النصوص والأزرار داخل الكارت */
-  .name .name-name {
-    font-size: 13px !important;
-    margin: 5px 0 !important;
-  }
-
-  .name .name-prise {
-    font-size: 12px !important;
-  }
-
-  .card-properts button,
-  .card-cart button {
-    font-size: 11px !important;
-    padding: 6px 4px !important;
-    width: 100% !important;
-  }
-
-  /* 5. تحسين النافذة المنبثقة (Modal) على الشاشة الصغيرة */
-  #propertes-cart .modal-content,
-  #add-1 .modal-content {
-    width: 92% !important;
-    max-height: 85vh !important;
+  /* 2. ضبط الكارت الداخلي للتفاصيل ليكون متناسق في المنتصف */
+  #propertes-cart > div,
+  #propertes-cart .modal-content {
+    width: 90% !important; /* أو 95% لو عايزها أعرض */
+    max-width: 400px !important;
+    max-height: 85vh !important; /* عشان لو الكلام كتير يظهر سكرول داخلي */
     overflow-y: auto !important;
+    margin: 0 auto !important;
+    border-radius: 15px !important;
     padding: 15px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3. ضبط المنتجات المشابهة جوة النافذة عشان م تخرجش بره */
+  #related-products-container {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: space-between !important;
+  }
+
+  #related-products-container .card {
+    width: 48% !important; /* يعرض منتجين جنب بعض جوة الـ Modal */
+    margin: 0 !important;
   }
 }
