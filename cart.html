@@ -28,12 +28,45 @@
         
     </header>
     <main>
-        
+        <div class="cart-page-container">
+        <div class="cart-header-title">
+            <h2>سلة التسوق</h2>
+            <a href="shop.html" class="back-to-shop">← العودة للمتجر</a>
+        </div>
+
+        <!-- عرض المنتجات -->
+        <div class="cart-items-wrapper" id="cart-items-container"></div>
+
+        <!-- قسم كود الخصم المعتمد على حساب العميل -->
+       
+        <div id="coupon-message" class="coupon-msg"></div>
+
+        <!-- ملخص الحساب -->
+        <div class="cart-summary">
+            <div>
+                <h3>الإجمالي:</h3>
+                <span id="discount-note" style="font-size: 12px; color: #28a745; display: none;">(تم تطبيق الخصم)</span>
+            </div>
+            <h3 id="total-price" style="color: #28a745;">0 ج.م</h3>
+            <div class="nam-clain">
+    <h3>ادخل رقم الهاتف</h3>
+    <input type="tel" id="phone-input" placeholder="01xxxxxxxxx">
+</div>
+        </div>
+
+        <button class="checkout-btn" id="checkout-btn">إتمام الطلب</button>
+
+        <!-- سجل الفواتير السابقة -->
+        <div class="history-section">
+            <h3 class="history-title">سجل الفواتير والطلبات السابقة</h3>
+            <div id="history-container"></div>
+        </div>
+    </div>
     </main>
     <script src="header.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+<script src="cart.js"></script>
 <!-- 2. ملف الاتصال الموحد -->
 <script src="firebase-config.js"></script>
 </body>

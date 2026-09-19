@@ -104,3 +104,258 @@ header {
   box-shadow: inset 3px 3px 6px #c2c8cc, 
               inset -3px -3px 6px #ffffff;
 }
+/* 1. إعدادات الحاوية الرئيسية لصفحة السلة */
+.cart-page-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 15px;
+}
+
+/* 2. رأس صفحة السلة والزر الخاص بالعودة للمتجر */
+.cart-header-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #2b3a4e;
+}
+
+/* 3. حاوية عناصر السلة ذات البروز الثلاثي الأبعاد */
+.cart-items-wrapper {
+  background-color: #e6ecf0;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 8px 8px 16px #c2c8cc, -8px -8px 16px #ffffff;
+}
+
+/* 4. تنسيق سطر المنتج المضاف للسلة والحد الفاصل بين العناصر */
+.cart-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 10px;
+  border-bottom: 1px solid #d1d9e0;
+}
+
+.cart-item-row:last-child {
+  border-bottom: none;
+}
+
+/* 5. معلومات المنتج وصورته داخل السلة */
+.cart-item-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.cart-item-info img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 3px 3px 6px #c2c8cc, -3px -3px 6px #ffffff;
+}
+
+.cart-item-info h4 {
+  color: #2b3a4e;
+  font-size: 15px;
+}
+
+.cart-item-info span {
+  color: #8c98a4;
+  font-size: 13px;
+}
+
+/* 6. أدوات تغيير الكمية (+ و -) وتصميم الحاوية المحفورة */
+.cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #e6ecf0;
+  padding: 6px 14px;
+  border-radius: 20px;
+  box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff;
+}
+
+.cart-item-controls button {
+  border: none;
+  background: #e6ecf0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  color: #2b3a4e;
+  box-shadow: 3px 3px 6px #c2c8cc, -3px -3px 6px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.cart-item-controls button:active {
+  box-shadow: inset 2px 2px 4px #c2c8cc, inset -2px -2px 4px #ffffff;
+}
+
+/* 7. إجمالي سعر المنتج */
+.cart-item-total {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-weight: bold;
+  color: #2b3a4e;
+}
+
+/* 8. مربع ملخص الفاتورة النهائي */
+.cart-summary {
+  background-color: #e6ecf0;
+  border-radius: 15px;
+  padding: 20px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 6px 6px 12px #c2c8cc, -6px -6px 12px #ffffff;
+  color: #2b3a4e;
+}
+
+/* 9. زر الشراء والتأكيد */
+.checkout-btn {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 14px 25px;
+  border-radius: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px;
+  box-shadow: 4px 4px 8px #c2c8cc, -4px -4px 8px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.checkout-btn:hover {
+  background: #218838;
+}
+
+/* 10. زر العودة للمتجر */
+.back-to-shop {
+  display: inline-block;
+  text-decoration: none;
+  color: #2b82fb;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 12px;
+  box-shadow: 3px 3px 6px #c2c8cc, -3px -3px 6px #ffffff;
+}
+
+/* 11. قسم إدخال كود الخصم */
+.discount-section {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.discount-section input {
+  flex: 1;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 12px;
+  background-color: #e6ecf0;
+  box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff;
+  outline: none;
+  color: #2b3a4e;
+  font-weight: bold;
+}
+
+.discount-section button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background: #2b82fb;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 3px 3px 6px #c2c8cc, -3px -3px 6px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.discount-section button:active {
+  box-shadow: inset 2px 2px 4px #00000033;
+}
+
+.coupon-msg {
+  font-size: 13px;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+/* 12. قسم تاريخ الفواتير السابقة */
+.history-section {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 2px dashed #c2c8cc;
+}
+
+.history-title {
+  color: #2b3a4e;
+  margin-bottom: 15px;
+}
+
+.invoice-card {
+  background-color: #e6ecf0;
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 5px 5px 10px #c2c8cc, -5px -5px 10px #ffffff;
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: #2b3a4e;
+  border-bottom: 1px solid #d1d9e0;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.invoice-items {
+  font-size: 13px;
+  color: #586574;
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.invoice-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.reorder-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+  box-shadow: 2px 2px 5px #c2c8cc, -2px -2px 5px #ffffff;
+}
+
+/* 13. تحسين المظهر على الشاشات الصغيرة */
+@media (max-width: 600px) {
+  .cart-item-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .cart-item-controls {
+    align-self: flex-start;
+  }
+
+  .cart-item-total {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
