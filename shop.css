@@ -8,24 +8,28 @@
 
 body {
   background-color: #e6ecf0;
+  padding-bottom: 90px;
 }
 
 /* 2. تنسيق الهيدر الرئيسي */
 header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   padding: 15px 35px;
   background-color: #e6ecf0;
   box-shadow: 0 8px 16px #c2c8cc, 
               0 -4px 12px #ffffff;
+  position: relative;
 }
 
-/* 3. قسم اللوجو والترحيب وبيانات العميل */
+/* ضبط اللوجو واسم العميل في اليمين */
 .longo-name {
   display: flex;
   align-items: center;
   gap: 15px;
+  order: 1;
 }
 
 .longo-name img {
@@ -62,29 +66,85 @@ header {
   margin-top: 2px;
 }
 
-/* 4. شريط التنقل (الروابط) */
-.links {
+/* شريط البحث والفلترة في المنتصف */
+.name-add {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  max-width: 700px;
+  margin: 0 20px;
+  padding: 12px 20px;
+  background-color: #e6ecf0;
+  border-radius: 20px;
+  box-shadow: 6px 6px 12px #c2c8cc, 
+             -6px -6px 12px #ffffff;
+  box-sizing: border-box;
+  order: 2;
 }
 
-.links a {
-  text-decoration: none;
-  color: #586574;
-  font-weight: bold;
-  font-size: 15px;
-  padding: 8px 18px;
-  border-radius: 15px;
-  transition: all 0.3s ease;
-}
-
-.links a:hover {
+/* زر إضافة صنف داخل شريط التحكم */
+.name-add-cart {
+  background-color: #e6ecf0;
   color: #2b82fb;
+  border: none;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 9px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 4px 4px 8px #c2c8cc, 
+             -4px -4px 8px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.name-add-cart:hover {
+  color: #1a6edb;
+}
+
+.name-add-cart:active {
   box-shadow: inset 3px 3px 6px #c2c8cc, 
               inset -3px -3px 6px #ffffff;
 }
 
-/* 5. زر تسجيل الخروج */
+/* إعادة ضبط الحاويات الداخلية لشريط البحث */
+.search-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.search-cart {
+  flex: 1;
+}
+
+.filter-cart {
+  flex: 0 0 140px;
+}
+
+.search-cart input,
+.filter-cart select {
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  outline: none;
+  background-color: #e6ecf0;
+  border-radius: 12px;
+  font-size: 13px;
+  color: #2b3a4e;
+  box-shadow: inset 3px 3px 6px #c2c8cc, 
+              inset -3px -3px 6px #ffffff;
+  box-sizing: border-box;
+}
+
+/* زر تسجيل الخروج في اليسار */
+.longout {
+  order: 3;
+}
+
 .longout a {
   text-decoration: none;
   color: #e63946;
@@ -103,124 +163,12 @@ header {
               inset -3px -3px 6px #ffffff;
 }
 
-/* شريط التحكم والتصفية */
-.name-add {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  max-width: 1000px;
-  margin: 0 auto 30px auto;
-  padding: 15px 20px;
-  background-color: #e6ecf0;
-  border-radius: 20px;
-  box-shadow: 6px 6px 12px #c2c8cc, 
-             -6px -6px 12px #ffffff;
-}
-
-/* زر إضافة صنف */
-.name-add-cart {
-  background-color: #e6ecf0;
-  color: #2b82fb;
-  border: none;
-  font-weight: bold;
-  font-size: 14px;
-  padding: 10px 20px;
-  border-radius: 12px;
-  cursor: pointer;
-  box-shadow: 4px 4px 8px #c2c8cc, 
-             -4px -4px 8px #ffffff;
-  transition: all 0.2s ease;
-}
-
-.name-add-cart:hover {
-  color: #1a6edb;
-}
-
-.name-add-cart:active {
-  box-shadow: inset 3px 3px 6px #c2c8cc, 
-              inset -3px -3px 6px #ffffff;
-}
-
-/* حاوية البحث والتصنيف والإجمالي بجانب بعضها */
-.search-filter {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-}
-
-/* 1. البحث: 50% */
-.search-cart {
-  flex: 0 0 calc(50% - 7px);
-  width: calc(50% - 7px);
-}
-
-/* 2. التصنيف: 30% */
-.filter-cart {
-  flex: 0 0 calc(30% - 7px);
-  width: calc(30% - 7px);
-}
-
-/* 3. شريط إجمالي المنتجات المتاحة: 20% (علي الشمال بنفس السطر) */
-.number-cart {
-  flex: 0 0 calc(20% - 7px);
-  width: calc(20% - 7px);
-  margin: 0;
-  padding: 10px 8px;
-  background-color: #e6ecf0;
-  border-radius: 12px;
-  text-align: center;
-  color: #2b3a4e;
-  font-size: 12px;
-  box-shadow: inset 2px 2px 5px #c2c8cc, 
-              inset -2px -2px 5px #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-sizing: border-box;
-}
-
-.number-carts {
-  color: #2b82fb;
-  margin-right: 3px;
-}
-
-.search-cart input,
-.filter-cart select {
-  width: 100%;
-  padding: 10px 12px;
-  border: none;
-  outline: none;
-  background-color: #e6ecf0;
-  border-radius: 12px;
-  font-size: 14px;
-  color: #2b3a4e;
-  box-shadow: inset 3px 3px 6px #c2c8cc, 
-              inset -3px -3px 6px #ffffff;
-  box-sizing: border-box;
-}
-
-.filter-cart select {
-  cursor: pointer;
-}
-
-/* تنسيق قسم المنتجات الرئيسي */
+/* تنسيق قسم المنتجات الرئيسي والكروت */
 main {
   width: 100%;
   padding: 20px;
 }
 
-.name-market {
-  text-align: center;
-  display: block;
-  color: #2b3a4e;
-  font-size: 25px;
-  margin-bottom: 30px;
-}
-
-/* الكارت المجسم 3D */
 .cards-container {
   display: flex;
   flex-wrap: wrap;
@@ -231,67 +179,62 @@ main {
 }
 
 .card {
-  width: 250px;
+  width: 200px;
+  background-color: #e6ecf0;
+  border-radius: 18px;
+  padding: 12px;
   box-sizing: border-box;
+  box-shadow: 6px 6px 12px #c2c8cc, -6px -6px 12px #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
+/* زر علامة + شبيه بأمازون */
 .card-cart {
   width: 100%;
+  display: flex;
+  justify-content: flex-end;
 }
 
-.card-cart button,
-.card-properts button {
-  width: 100%;
+.amazon-plus-btn {
+  width: 35px !important;
+  height: 35px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  color: #2b82fb !important;
+  background-color: #e6ecf0;
+  box-shadow: 3px 3px 6px #c2c8cc, -3px -3px 6px #ffffff;
   border: none;
-  background-color: #e6ecf0;
-  border-radius: 15px;
-  box-shadow: 4px 4px 8px #c2c8cc, 
-             -4px -4px 8px #ffffff;
+  cursor: pointer;
   transition: all 0.2s ease;
-  background-color: #e6ecf0;
-  color: #2b82fb;
-  border-radius: 15px;
 }
 
-.card-cart button a,
-.card-properts button a {
-  
-  display: block;
-  padding: 10px;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 13px;
+.amazon-plus-btn:active {
+  box-shadow: inset 2px 2px 4px #c2c8cc, inset -2px -2px 4px #ffffff !important;
 }
 
-.card-cart button a {
-  color: #2b82fb;
-}
-
-.card-properts button a {
-  color: #586574;
-}
-
-.card-cart button:active,
-.card-properts button:active {
-  box-shadow: inset 3px 3px 6px #c2c8cc, 
-              inset -3px -3px 6px #ffffff;
-}
-
+/* صورة الكرت مع تفعيل المؤشر للنقر */
 .card-img {
   width: 100%;
-  height: 170px;
-  border-radius: 20px;
+  height: 150px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: inset 4px 4px 8px #c2c8cc, 
-              inset -4px -4px 8px #ffffff;
-  padding: 8px;
+  box-shadow: inset 3px 3px 6px #c2c8cc, 
+              inset -3px -3px 6px #ffffff;
+  padding: 5px;
+  cursor: pointer;
 }
 
 .card-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 14px;
+  border-radius: 10px;
 }
 
 .name {
@@ -300,14 +243,21 @@ main {
 
 .name-name {
   color: #2b3a4e;
-  font-size: 17px;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.name-filter {
+  font-size: 12px;
+  color: #8c98a4;
+  display: block;
   margin-bottom: 4px;
 }
 
 .name-prise {
   color: #2b82fb;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 15px;
   display: block;
 }
 
@@ -315,6 +265,25 @@ main {
   width: 100%;
 }
 
+.card-properts button {
+  width: 100%;
+  border: none;
+  background-color: #e6ecf0;
+  border-radius: 12px;
+  padding: 8px;
+  color: #586574;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 3px 3px 6px #c2c8cc, -3px -3px 6px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.card-properts button:active {
+  box-shadow: inset 2px 2px 4px #c2c8cc, inset -2px -2px 4px #ffffff;
+}
+
+/* إشعار السلة المنبثق */
 .name-add-car1 {
   position: fixed;
   bottom: -70px;
@@ -334,18 +303,10 @@ main {
 }
 
 .name-add-car1.show {
-  bottom: 30px;
+  bottom: 90px;
 }
 
 /* نافذة إضافة وتعديل صنف */
-#add-1 {
-  display: none !important;
-}
-
-#add-1.active {
-  display: flex !important;
-}
-
 .form {
   display: none !important;
   position: fixed;
@@ -405,11 +366,6 @@ main {
   box-sizing: border-box;
 }
 
-.add-form input:focus {
-  box-shadow: inset 4px 4px 8px #b1b7bb, 
-              inset -4px -4px 8px #ffffff;
-}
-
 .btn-card {
   display: flex;
   justify-content: space-between;
@@ -433,25 +389,17 @@ main {
 
 .btn-save-card {
   color: #2b82fb;
-  box-shadow: 4px 4px 8px #c2c8cc, 
-             -4px -4px 8px #ffffff;
+  box-shadow: 4px 4px 8px #c2c8cc, -4px -4px 8px #ffffff;
 }
 
 .btn-save-delet {
   color: #e74c3c;
-  box-shadow: 4px 4px 8px #c2c8cc, 
-             -4px -4px 8px #ffffff;
+  box-shadow: 4px 4px 8px #c2c8cc, -4px -4px 8px #ffffff;
 }
 
 .btn-save-cancel {
   color: #7f8c8d;
-  box-shadow: 4px 4px 8px #c2c8cc, 
-             -4px -4px 8px #ffffff;
-}
-
-.btn-card button:active {
-  box-shadow: inset 2px 2px 5px #c2c8cc, 
-              inset -2px -2px 5px #ffffff;
+  box-shadow: 4px 4px 8px #c2c8cc, -4px -4px 8px #ffffff;
 }
 
 /* النافذة المنبثقة للتفاصيل */
@@ -489,7 +437,6 @@ main {
   position: relative !important;
   direction: rtl !important;
   margin: auto !important;
-  border: none !important;
 }
 
 .close-propertes-btn {
@@ -509,10 +456,6 @@ main {
   border: none !important;
   cursor: pointer !important;
   z-index: 10 !important;
-}
-
-.close-propertes-btn:active {
-  box-shadow: inset 2px 2px 5px #c2c8cc, inset -2px -2px 5px #ffffff !important;
 }
 
 .propertes-main-grid {
@@ -555,10 +498,13 @@ main {
 
 .pro-details-box h3 {
   color: #2b3a4e !important;
+  font-size: 14px;
+  margin-bottom: 5px;
 }
 
 .pro-details-box p {
   color: #586574 !important;
+  font-size: 13px;
 }
 
 .pro-cart-pnt button,
@@ -573,7 +519,6 @@ main {
   cursor: pointer !important;
   box-shadow: 4px 4px 8px #c2c8cc, -4px -4px 8px #ffffff !important;
   transition: all 0.2s ease !important;
-  outline: none !important;
 }
 
 .pro-cart-pnt button {
@@ -585,11 +530,6 @@ main {
   margin-top: 10px !important;
 }
 
-.pro-cart-pnt button:active,
-#pro-add-to-cart-btn2:active {
-  box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff !important;
-}
-
 .modal-divider {
   border: none !important;
   height: 2px !important;
@@ -597,7 +537,7 @@ main {
   margin: 20px 0 !important;
 }
 
-/* --- تنسيقات سكشن المنتجات المشابهة (عرض المنتجات بجانب بعض) --- */
+/* المنتجات المشابهة داخل النافذة */
 .related-products-section {
   width: 100%;
   margin-top: 15px;
@@ -611,87 +551,60 @@ main {
 
 .related-cards-container {
   display: flex !important;
-  flex-direction: row !important; /* تجعل البطاقات بجانب بعضها */
+  flex-direction: row !important;
   flex-wrap: nowrap !important;
   gap: 15px !important;
-  overflow-x: auto !important; /* تمكين التمرير الأفقي عند كثرة المنتجات */
+  overflow-x: auto !important;
   padding: 10px 5px !important;
 }
 
 .related-card-item {
-  flex: 0 0 200px !important; /* حجم ثابت للبطاقة داخل المشابهة */
-  width: 200px !important;
+  flex: 0 0 180px !important;
+  width: 180px !important;
   background-color: #e6ecf0;
   border-radius: 15px;
   padding: 10px;
   box-shadow: 4px 4px 8px #c2c8cc, -4px -4px 8px #ffffff;
-  box-sizing: border-box;
 }
 
 .related-card-item .card-img {
-  height: 120px;
+  height: 110px;
 }
 
-.related-card-item .show-details-btn {
-  width: 100%;
-  border: none;
+/* الأزرار العائمة بالأسفل */
+.links {
+  position: fixed;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  z-index: 999;
+  background: rgba(230, 236, 240, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 8px 20px;
+  border-radius: 30px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
   background-color: #e6ecf0;
-  border-radius: 10px;
-  padding: 6px;
-  font-size: 12px;
-  font-weight: bold;
+  border-radius: 50%;
+  text-decoration: none;
   color: #586574;
-  cursor: pointer;
-  box-shadow: 2px 2px 5px #c2c8cc, -2px -2px 5px #ffffff;
-  margin-top: 6px;
+  font-weight: bold;
+  font-size: 12px;
+  box-shadow: 4px 4px 8px #c2c8cc, -4px -4px 8px #ffffff;
+  transition: all 0.3s ease;
 }
 
-.related-card-item .show-details-btn:active {
-  box-shadow: inset 2px 2px 4px #c2c8cc, inset -2px -2px 4px #ffffff;
-}
-/* ==========================================
-   تنسيق النافذة المنبثقة (Modal) للتليفون
-   ========================================== */
-@media (max-width: 768px) {
-  /* 1. جعل الخلفية المعتمة تغطي الشاشة بالكامل وتتوسط العناصر */
-  #propertes-cart {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: rgba(0, 0, 0, 0.6) !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    z-index: 9999 !important;
-    padding: 10px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 2. ضبط الكارت الداخلي للتفاصيل ليكون متناسق في المنتصف */
-  #propertes-cart > div,
-  #propertes-cart .modal-content {
-    width: 90% !important; /* أو 95% لو عايزها أعرض */
-    max-width: 400px !important;
-    max-height: 85vh !important; /* عشان لو الكلام كتير يظهر سكرول داخلي */
-    overflow-y: auto !important;
-    margin: 0 auto !important;
-    border-radius: 15px !important;
-    padding: 15px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 3. ضبط المنتجات المشابهة جوة النافذة عشان م تخرجش بره */
-  #related-products-container {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-    justify-content: space-between !important;
-  }
-
-  #related-products-container .card {
-    width: 48% !important; /* يعرض منتجين جنب بعض جوة الـ Modal */
-    margin: 0 !important;
-  }
+.links a:hover {
+  color: #2b82fb;
+  box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff;
 }

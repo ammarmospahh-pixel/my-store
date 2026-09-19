@@ -14,7 +14,7 @@ function shuffleArray(array) {
 // 1. متغيرات النطاق العام (Global Scope)
 // ==========================================
 let productsArray = [];
-let activeProductId = null; // تخزين ID المنتج المفتوح حالياً
+let activeProductId = null; 
 
 // ==========================================
 // دالة عرض المنتجات المشابهة داخل النافذة المنبثقة
@@ -37,15 +37,19 @@ function renderRelatedProducts(category, currentProductId) {
     const cardEl = document.createElement('div');
     cardEl.className = 'card related-card-item';
     cardEl.innerHTML = `
-      <div class="card-cart"><button type="button"><a href="#">اضافه للعربه</a></button></div>
-      <div class="card-img"><img src="${itemImg}" alt="${item.name}" /></div>
+      <div class="card-cart">
+        <button type="button" class="btn-add-to-cart amazon-plus-btn" data-id="${item.id}">+</button>
+      </div>
+      <div class="card-img show-details-btn" data-id="${item.id}" style="cursor: pointer;">
+        <img src="${itemImg}" alt="${item.name}" />
+      </div>
       <div class="name">
-        <h3 class="name-name" style="font-size: 14px;">${item.name}</h3>
+        <h3 class="name-name" style="font-size: 13px;">${item.name}</h3>
         <span class="name-filter" style="font-size: 11px; color: #8c98a4;">${item.category}</span>
-        <span class="name-prise" style="font-size: 14px;">${item.price} ج.م</span>
+        <span class="name-prise" style="font-size: 13px;">${item.price} ج.م</span>
       </div>
       <div class="card-properts">
-        <button type="button" class="show-details-btn" data-id="${item.id}">إظهار تفاصيل</button>
+        <button type="button" class="show-details-btn" data-id="${item.id}">تفاصيل</button>
       </div>
     `;
 
@@ -53,9 +57,7 @@ function renderRelatedProducts(category, currentProductId) {
   });
 }
 
-// ==========================================
-// التحكم في بيانات تسجيل الدخول بالهيدر
-// ==========================================
+// التحقق من تسجيل الدخول
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
 if (!currentUser) {
@@ -64,7 +66,6 @@ if (!currentUser) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. تحديث بيانات العميل في الهيدر
   const clientNameEl = document.getElementById('clien-name');
   const clientIdNumEl = document.getElementById('clien-id-num');
   const addBtn = document.getElementById('name-add-cart');
@@ -78,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
     addBtn.style.display = 'block';
   }
 
-  // 2. التحكم بظهور زر تعديل التفاصيل للأدمن
   const adminEditWrapper = document.getElementById('admin-edit-wrapper');
   if (currentUser && currentUser.role === 'admin' && adminEditWrapper) {
     adminEditWrapper.style.display = 'block';
@@ -86,18 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
     adminEditWrapper.style.display = 'none';
   }
 
-  // 3. تحديد وتخزين عناصر الصفحة والنافذة
   const modalForm = document.getElementById('add-1');
   const cancelBtn = document.querySelector('.btn-save-cancel');
   const deleteBtn = document.querySelector('.btn-save-delet');
   const saveBtn = document.querySelector('.btn-save-card');
-  const mainContainer = document.querySelector('.cards-container');
-  const totalCountEl = document.querySelector('.number-carts');
 
   const searchInput = document.getElementById('search-name');
   const categoryFilterSelect = document.getElementById('name-filter-cart');
 
-  // عناصر التعديل على التفاصيل
   const editDescBtn = document.getElementById('pro-add-to-cart-btn2');
   const descText = document.getElementById('pro-description');
   const editContainer = document.getElementById('edit-description-container');
@@ -105,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveDescBtn = document.getElementById('save-description-btn');
   const cancelDescBtn = document.getElementById('cancel-description-btn');
 
-  // عناصر نموذج إضافة / تعديل صنف
   const idInput = document.querySelector('.form-e input[type="number"]');
   const nameInput = document.querySelectorAll('.form-e input')[1];
   const categoryInput = document.querySelectorAll('.form-e input')[2];
@@ -115,38 +110,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let tempUploadedImage = '';
 
-  // 4. تعبئة البيانات تلقائياً بمجرد كتابة الـ ID
+  // 1. تجهيز Datalist لعرض الـ IDs الموجودة أثناء الكتابة
+  let idsDatalist = document.getElementById('ids-list');
+  if (!idsDatalist && idInput) {
+    idsDatalist = document.createElement('datalist');
+    idsDatalist.id = 'ids-list';
+    document.body.appendChild(idsDatalist);
+    idInput.setAttribute('list', 'ids-list');
+  }
+
+  // 2. تجهيز Datalist لعرض أسماء المنتجات الموجودة أثناء الكتابة
+  let namesDatalist = document.getElementById('names-list');
+  if (!namesDatalist && nameInput) {
+    namesDatalist = document.createElement('datalist');
+    namesDatalist.id = 'names-list';
+    document.body.appendChild(namesDatalist);
+    nameInput.setAttribute('list', 'names-list');
+  }
+
+  // التفاعل عند كتابة أو اختيار الـ ID
   if (idInput) {
     idInput.addEventListener('input', () => {
       const typedId = idInput.value.trim();
-      if (!typedId) {
-        clearFormExceptId();
-        return;
-      }
-
+      if (!typedId) { clearFormExceptId(); return; }
+      
       const existingProd = productsArray.find(p => String(p.id) === String(typedId));
       if (existingProd) {
-        fillFormFields(existingProd, false);
+        fillFormFields(existingProd, false); // جلب البيانات للتعديل
       } else {
-        clearFormExceptId();
+        clearFormExceptId(); 
       }
     });
   }
 
-  // 5. تعبئة البيانات تلقائياً بمجرد كتابة اسم الصنف
+  // التفاعل عند كتابة أو اختيار الاسم للتأكد من المنتجات المتشابهة
   if (nameInput) {
     nameInput.addEventListener('input', () => {
       const typedName = nameInput.value.trim().toLowerCase();
-      if (!typedName) {
-        clearFormExceptName();
-        return;
-      }
-
+      if (!typedName) { clearFormExceptName(); return; }
+      
       const existingProd = productsArray.find(p => (p.name || '').trim().toLowerCase() === typedName);
       if (existingProd) {
-        fillFormFields(existingProd, true);
-      } else {
-        clearFormExceptName();
+        fillFormFieldsByName(existingProd); // ملء البيانات لو الاسم موجود وحابب تعدله
       }
     });
   }
@@ -159,18 +164,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (urlInput) urlInput.value = (prod.image && !prod.image.startsWith('data:')) ? prod.image : '';
   }
 
+  function fillFormFieldsByName(prod) {
+    if (idInput) idInput.value = prod.id || '';
+    if (categoryInput) categoryInput.value = prod.category || '';
+    if (priceInput) priceInput.value = prod.price || '';
+    if (urlInput) urlInput.value = (prod.image && !prod.image.startsWith('data:')) ? prod.image : '';
+  }
+
   if (fileInput) {
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-          tempUploadedImage = event.target.result;
-        };
+        reader.onload = (event) => { tempUploadedImage = event.target.result; };
         reader.readAsDataURL(file);
-      } else {
-        tempUploadedImage = '';
-      }
+      } else { tempUploadedImage = ''; }
     });
   }
 
@@ -190,39 +198,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // جلب البيانات المباشرة من Firebase
   if (typeof db !== 'undefined') {
     db.ref('products').on('value', (snapshot) => {
       const data = snapshot.val();
       productsArray = [];
-
       if (data) {
-        Object.keys(data).forEach(key => {
-          productsArray.push(data[key]);
-        });
+        Object.keys(data).forEach(key => { productsArray.push(data[key]); });
       }
-
       updateCategoryDropdowns(productsArray);
+      updateIdsDropdown(productsArray);   // تحديث قائمة الـ IDs
+      updateNamesDropdown(productsArray); // تحديث قائمة الأسماء
       filterAndRenderProducts();
     });
   }
 
+  function updateIdsDropdown(products) {
+    if (idsDatalist) {
+      idsDatalist.innerHTML = products.map(p => `<option value="${p.id}">${p.name ? ' - ' + p.name : ''}</option>`).join('');
+    }
+  }
+
+  function updateNamesDropdown(products) {
+    if (namesDatalist) {
+      namesDatalist.innerHTML = products.map(p => `<option value="${p.name}">ID: ${p.id}</option>`).join('');
+    }
+  }
+
   function updateCategoryDropdowns(products) {
     const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
-
     if (categoryFilterSelect) {
       const currentSelected = categoryFilterSelect.value;
       let optionsHTML = `<option value="all">اختر التصنيف</option>`;
-      categories.forEach(cat => {
-        optionsHTML += `<option value="${cat}">${cat}</option>`;
-      });
+      categories.forEach(cat => { optionsHTML += `<option value="${cat}">${cat}</option>`; });
       categoryFilterSelect.innerHTML = optionsHTML;
-
-      if (currentSelected && categories.includes(currentSelected)) {
-        categoryFilterSelect.value = currentSelected;
-      } else {
-        categoryFilterSelect.value = 'all';
-      }
+      categoryFilterSelect.value = (currentSelected && categories.includes(currentSelected)) ? currentSelected : 'all';
     }
 
     let formDatalist = document.getElementById('categories-list');
@@ -232,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.appendChild(formDatalist);
       categoryInput.setAttribute('list', 'categories-list');
     }
-
     if (formDatalist) {
       formDatalist.innerHTML = categories.map(cat => `<option value="${cat}">`).join('');
     }
@@ -245,53 +253,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const filtered = productsArray.filter(prod => {
       const prodName = (prod.name || '').toString().toLowerCase();
       const prodId = (prod.id || '').toString().toLowerCase();
-      
       const matchesSearch = prodName.includes(searchTerm) || prodId.includes(searchTerm);
       const matchesCategory = (selectedCategory === 'all' || selectedCategory === 'اختر التصنيف') ? true : prod.category === selectedCategory;
-
       return matchesSearch && matchesCategory;
     });
 
-    // لخبطة الترتيب عشوائياً قبل العرض
-    const randomized = shuffleArray(filtered);
-
-    displayProducts(randomized);
-  }
-
- function displayProducts(products) {
-    if (!mainContainer) return;
-    document.querySelectorAll('.cards-container .card').forEach(card => card.remove());
-
-    products.forEach(prod => {
-      let imageUrl = 'img/market.jpg';
-      if (prod.image && prod.image.trim().length > 5) {
-        imageUrl = prod.image.trim();
-      }
-
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="card-cart">
-          <button type="button" class="btn-add-to-cart" data-id="${prod.id}">إضافة للعربة</button>
-        </div>
-        <div class="card-img"><img src="${imageUrl}" alt="${prod.name}" /></div>
-        <div class="name">
-          <h3 class="name-name">${prod.name}</h3>
-          <span class="name-filter">${prod.category}</span>
-          <span class="name-prise">${prod.price} ج.م</span>
-        </div>
-        <div class="card-properts"><button type="button" class="show-details-btn" data-id="${prod.id}">إظهار تفاصيل</button></div>
-      `;
-      mainContainer.appendChild(card);
-    });
-
-    if (totalCountEl) totalCountEl.textContent = products.length;
+    displayProducts(shuffleArray(filtered));
   }
 
   if (searchInput) searchInput.addEventListener('input', filterAndRenderProducts);
   if (categoryFilterSelect) categoryFilterSelect.addEventListener('change', filterAndRenderProducts);
 
-  // أحداث زر تعديل التفاصيل للأدمن
   if (editDescBtn) {
     editDescBtn.addEventListener('click', () => {
       if (descInput && descText) {
@@ -313,37 +285,26 @@ document.addEventListener('DOMContentLoaded', () => {
   if (saveDescBtn) {
     saveDescBtn.addEventListener('click', () => {
       const newDescription = descInput.value.trim();
-
       if (!activeProductId) {
-        alert('خطأ: لم يتم تحديد المنتج بشكل صحيح، يرجى إغلاق النافذة وفتحها مجدداً!');
+        alert('خطأ: لم يتم تحديد المنتج بشكل صحيح!');
         return;
       }
-
       if (typeof db !== 'undefined') {
-        db.ref('products/' + activeProductId).update({
-          description: newDescription
-        }).then(() => {
-          const updatedText = newDescription || 'لا توجد تفاصيل إضافية مضافة لهذا المنتج.';
-          if (descText) descText.textContent = updatedText;
-
+        db.ref('products/' + activeProductId).update({ description: newDescription }).then(() => {
+          if (descText) descText.textContent = newDescription || 'لا توجد تفاصيل إضافية مضافة لهذا المنتج.';
           const localProd = productsArray.find(p => String(p.id) === String(activeProductId));
           if (localProd) localProd.description = newDescription;
-
           if (editContainer) editContainer.style.display = 'none';
           if (descText) descText.style.display = 'block';
           alert('تم حفظ التفاصيل بنجاح!');
-        }).catch(err => {
-          alert('حدث خطأ أثناء الحفظ: ' + err.message);
-        });
+        }).catch(err => { alert('حدث خطأ: ' + err.message); });
       }
     });
   }
 
-  // حفظ / تعديل المنتج
   if (saveBtn) {
     saveBtn.addEventListener('click', (e) => {
       e.preventDefault();
-
       const idVal = idInput ? idInput.value.trim() : '';
       const nameVal = nameInput ? nameInput.value.trim() : '';
       const catVal = categoryInput ? categoryInput.value.trim() || 'أخرى' : 'أخرى';
@@ -355,53 +316,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const duplicateName = productsArray.find(p => (p.name || '').trim().toLowerCase() === nameVal.toLowerCase() && String(p.id) !== String(idVal));
-      if (duplicateName) {
-        alert(`اسم الصنف "${nameVal}" مستخدم بالفعل لصنف آخر برقم ID (${duplicateName.id}). لا يمكنك تكرار اسم الصنف!`);
-        return;
-      }
-
       const existingProd = productsArray.find(p => String(p.id) === String(idVal));
-      let finalImg = tempUploadedImage;
-
-      if (!finalImg || finalImg === '') {
-        finalImg = urlVal || (existingProd ? existingProd.image : '');
-      }
+      let finalImg = tempUploadedImage || urlVal || (existingProd ? existingProd.image : '');
 
       if (typeof db !== 'undefined') {
         db.ref('products/' + idVal).set({
-          id: idVal,
-          name: nameVal,
-          category: catVal,
+          id: idVal, 
+          name: nameVal, 
+          category: catVal, 
           price: priceVal,
-          image: finalImg,
+          image: finalImg, 
           description: existingProd ? (existingProd.description || '') : ''
-        }).then(() => {
-          alert('تم حفظ البيانات بنجاح!');
+        }).then(() => { 
+          alert(existingProd ? 'تم تحديث بيانات المنتج بنجاح!' : 'تم إضافة المنتج الجديد بنجاح!'); 
         });
       }
-
       if (modalForm) modalForm.classList.remove('active');
       clearForm();
     });
   }
 
-  // حذف المنتج
   if (deleteBtn) {
     deleteBtn.addEventListener('click', (e) => {
       e.preventDefault();
       const idVal = idInput ? idInput.value.trim() : '';
-
-      if (!idVal) {
-        alert('يرجى إدخال الـ ID الخاص بالمنتج المراد حذفه');
-        return;
-      }
-
-      if (confirm('هل أنت تأكد من رغبتك في حذف هذا المنتج؟')) {
+      if (!idVal) { alert('يرجى إدخال الـ ID'); return; }
+      if (confirm('هل أنت متأكد من الحذف؟')) {
         if (typeof db !== 'undefined') {
-          db.ref('products/' + idVal).remove().then(() => {
-            alert('تم حذف المنتج بنجاح!');
-          });
+          db.ref('products/' + idVal).remove().then(() => { alert('تم الحذف بنجاح!'); });
         }
         if (modalForm) modalForm.classList.remove('active');
         clearForm();
@@ -434,16 +376,47 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ==========================================
-// الاستماع للنقر على "إظهار تفاصيل" النافذة
-// ==========================================
+// دالة عرض المنتجات بالكرت الرئيسي
+function displayProducts(products) {
+  const mainContainer = document.querySelector('.cards-container');
+  if (!mainContainer) return;
+  
+  mainContainer.innerHTML = '';
+
+  products.forEach(prod => {
+    let imageUrl = 'img/market.jpg';
+    if (prod.image && prod.image.trim().length > 5) {
+      imageUrl = prod.image.trim();
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-cart">
+        <button type="button" class="btn-add-to-cart amazon-plus-btn" data-id="${prod.id}" title="إضافة للعربة">+</button>
+      </div>
+      <div class="card-img show-details-btn" data-id="${prod.id}" style="cursor: pointer;">
+        <img src="${imageUrl}" alt="${prod.name}" />
+      </div>
+      <div class="name">
+        <h3 class="name-name">${prod.name}</h3>
+        <span class="name-filter">${prod.category}</span>
+        <span class="name-prise">${prod.price} ج.م</span>
+      </div>
+      <div class="card-properts">
+        <button type="button" class="show-details-btn" data-id="${prod.id}">تفاصيل</button>
+      </div>
+    `;
+    mainContainer.appendChild(card);
+  });
+}
+
+// الاستماع للنقر (فتح التفاصيل، أو إضافة للعربة عبر زر +، أو الإغلاق)
 document.addEventListener('click', function (e) {
   const btn = e.target.closest('.show-details-btn');
-  
   if (btn) {
     e.preventDefault();
     activeProductId = btn.getAttribute('data-id');
-    
     const foundProd = productsArray.find(p => String(p.id) === String(activeProductId));
 
     if (foundProd) {
@@ -466,20 +439,17 @@ document.addEventListener('click', function (e) {
 
       renderRelatedProducts(foundProd.category, foundProd.id);
 
-      if (modal) {
-        modal.classList.add('active');
-      }
+      if (modal) modal.classList.add('active');
     }
   }
 
-  // إغلاق النافذة
+  // إغلاق النافذة المنبثقة
   if (e.target.id === 'close-propertes' || e.target.classList.contains('close-propertes-btn') || e.target.id === 'propertes-cart') {
     const modal = document.getElementById('propertes-cart');
     if (modal) modal.classList.remove('active');
   }
-});
-// الاستماع لضغطات أزرار "إضافة للعربة" في المتجر
-document.addEventListener('click', function (e) {
+
+  // إضافة للعربة عبر زر (+)
   const addBtn = e.target.closest('.btn-add-to-cart');
   if (addBtn) {
     e.preventDefault();
@@ -489,7 +459,7 @@ document.addEventListener('click', function (e) {
     }
   }
 
-  // زر الإضافة من داخل نافذة التفاصيل
+  // الإضافة من داخل نافذة التفاصيل
   if (e.target.id === 'pro-add-to-cart-btn') {
     e.preventDefault();
     if (activeProductId && typeof addToCart === 'function') {

@@ -359,3 +359,40 @@ header {
     justify-content: space-between;
   }
 }
+/* الأزرار العائمة بالأسفل */
+.links {
+  position: fixed;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  z-index: 999;
+  background: rgba(230, 236, 240, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 8px 20px;
+  border-radius: 30px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: #e6ecf0;
+  border-radius: 50%;
+  text-decoration: none;
+  color: #586574;
+  font-weight: bold;
+  font-size: 12px;
+  box-shadow: 4px 4px 8px #c2c8cc, -4px -4px 8px #ffffff;
+  transition: all 0.3s ease;
+}
+
+.links a:hover {
+  color: #2b82fb;
+  box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff;
+}

@@ -16,21 +16,6 @@
           <span class="clien-id">ID: <span id="clien-id-num">1024</span></span>
         </div>
       </div>
-      <nav class="links">
-        <a href="shop.html">المتجر</a>
-        <a href="cart.html">السله</a>
-        <a href="contact.html">تواصل معنا</a>
-      </nav>
-      <div class="longout">
-        <a href="index.html"> تسجيل خروج</a>
-      </div>
-    </header>
-
-    <!-- البحث والفلتر-->
-    <main>
-      <br />
-      <!-- <h3 class="name-market">المنتاجات المتاحه</h3> -->
-      
       <div class="name-add">
         <button class="name-add-cart" id="name-add-cart">اضافه صنف</button>
         <div class="name-add-car1" id="name-add-cart1">
@@ -49,43 +34,34 @@
               <option value="electronics" id="add-filter">إلكترونيات</option>
             </select>
           </div>
-
-          <!-- إجمالي المنتجات المتاحة: 20% (في نفس السطر) -->
-          <div class="number-cart">
-            <span>اجمالي المنتجات المتاحه : <strong class="number-carts">1</strong></span>
-          </div>
         </div>
       </div>
+      
+      <div class="longout">
+        <a href="index.html"> تسجيل خروج</a>
+      </div>
+    </header>
 
+    <nav class="links">
+      <a href="shop.html">المتجر</a>
+      <a href="cart.html">السله</a>
+      <a href="contact.html">تواصل معنا</a>
+    </nav>
+
+    <!-- المنتجات -->
+    <main>
       <div class="cards-container">
-        <!-- الكرت نفسو -->
-        <div class="card">
-          <div class="card-cart">
-        <button type="button" class="btn-add-to-cart" data-id="${item.id}">إضافة للعربة</button>
-      </div>
-          <div class="card-img">
-            <img src="" alt="صوره المنتج" />
-          </div>
-          <div class="name">
-            <h3 class="name-name"></h3>
-            <span class="name-filter"></span>
-            <!-- سعر المنتج -->
-            <span class="name-prise"></span>
-          </div>
-          <div class="card-properts">
-            <button><a href="">اظهار تفاصيل</a></button>
-          </div>
-        </div>
+        <!-- الكرت يتم إنشاؤه برمجياً من الجافاسكريبت -->
       </div>
     </main>
 
     <!-- اضافه كرت -->
     <section class="form" id="add-1">
       <div class="add-form">
-        <h3>اضافه /تعديل صتف</h3>
+        <h3>اضافه / تعديل صنف</h3>
         <div class="form-e">
           <label for="">ID</label>
-          <input type="number" placeholder="أدخل اسم المنتج" />
+          <input type="number" placeholder="أدخل ID المنتج" />
 
           <label for="">اسم الصنف</label>
           <input type="text" placeholder="أدخل اسم المنتج" />
@@ -101,7 +77,7 @@
           </datalist>
 
           <label for="">السعر</label>
-          <input type="number" placeholder=" أدخل السعر" />
+          <input type="number" placeholder="أدخل السعر" />
 
           <label for="">رابط الصوره</label>
           <input type="file" />
@@ -123,7 +99,7 @@
         <div class="propertes-main-grid">
           <!-- صورة البند (على اليمين) -->
           <div class="pro-cart-img">
-            <img id="pro-img" src="" alt="صورة المنتج">
+            <img id="pro-img" src="" alt="صورة المنتج" /> 
           </div>
 
           <!-- بيانات البند والتفاصيل (على الشمال) -->
@@ -173,14 +149,11 @@
       </div>
     </section>
 
-    <!-- 1. مكتبات الفايربيس الأساسية -->
+    <!-- مكتبات الفايربيس والملفات البرمجية -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <!-- 2. ملف الاتصال الموحد -->
     <script src="firebase-config.js"></script>
-<script src="cart.js"></script>
-    <!-- 3. ملف الجافاسكريبت الخاص بالصفحة الحالية -->
+    <script src="cart.js"></script>
     <script src="shop.js"></script>
   </body>
 </html>

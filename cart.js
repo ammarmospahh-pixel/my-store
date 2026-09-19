@@ -93,7 +93,9 @@ function saveInvoiceToHistory(invoice) {
 
   // حفظ في فايربيز عشان تظهر من أي جهاز
   if (typeof firebase !== 'undefined' && userId !== 'guest') {
-    firebase.database().ref(`users_invoices/${userId}`).push(invoice).catch(err => {
+    const newRef = firebase.database().ref(`users_invoices/${userId}`).push();
+    invoice.firebaseKey = newRef.key; // حفظ مفتاح الفايربيز للتمكن من حذفها لاحقاً
+    newRef.set(invoice).catch(err => {
       console.error('Firebase Save Error:', err);
     });
   }
@@ -115,7 +117,9 @@ async function fetchAndSyncInvoices(callback) {
         const data = snapshot.val();
         let firebaseInvoices = [];
         Object.keys(data).forEach(key => {
-          firebaseInvoices.push(data[key]);
+          let inv = data[key];
+          inv.firebaseKey = key; // ربط المفتاح للتحكم في الحذف
+          firebaseInvoices.push(inv);
         });
         
         // ترتيب من الأحدث للأقدم
@@ -129,6 +133,40 @@ async function fetchAndSyncInvoices(callback) {
       console.error('Firebase Fetch Error:', err);
     }
   }
+}
+
+// ==========================================
+// دالة حذف فاتورة من السجل (محلياً وفي Firebase)
+// ==========================================
+function deleteInvoice(invoiceCode) {
+  const userId = getCurrentUserId();
+  if (!confirm(`هل أنت متأكد من حذف الفاتورة رقم (${invoiceCode})؟`)) return;
+
+  // 1. التحديث محلياً
+  let localHistory = JSON.parse(localStorage.getItem(`invoicesHistory_${userId}`)) || [];
+  const targetInvoice = localHistory.find(i => String(i.invoiceCode) === String(invoiceCode));
+  
+  localHistory = localHistory.filter(i => String(i.invoiceCode) !== String(invoiceCode));
+  localStorage.setItem(`invoicesHistory_${userId}`, JSON.stringify(localHistory));
+
+  // 2. الحذف من Firebase إذا وجد المفتاح
+  if (typeof firebase !== 'undefined' && userId !== 'guest' && targetInvoice && targetInvoice.firebaseKey) {
+    firebase.database().ref(`users_invoices/${userId}/${targetInvoice.firebaseKey}`).remove().catch(err => {
+      console.error('Firebase Delete Error:', err);
+    });
+  } else if (typeof firebase !== 'undefined' && userId !== 'guest') {
+    // بحث احتياطي عن طريق invoiceCode لو الـ firebaseKey مش متخزن
+    firebase.database().ref(`users_invoices/${userId}`).orderByChild('invoiceCode').equalTo(invoiceCode).once('value', snapshot => {
+      if (snapshot.exists()) {
+        snapshot.forEach(childSnapshot => {
+          childSnapshot.ref.remove();
+        });
+      }
+    });
+  }
+
+  // 3. إعادة رسم القائمة فوراً
+  renderInvoicesHistory();
 }
 
 // ==========================================
@@ -243,7 +281,7 @@ function handleCheckout() {
     date: dateStr
   };
 
-  // 1. حفظ الطلب في سجل الفواتير المحلي
+  // 1. حفظ الطلب في سجل الفواتير المحلي وفي فايربيز
   saveInvoiceToHistory(invoiceData);
 
   // 2. إرسال البيانات لجوجل شيت بدون أخطاء تقاطعية
@@ -286,7 +324,7 @@ function handleCheckout() {
 }
 
 // ==========================================
-// 7. عرض سجل الفواتير والسقوف الزمنية
+// 7. عرض سجل الفواتير مع زر الحذف وإعادة الشراء
 // ==========================================
 function renderInvoicesHistory() {
   const historyContainer = document.getElementById('history-container');
@@ -308,9 +346,12 @@ function renderInvoicesHistory() {
       const itemsText = (inv.items || []).map(i => `${i.name} (${i.quantity}x)`).join(' - ');
 
       card.innerHTML = `
-        <div class="invoice-header">
+        <div class="invoice-header" style="display: flex; justify-content: space-between; align-items: center;">
           <span>فاتورة #${inv.invoiceCode}</span>
-          <span style="color: #666; font-size: 12px;">${inv.date}</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: #666; font-size: 12px;">${inv.date}</span>
+            <button type="button" class="btn-delete-invoice" data-code="${inv.invoiceCode}" style="background: none; border: none; color: #e63946; cursor: pointer; font-size: 15px; font-weight: bold;" title="حذف الفاتورة">🗑️</button>
+          </div>
         </div>
         <div class="invoice-items">
           <p><strong>العميل:</strong> ${inv.clientName} | <strong>الهاتف:</strong> ${inv.phone}</p>
@@ -329,6 +370,7 @@ function renderInvoicesHistory() {
     });
   });
 }
+
 // ==========================================
 // 8. الاستماع للأحداث والضغطات (معالجة عامة وآمنة)
 // ==========================================
@@ -364,6 +406,13 @@ document.addEventListener('click', (e) => {
     renderCartPage();
   }
 
+  // حذف الفاتورة السابقة من السجل
+  const deleteInvBtn = target.closest('.btn-delete-invoice');
+  if (deleteInvBtn) {
+    const invCode = deleteInvBtn.getAttribute('data-code');
+    if (invCode) deleteInvoice(invCode);
+  }
+
   // إعادة شراء الفاتورة السابقة
   const reorderBtn = target.closest('.btn-reorder');
   if (reorderBtn) {
@@ -384,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (currentUser) {
     const nameEl = document.getElementById('clien-name');
     const idEl = document.getElementById('clien-id-num');
-    if (nameEl) nameEl.textContent = currentUser.name;
+    if (nameName = nameEl) nameEl.textContent = currentUser.name;
     if (idEl) idEl.textContent = currentUser.id;
   }
 
