@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     displayProducts(randomized);
   }
 
-  function displayProducts(products) {
+ function displayProducts(products) {
     if (!mainContainer) return;
     document.querySelectorAll('.cards-container .card').forEach(card => card.remove());
 
@@ -271,12 +271,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
-        <div class="card-cart"><button type="button"><a href="#">اضافه للعربه</a></button></div>
+        <div class="card-cart">
+          <button type="button" class="btn-add-to-cart" data-id="${prod.id}">إضافة للعربة</button>
+        </div>
         <div class="card-img"><img src="${imageUrl}" alt="${prod.name}" /></div>
         <div class="name">
           <h3 class="name-name">${prod.name}</h3>
           <span class="name-filter">${prod.category}</span>
-          <span class="name-prise">${prod.price}</span>
+          <span class="name-prise">${prod.price} ج.م</span>
         </div>
         <div class="card-properts"><button type="button" class="show-details-btn" data-id="${prod.id}">إظهار تفاصيل</button></div>
       `;
@@ -474,5 +476,26 @@ document.addEventListener('click', function (e) {
   if (e.target.id === 'close-propertes' || e.target.classList.contains('close-propertes-btn') || e.target.id === 'propertes-cart') {
     const modal = document.getElementById('propertes-cart');
     if (modal) modal.classList.remove('active');
+  }
+});
+// الاستماع لضغطات أزرار "إضافة للعربة" في المتجر
+document.addEventListener('click', function (e) {
+  const addBtn = e.target.closest('.btn-add-to-cart');
+  if (addBtn) {
+    e.preventDefault();
+    const prodId = addBtn.getAttribute('data-id');
+    if (prodId && typeof addToCart === 'function') {
+      addToCart(prodId, productsArray);
+    }
+  }
+
+  // زر الإضافة من داخل نافذة التفاصيل
+  if (e.target.id === 'pro-add-to-cart-btn') {
+    e.preventDefault();
+    if (activeProductId && typeof addToCart === 'function') {
+      addToCart(activeProductId, productsArray);
+      const modal = document.getElementById('propertes-cart');
+      if (modal) modal.classList.remove('active');
+    }
   }
 });
