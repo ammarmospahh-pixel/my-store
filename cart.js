@@ -474,7 +474,13 @@ document.addEventListener('click', (e) => {
     if (invCode) reorderInvoice(invCode);
   }
 
-  if (target.id === 'checkout-btn' || target.closest('#checkout-btn')) {
+  // الضغط على زر إتمام الطلب الرئيسي
+  if (
+    target.id === 'checkout-btn' || 
+    target.closest('#checkout-btn') ||
+    target.classList.contains('checkout-btn') ||
+    target.classList.contains('btn-checkout')
+  ) {
     e.preventDefault();
     handleCheckout();
   }
