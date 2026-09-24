@@ -370,7 +370,46 @@ function renderInvoicesHistory() {
     });
   });
 }
+// ==========================================
+// دالة إعادة شراء فاتورة سابقة
+// ==========================================
+function reorderInvoice(invoiceCode) {
+  const userId = getCurrentUserId();
+  const localHistory = JSON.parse(localStorage.getItem(`invoicesHistory_${userId}`)) || [];
+  
+  // البحث عن الفاتورة المطلوبة
+  const targetInvoice = localHistory.find(inv => String(inv.invoiceCode) === String(invoiceCode));
 
+  if (!targetInvoice || !targetInvoice.items || targetInvoice.items.length === 0) {
+    alert('تعذر العثور على تفاصيل الفاتورة لإعادة الشراء!');
+    return;
+  }
+
+  // جلب السلة الحالية
+  let currentCart = getCart();
+
+  // دمج منتجات الفاتورة السابقة مع السلة الحالية
+  targetInvoice.items.forEach(oldItem => {
+    const existingIndex = currentCart.findIndex(item => String(item.id) === String(oldItem.id));
+    if (existingIndex > -1) {
+      currentCart[existingIndex].quantity += (oldItem.quantity || 1);
+    } else {
+      currentCart.push({
+        id: oldItem.id,
+        name: oldItem.name,
+        price: parseFloat(oldItem.price) || 0,
+        image: oldItem.image || 'img/market.jpg',
+        quantity: oldItem.quantity || 1
+      });
+    }
+  });
+
+  // حفظ السلة وتحديث الواجهة
+  saveCart(currentCart);
+  renderCartPage();
+
+  alert('تمت إضافة منتجات الفاتورة إلى السلة بنجاح! 🛒');
+}
 // ==========================================
 // 8. الاستماع للأحداث والضغطات (معالجة عامة وآمنة)
 // ==========================================
