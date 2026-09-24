@@ -86,30 +86,25 @@ function addToCart(product, productsList = []) {
 function saveInvoiceToHistory(invoice) {
   const userId = getCurrentUserId();
   
-  // حفظ محلي سريع
   const localHistory = JSON.parse(localStorage.getItem(`invoicesHistory_${userId}`)) || [];
   localHistory.unshift(invoice);
   localStorage.setItem(`invoicesHistory_${userId}`, JSON.stringify(localHistory));
 
-  // حفظ في فايربيز عشان تظهر من أي جهاز
   if (typeof firebase !== 'undefined' && userId !== 'guest') {
     const newRef = firebase.database().ref(`users_invoices/${userId}`).push();
-    invoice.firebaseKey = newRef.key; // حفظ مفتاح الفايربيز للتمكن من حذفها لاحقاً
+    invoice.firebaseKey = newRef.key;
     newRef.set(invoice).catch(err => {
       console.error('Firebase Save Error:', err);
     });
   }
 }
 
-// دالة جلب الفواتير (تدمج بين المحلي والفايربيز بذكاء بدون تعطيل الصفحة)
 async function fetchAndSyncInvoices(callback) {
   const userId = getCurrentUserId();
   
-  // 1. عرض النسخة المحلية فوراً لسرعة الاستجابة
   const localHistory = JSON.parse(localStorage.getItem(`invoicesHistory_${userId}`)) || [];
   callback(localHistory);
 
-  // 2. سحب البيانات المحدثة من Firebase في الخلفية لو العميل مسجل
   if (typeof firebase !== 'undefined' && userId !== 'guest') {
     try {
       const snapshot = await firebase.database().ref(`users_invoices/${userId}`).once('value');
@@ -118,14 +113,11 @@ async function fetchAndSyncInvoices(callback) {
         let firebaseInvoices = [];
         Object.keys(data).forEach(key => {
           let inv = data[key];
-          inv.firebaseKey = key; // ربط المفتاح للتحكم في الحذف
+          inv.firebaseKey = key;
           firebaseInvoices.push(inv);
         });
         
-        // ترتيب من الأحدث للأقدم
         firebaseInvoices.reverse();
-
-        // تحديث النسخة المحلية
         localStorage.setItem(`invoicesHistory_${userId}`, JSON.stringify(firebaseInvoices));
         callback(firebaseInvoices);
       }
@@ -135,27 +127,21 @@ async function fetchAndSyncInvoices(callback) {
   }
 }
 
-// ==========================================
-// دالة حذف فاتورة من السجل (محلياً وفي Firebase)
-// ==========================================
 function deleteInvoice(invoiceCode) {
   const userId = getCurrentUserId();
   if (!confirm(`هل أنت متأكد من حذف الفاتورة رقم (${invoiceCode})؟`)) return;
 
-  // 1. التحديث محلياً
   let localHistory = JSON.parse(localStorage.getItem(`invoicesHistory_${userId}`)) || [];
   const targetInvoice = localHistory.find(i => String(i.invoiceCode) === String(invoiceCode));
   
   localHistory = localHistory.filter(i => String(i.invoiceCode) !== String(invoiceCode));
   localStorage.setItem(`invoicesHistory_${userId}`, JSON.stringify(localHistory));
 
-  // 2. الحذف من Firebase إذا وجد المفتاح
   if (typeof firebase !== 'undefined' && userId !== 'guest' && targetInvoice && targetInvoice.firebaseKey) {
     firebase.database().ref(`users_invoices/${userId}/${targetInvoice.firebaseKey}`).remove().catch(err => {
       console.error('Firebase Delete Error:', err);
     });
   } else if (typeof firebase !== 'undefined' && userId !== 'guest') {
-    // بحث احتياطي عن طريق invoiceCode لو الـ firebaseKey مش متخزن
     firebase.database().ref(`users_invoices/${userId}`).orderByChild('invoiceCode').equalTo(invoiceCode).once('value', snapshot => {
       if (snapshot.exists()) {
         snapshot.forEach(childSnapshot => {
@@ -165,7 +151,6 @@ function deleteInvoice(invoiceCode) {
     });
   }
 
-  // 3. إعادة رسم القائمة فوراً
   renderInvoicesHistory();
 }
 
@@ -251,9 +236,10 @@ function handleCheckout() {
   }
 
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  const clientNameEl = document.getElementById('clien-name');
-  const clientName = (currentUser && currentUser.name) ? currentUser.name : (clientNameEl ? clientNameEl.textContent : 'عميل');
-  const clientId = getCurrentUserId();
+  const isGuest = !currentUser || !currentUser.id || currentUser.role === 'guest';
+  
+  const clientName = isGuest ? 'زائر (طلب إضافة حساب)' : currentUser.name;
+  const clientId = isGuest ? 'غير مسجل' : currentUser.id;
 
   const invoiceCode = 'INV-' + Math.floor(100000 + Math.random() * 900000);
   const now = new Date();
@@ -278,13 +264,12 @@ function handleCheckout() {
     items: cart,
     itemsString: itemsSummaryArray.join(' - '),
     totalPrice: totalAmount.toFixed(2),
-    date: dateStr
+    date: dateStr,
+    accountRequest: isGuest ? 'طلب إضافة حساب' : 'عميل مسجل'
   };
 
-  // 1. حفظ الطلب في سجل الفواتير المحلي وفي فايربيز
   saveInvoiceToHistory(invoiceData);
 
-  // 2. إرسال البيانات لجوجل شيت بدون أخطاء تقاطعية
   try {
     fetch(GOOGLE_SHEET_POST_URL, {
       method: 'POST',
@@ -296,30 +281,30 @@ function handleCheckout() {
         clientName: `${invoiceData.clientName} (${phoneVal})`,
         items: invoiceData.itemsString,
         totalPrice: invoiceData.totalPrice,
-        date: invoiceData.date
+        date: invoiceData.date,
+        note: invoiceData.accountRequest
       })
     });
   } catch (err) {
     console.error('Google Sheet Error:', err);
   }
 
-  // 3. تجهيز رسالة الواتساب
-  const message = `طلب جديد من المتجر 🛒\n\n` +
-                  `رقم الفاتورة: ${invoiceCode}\n` +
-                  `رقم العميل (ID): ${clientId}\n` +
-                  `اسم العميل: ${clientName}\n` +
-                  `رقم الهاتف: ${phoneVal}\n` +
-                  `التاريخ: ${dateStr}\n\n` +
-                  `المنتجات:\n${whatsappItemsText}\n` +
-                  `الإجمالي النهائي: ${totalAmount.toFixed(2)} ج.م`;
+  let message = `طلب جديد من المتجر 🛒\n\n`;
+  if (isGuest) {
+    message += `⚠️ [طلب إضافة حساب جديد]\n\n`;
+  }
+  message += `رقم الفاتورة: ${invoiceCode}\n` +
+             `رقم العميل (ID): ${clientId}\n` +
+             `اسم العميل: ${clientName}\n` +
+             `رقم الهاتف: ${phoneVal}\n` +
+             `التاريخ: ${dateStr}\n\n` +
+             `المنتجات:\n${whatsappItemsText}\n` +
+             `الإجمالي النهائي: ${totalAmount.toFixed(2)} ج.م`;
 
   const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
-  // 4. تفريغ السلة وتحديث الصفحة فوراً
   saveCart([]);
   renderCartPage();
-
-  // 5. فتح الواتساب في نافذة جديدة
   window.open(whatsappUrl, '_blank');
 }
 
@@ -330,7 +315,6 @@ function renderInvoicesHistory() {
   const historyContainer = document.getElementById('history-container');
   if (!historyContainer) return;
 
-  // جلب الفواتير وعرضها متزامنة مع الفايربيز
   fetchAndSyncInvoices((history) => {
     historyContainer.innerHTML = '';
 
@@ -370,14 +354,11 @@ function renderInvoicesHistory() {
     });
   });
 }
-// ==========================================
-// دالة إعادة شراء فاتورة سابقة
-// ==========================================
+
 function reorderInvoice(invoiceCode) {
   const userId = getCurrentUserId();
   const localHistory = JSON.parse(localStorage.getItem(`invoicesHistory_${userId}`)) || [];
   
-  // البحث عن الفاتورة المطلوبة
   const targetInvoice = localHistory.find(inv => String(inv.invoiceCode) === String(invoiceCode));
 
   if (!targetInvoice || !targetInvoice.items || targetInvoice.items.length === 0) {
@@ -385,10 +366,8 @@ function reorderInvoice(invoiceCode) {
     return;
   }
 
-  // جلب السلة الحالية
   let currentCart = getCart();
 
-  // دمج منتجات الفاتورة السابقة مع السلة الحالية
   targetInvoice.items.forEach(oldItem => {
     const existingIndex = currentCart.findIndex(item => String(item.id) === String(oldItem.id));
     if (existingIndex > -1) {
@@ -404,19 +383,57 @@ function reorderInvoice(invoiceCode) {
     }
   });
 
-  // حفظ السلة وتحديث الواجهة
   saveCart(currentCart);
   renderCartPage();
 
   alert('تمت إضافة منتجات الفاتورة إلى السلة بنجاح! 🛒');
 }
+
 // ==========================================
-// 8. الاستماع للأحداث والضغطات (معالجة عامة وآمنة)
+// 8. تثبيت رقم الهاتف
+// ==========================================
+function setupPhoneCheckbox() {
+  const checkbox = document.querySelector('.ckecknameder');
+  const phoneInput = document.getElementById('phone-input');
+  
+  if (!checkbox || !phoneInput) return;
+
+  const userId = getCurrentUserId();
+  const storageKey = `saved_phone_${userId}`;
+
+  const savedPhone = localStorage.getItem(storageKey);
+  if (savedPhone) {
+    phoneInput.value = savedPhone;
+    checkbox.checked = true;
+  }
+
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+      const phoneValue = phoneInput.value.trim();
+      if (phoneValue) {
+        localStorage.setItem(storageKey, phoneValue);
+      } else {
+        alert('يرجى كتابة رقم الهاتف أولاً ثم تفعيل الخيار لتثبيته.');
+        checkbox.checked = false;
+      }
+    } else {
+      localStorage.removeItem(storageKey);
+    }
+  });
+
+  phoneInput.addEventListener('input', () => {
+    if (checkbox.checked) {
+      localStorage.setItem(storageKey, phoneInput.value.trim());
+    }
+  });
+}
+
+// ==========================================
+// 9. الاستماع للأحداث والتشغيل عند تحميل الصفحة
 // ==========================================
 document.addEventListener('click', (e) => {
   const target = e.target;
 
-  // التحكم في زيادة ونقصان وإزالة عناصر السلة
   if (
     target.classList.contains('btn-increase') ||
     target.classList.contains('btn-decrease') ||
@@ -445,180 +462,36 @@ document.addEventListener('click', (e) => {
     renderCartPage();
   }
 
-  // حذف الفاتورة السابقة من السجل
   const deleteInvBtn = target.closest('.btn-delete-invoice');
   if (deleteInvBtn) {
     const invCode = deleteInvBtn.getAttribute('data-code');
     if (invCode) deleteInvoice(invCode);
   }
 
-  // إعادة شراء الفاتورة السابقة
   const reorderBtn = target.closest('.btn-reorder');
   if (reorderBtn) {
     const invCode = reorderBtn.getAttribute('data-code');
     if (invCode) reorderInvoice(invCode);
   }
 
-  // الضغط على زر إتمام الطلب الرئيسي
   if (target.id === 'checkout-btn' || target.closest('#checkout-btn')) {
     e.preventDefault();
     handleCheckout();
   }
 });
 
-// التشغيل التلقائي بمجرد تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
   if (currentUser) {
     const nameEl = document.getElementById('clien-name');
     const idEl = document.getElementById('clien-id-num');
-    if (nameName = nameEl) nameEl.textContent = currentUser.name;
+    if (nameEl) nameEl.textContent = currentUser.name;
     if (idEl) idEl.textContent = currentUser.id;
   }
 
   if (document.getElementById('cart-items-container')) {
     renderCartPage();
   }
-});
-function handleCheckout() {
-  const cart = getCart();
-  if (cart.length === 0) {
-    alert('السلة فارغة!');
-    return;
-  }
 
-  const phoneInput = document.getElementById('phone-input');
-  const phoneVal = phoneInput ? phoneInput.value.trim() : '';
-
-  if (!phoneVal) {
-    alert('يرجى إدخال رقم الهاتف لاستكمال الطلب!');
-    if (phoneInput) phoneInput.focus();
-    return;
-  }
-
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  const isGuest = !currentUser || !currentUser.id || currentUser.role === 'guest';
-  
-  // تحديد اسم العميل ونوعه
-  const clientName = isGuest ? 'زائر (طلب إضافة حساب)' : currentUser.name;
-  const clientId = isGuest ? 'غير مسجل' : currentUser.id;
-
-  const invoiceCode = 'INV-' + Math.floor(100000 + Math.random() * 900000);
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-
-  let itemsSummaryArray = [];
-  let whatsappItemsText = '';
-
-  cart.forEach((item, index) => {
-    const itemTotal = item.price * item.quantity;
-    itemsSummaryArray.push(`${item.name} (${item.quantity}x)`);
-    whatsappItemsText += `${index + 1}. ${item.name} | الكمية: ${item.quantity} | السعر: ${itemTotal.toFixed(2)} ج.م\n`;
-  });
-
-  const totalAmount = calculateTotals(cart);
-
-  const invoiceData = {
-    invoiceCode: invoiceCode,
-    clientId: clientId,
-    clientName: clientName,
-    phone: phoneVal,
-    items: cart,
-    itemsString: itemsSummaryArray.join(' - '),
-    totalPrice: totalAmount.toFixed(2),
-    date: dateStr,
-    accountRequest: isGuest ? 'طلب إضافة حساب' : 'عميل مسجل'
-  };
-
-  // 1. حفظ الطلب في سجل الفواتير المحلي وفي فايربيز
-  saveInvoiceToHistory(invoiceData);
-
-  // 2. إرسال البيانات لجوجل شيت
-  try {
-    fetch(GOOGLE_SHEET_POST_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({
-        invoiceCode: invoiceData.invoiceCode,
-        clientId: invoiceData.clientId,
-        clientName: `${invoiceData.clientName} (${phoneVal})`,
-        items: invoiceData.itemsString,
-        totalPrice: invoiceData.totalPrice,
-        date: invoiceData.date,
-        note: invoiceData.accountRequest
-      })
-    });
-  } catch (err) {
-    console.error('Google Sheet Error:', err);
-  }
-
-  // 3. تجهيز رسالة الواتساب
-  let message = `طلب جديد من المتجر 🛒\n\n`;
-  if (isGuest) {
-    message += `⚠️ [طلب إضافة حساب جديد]\n\n`;
-  }
-  message += `رقم الفاتورة: ${invoiceCode}\n` +
-             `رقم العميل (ID): ${clientId}\n` +
-             `اسم العميل: ${clientName}\n` +
-             `رقم الهاتف: ${phoneVal}\n` +
-             `التاريخ: ${dateStr}\n\n` +
-             `المنتجات:\n${whatsappItemsText}\n` +
-             `الإجمالي النهائي: ${totalAmount.toFixed(2)} ج.م`;
-
-  const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
-  // 4. تفريغ السلة وتحديث الصفحة فوراً
-  saveCart([]);
-  renderCartPage();
-
-  // 5. فتح الواتساب
-  window.open(whatsappUrl, '_blank');
-}
-// ==========================================
-// إدارة تثبيت رقم الهاتف حسب العميل (ckecknameder)
-// ==========================================
-function setupPhoneCheckbox() {
-  const checkbox = document.querySelector('.ckecknameder');
-  const phoneInput = document.getElementById('phone-input');
-  
-  if (!checkbox || !phoneInput) return;
-
-  const userId = getCurrentUserId(); // جلب ID المستخدم الحالي
-  const storageKey = `saved_phone_${userId}`; // مفتاح التخزين المخصص للمستخدم
-
-  // 1. استرجاع الرقم المحفوظ إن وجد
-  const savedPhone = localStorage.getItem(storageKey);
-  if (savedPhone) {
-    phoneInput.value = savedPhone;
-    checkbox.checked = true;
-  }
-
-  // 2. عند تغيير حالة الـ Checkbox
-  checkbox.addEventListener('change', () => {
-    if (checkbox.checked) {
-      const phoneValue = phoneInput.value.trim();
-      if (phoneValue) {
-        localStorage.setItem(storageKey, phoneValue);
-      } else {
-        alert('يرجى كتابة رقم الهاتف أولاً ثم تفعيل الخيار لتثبيته.');
-        checkbox.checked = false;
-      }
-    } else {
-      // إذا ألغى التحديد يتم مسح الرقم المحفوظ من الـ localStorage
-      localStorage.removeItem(storageKey);
-    }
-  });
-
-  // 3. تحديث التخزين لو أجرى المستخدم تعديلاً على الرقم وهو مفعّل
-  phoneInput.addEventListener('input', () => {
-    if (checkbox.checked) {
-      localStorage.setItem(storageKey, phoneInput.value.trim());
-    }
-  });
-}
-
-// تشغيل الدالة تلقائياً عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', () => {
   setupPhoneCheckbox();
 });
