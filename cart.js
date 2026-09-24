@@ -441,3 +441,98 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCartPage();
   }
 });
+function handleCheckout() {
+  const cart = getCart();
+  if (cart.length === 0) {
+    alert('السلة فارغة!');
+    return;
+  }
+
+  const phoneInput = document.getElementById('phone-input');
+  const phoneVal = phoneInput ? phoneInput.value.trim() : '';
+
+  if (!phoneVal) {
+    alert('يرجى إدخال رقم الهاتف لاستكمال الطلب!');
+    if (phoneInput) phoneInput.focus();
+    return;
+  }
+
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const isGuest = !currentUser || !currentUser.id || currentUser.role === 'guest';
+  
+  // تحديد اسم العميل ونوعه
+  const clientName = isGuest ? 'زائر (طلب إضافة حساب)' : currentUser.name;
+  const clientId = isGuest ? 'غير مسجل' : currentUser.id;
+
+  const invoiceCode = 'INV-' + Math.floor(100000 + Math.random() * 900000);
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ar-EG') + ' ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+  let itemsSummaryArray = [];
+  let whatsappItemsText = '';
+
+  cart.forEach((item, index) => {
+    const itemTotal = item.price * item.quantity;
+    itemsSummaryArray.push(`${item.name} (${item.quantity}x)`);
+    whatsappItemsText += `${index + 1}. ${item.name} | الكمية: ${item.quantity} | السعر: ${itemTotal.toFixed(2)} ج.م\n`;
+  });
+
+  const totalAmount = calculateTotals(cart);
+
+  const invoiceData = {
+    invoiceCode: invoiceCode,
+    clientId: clientId,
+    clientName: clientName,
+    phone: phoneVal,
+    items: cart,
+    itemsString: itemsSummaryArray.join(' - '),
+    totalPrice: totalAmount.toFixed(2),
+    date: dateStr,
+    accountRequest: isGuest ? 'طلب إضافة حساب' : 'عميل مسجل'
+  };
+
+  // 1. حفظ الطلب في سجل الفواتير المحلي وفي فايربيز
+  saveInvoiceToHistory(invoiceData);
+
+  // 2. إرسال البيانات لجوجل شيت
+  try {
+    fetch(GOOGLE_SHEET_POST_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        invoiceCode: invoiceData.invoiceCode,
+        clientId: invoiceData.clientId,
+        clientName: `${invoiceData.clientName} (${phoneVal})`,
+        items: invoiceData.itemsString,
+        totalPrice: invoiceData.totalPrice,
+        date: invoiceData.date,
+        note: invoiceData.accountRequest
+      })
+    });
+  } catch (err) {
+    console.error('Google Sheet Error:', err);
+  }
+
+  // 3. تجهيز رسالة الواتساب
+  let message = `طلب جديد من المتجر 🛒\n\n`;
+  if (isGuest) {
+    message += `⚠️ [طلب إضافة حساب جديد]\n\n`;
+  }
+  message += `رقم الفاتورة: ${invoiceCode}\n` +
+             `رقم العميل (ID): ${clientId}\n` +
+             `اسم العميل: ${clientName}\n` +
+             `رقم الهاتف: ${phoneVal}\n` +
+             `التاريخ: ${dateStr}\n\n` +
+             `المنتجات:\n${whatsappItemsText}\n` +
+             `الإجمالي النهائي: ${totalAmount.toFixed(2)} ج.م`;
+
+  const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+  // 4. تفريغ السلة وتحديث الصفحة فوراً
+  saveCart([]);
+  renderCartPage();
+
+  // 5. فتح الواتساب
+  window.open(whatsappUrl, '_blank');
+}

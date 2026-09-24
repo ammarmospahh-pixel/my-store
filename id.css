@@ -1,0 +1,154 @@
+/* 1. الحاوية الخارجية للصفحة */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.pag-ling {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* لون خلفية رمادي فاتح مائل للأبيض ليظهر تأثير الظلال */
+  background-color: #e6ecf0; 
+}
+
+/* 2. الكارت الرئيسي */
+.card-sing {
+  background-color: #e6ecf0;
+  width: 350px;
+  padding: 40px 35px;
+  border-radius: 35px;
+  /* سر الـ 3D: ظلان متعاكسان (ظل غامق للأسفل والأيمن، وظل أبيض بارز للأعلى واليسار) */
+  box-shadow: 12px 12px 24px #c2c8cc, 
+             -12px -12px 24px #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 3. قسم الشعار والترحيب */
+.A\.M\.-TD {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.A\.M\.-TD img {
+  width: 100px;
+  height: 100px;
+  border-radius: 25%;
+  padding: 10px;
+  background-color: #e6ecf0;
+  /* إعطاء دائرية الشعار مظهر 3D بارز */
+  box-shadow: 6px 6px 12px #c2c8cc, 
+             -6px -6px 12px #ffffff;
+}
+
+.A\.M\.-TD h1 {
+  color: #2b3a4e;
+  font-size: 24px;
+  margin: 15px 0 5px 0;
+}
+
+.A\.M\.-TD h2 {
+  color: #8c98a4;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+/* 4. قسم عنوان تسجيل الدخول */
+.login h1 {
+  font-size: 20px;
+  color: #2b3a4e;
+  margin: 0 0 5px 0;
+  text-transform: capitalize;
+}
+
+.login h3 {
+  font-size: 12px;
+  color: #8c98a4;
+  margin: 0 0 15px 0;
+  font-weight: normal;
+}
+
+/* 5. قسم المدخلات (الإنبوت المحفور) */
+.ID label {
+  font-size: 12px;
+  color: #586574;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.ID input {
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border: none;
+  background-color: #e6ecf0;
+  border-radius: 25px;
+  /* استخدام inset تجعل حقل الإدخال يبدو محفوراً للداخل */
+  box-shadow: inset 5px 5px 8px #c2c8cc, 
+              inset -5px -5px 8px #ffffff;
+  outline: none;
+  color: #2b3a4e;
+}
+
+/* 6. زر الدخول البارز */
+button {
+  background-color: #e6ecf0;
+  border: none;
+  padding: 14px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  /* جعل الزر بارزاً للخارج */
+  box-shadow: 6px 6px 12px #c2c8cc, 
+             -6px -6px 12px #ffffff;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+}
+
+/* تأثير الضغط على الزر ليغوص للداخل */
+button:active {
+  box-shadow: inset 4px 4px 6px #c2c8cc, 
+              inset -4px -4px 6px #ffffff;
+}
+
+button a {
+  color: #2b82fb; /* لون أزرق جذاب للنص */
+  text-decoration: none;
+  display: block;
+}
+---------سوشيل
+.social-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 35px;
+  margin-top: 25px;
+}
+
+.social-links a {
+  color: #555;
+  font-size: 26px;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.social-links a:hover {
+  transform: translateY(-4px);
+}
+
+.social-links a .fa-facebook:hover {
+  color: #1877f2;
+}
+
+.social-links a .fa-instagram:hover {
+  color: #e4405f;
+}
+
+.social-links a .fa-whatsapp:hover {
+  color: #25d366;
+}
