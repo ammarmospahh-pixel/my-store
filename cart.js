@@ -575,3 +575,50 @@ function handleCheckout() {
   // 5. فتح الواتساب
   window.open(whatsappUrl, '_blank');
 }
+// ==========================================
+// إدارة تثبيت رقم الهاتف حسب العميل (ckecknameder)
+// ==========================================
+function setupPhoneCheckbox() {
+  const checkbox = document.querySelector('.ckecknameder');
+  const phoneInput = document.getElementById('phone-input');
+  
+  if (!checkbox || !phoneInput) return;
+
+  const userId = getCurrentUserId(); // جلب ID المستخدم الحالي
+  const storageKey = `saved_phone_${userId}`; // مفتاح التخزين المخصص للمستخدم
+
+  // 1. استرجاع الرقم المحفوظ إن وجد
+  const savedPhone = localStorage.getItem(storageKey);
+  if (savedPhone) {
+    phoneInput.value = savedPhone;
+    checkbox.checked = true;
+  }
+
+  // 2. عند تغيير حالة الـ Checkbox
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+      const phoneValue = phoneInput.value.trim();
+      if (phoneValue) {
+        localStorage.setItem(storageKey, phoneValue);
+      } else {
+        alert('يرجى كتابة رقم الهاتف أولاً ثم تفعيل الخيار لتثبيته.');
+        checkbox.checked = false;
+      }
+    } else {
+      // إذا ألغى التحديد يتم مسح الرقم المحفوظ من الـ localStorage
+      localStorage.removeItem(storageKey);
+    }
+  });
+
+  // 3. تحديث التخزين لو أجرى المستخدم تعديلاً على الرقم وهو مفعّل
+  phoneInput.addEventListener('input', () => {
+    if (checkbox.checked) {
+      localStorage.setItem(storageKey, phoneInput.value.trim());
+    }
+  });
+}
+
+// تشغيل الدالة تلقائياً عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+  setupPhoneCheckbox();
+});
