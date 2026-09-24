@@ -1,4 +1,5 @@
 // ==========================================
+
 // 0. دالة الخلط العشوائي (Fisher-Yates Shuffle)
 // ==========================================
 function shuffleArray(array) {
@@ -70,24 +71,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const clientIdNumEl = document.getElementById('clien-id-num');
   const addBtn = document.getElementById('name-add-cart');
 
-  if (clientNameEl && currentUser) clientNameEl.textContent = currentUser.name;
-  if (clientIdNumEl && currentUser) clientIdNumEl.textContent = currentUser.id;
+  // جلب معلومات المستخدم بأمان
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-  // إخفاء الزر افتراضياً، وإظهاره فقط إذا كان المستخدم أدمن
-if (addBtn) {
-  if (currentUser && currentUser.role === 'admin') {
-    addBtn.style.display = 'block';
-  } else {
-    addBtn.style.display = 'none';
+  if (clientNameEl) clientNameEl.textContent = currentUser ? currentUser.name : 'زائر';
+  if (clientIdNumEl) clientIdNumEl.textContent = currentUser ? currentUser.id : '---';
+
+  // 🔒 إخفاء الزر بشكل قاطع للجميع، وإظهاره فقط للأدمن المسجل
+  if (addBtn) {
+    if (currentUser && currentUser.role === 'admin') {
+      addBtn.style.setProperty('display', 'block', 'important');
+    } else {
+      addBtn.style.setProperty('display', 'none', 'important');
+    }
   }
-}
 
   const adminEditWrapper = document.getElementById('admin-edit-wrapper');
-  if (currentUser && currentUser.role === 'admin' && adminEditWrapper) {
-    adminEditWrapper.style.display = 'block';
-  } else if (adminEditWrapper) {
-    adminEditWrapper.style.display = 'none';
+  if (adminEditWrapper) {
+    if (currentUser && currentUser.role === 'admin') {
+      adminEditWrapper.style.setProperty('display', 'block', 'important');
+    } else {
+      adminEditWrapper.style.setProperty('display', 'none', 'important');
+    }
   }
+  // ... باقي الكود كما هو
 
   const modalForm = document.getElementById('add-1');
   const cancelBtn = document.querySelector('.btn-save-cancel');
