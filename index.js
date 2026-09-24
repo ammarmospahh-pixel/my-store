@@ -62,7 +62,7 @@ const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
 if (!currentUser) {
   alert('يرجى تسجيل الدخول أولاً!');
-  window.location.href = 'index.html';
+  window.location.href = 'id.html';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
