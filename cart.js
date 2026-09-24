@@ -7,21 +7,11 @@ const MY_WHATSAPP_NUMBER = '201501893345';
 // ==========================================
 // 1. تحديد ID العميل الحالي
 // ==========================================
-// 1. جلب ID موحد حتى للزائر عبر جهاز واحد
 function getCurrentUserId() {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
   if (currentUser && currentUser.id) {
     return currentUser.id;
   }
-
-  // إنشاء ID مؤقت للزائر للحفظ المحلي دون مشاكل
-  let guestId = localStorage.getItem('guest_temp_id');
-  if (!guestId) {
-    guestId = 'guest_' + Math.floor(100000 + Math.random() * 900000);
-    localStorage.setItem('guest_temp_id', guestId);
-  }
-  return guestId;
-}
 
   const clientIdEl = document.getElementById('clien-id-num');
   if (clientIdEl && clientIdEl.textContent.trim()) {
