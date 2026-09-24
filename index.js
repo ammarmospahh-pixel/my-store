@@ -73,11 +73,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (clientNameEl && currentUser) clientNameEl.textContent = currentUser.name;
   if (clientIdNumEl && currentUser) clientIdNumEl.textContent = currentUser.id;
 
-  if (currentUser && currentUser.role === 'client' && addBtn) {
-    addBtn.style.display = 'none';
-  } else if (currentUser && currentUser.role === 'admin' && addBtn) {
+  // إخفاء الزر افتراضياً، وإظهاره فقط إذا كان المستخدم أدمن
+if (addBtn) {
+  if (currentUser && currentUser.role === 'admin') {
     addBtn.style.display = 'block';
+  } else {
+    addBtn.style.display = 'none';
   }
+}
 
   const adminEditWrapper = document.getElementById('admin-edit-wrapper');
   if (currentUser && currentUser.role === 'admin' && adminEditWrapper) {
