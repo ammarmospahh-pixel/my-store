@@ -58,13 +58,13 @@ function renderRelatedProducts(category, currentProductId) {
   });
 }
 
-// التحقق من تسجيل الدخول
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+// // التحقق من تسجيل الدخول
+// const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-if (!currentUser) {
-  alert('يرجى تسجيل الدخول أولاً!');
-  window.location.href = 'id.html';
-}
+// if (!currentUser) {
+//   alert('يرجى تسجيل الدخول أولاً!');
+//   window.location.href = 'id.html';
+// }
 
 document.addEventListener('DOMContentLoaded', () => {
   const clientNameEl = document.getElementById('clien-name');
@@ -478,4 +478,95 @@ document.addEventListener('click', function (e) {
       if (modal) modal.classList.remove('active');
     }
   }
+  
 });
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  const userImg = document.getElementById('user-img');
+  const editLabel = document.querySelector('label[for="uploud-img-user"]');
+  const oldInput = document.getElementById('uploud-img-user');
+
+  // جلب بيانات العميل الحالي
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+  if (currentUser && currentUser.id) {
+    const userId = currentUser.id;
+
+    // 1. جلب الصورة المحفوظة في Firebase تلقائياً عند فتح الصفحة
+    if (typeof db !== 'undefined') {
+      db.ref('users/' + userId + '/avatar').on('value', (snapshot) => {
+        const savedImg = snapshot.val();
+        if (savedImg && userImg) {
+          userImg.src = savedImg;
+        }
+      });
+    }
+
+    if (userImg) {
+      userImg.style.cursor = 'pointer';
+
+      // 2. عند الضغط على الصورة: فتح نافذة اختيار ملف جديدة
+      userImg.addEventListener('click', function () {
+        const tempInput = document.createElement('input');
+        tempInput.type = 'file';
+        tempInput.accept = 'image/*';
+
+        tempInput.onchange = function (e) {
+          const file = e.target.files[0];
+          if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+              // ضغط الصورة ثم رفعها إلى Firebase
+              compressAndSaveToFirebase(event.target.result, userId, userImg);
+            };
+
+            reader.readAsDataURL(file);
+          }
+        };
+
+        tempInput.click();
+      });
+    }
+  } else {
+    // حالة الزائر
+    if (userImg) userImg.style.cursor = 'default';
+    if (oldInput) oldInput.disabled = true;
+    if (editLabel) editLabel.style.display = 'none';
+  }
+});
+
+// دالة ضغط الصورة ورفعها مباشرة لـ Firebase
+function compressAndSaveToFirebase(base64Str, userId, imgElement) {
+  const img = new Image();
+  img.src = base64Str;
+  img.onload = function () {
+    const canvas = document.createElement('canvas');
+    const MAX_WIDTH = 300; // تقليل الحجم لسرعة الرفع والتحميل في السيرفر
+    const scaleFactor = MAX_WIDTH / img.width;
+
+    canvas.width = MAX_WIDTH;
+    canvas.height = img.height * scaleFactor;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    // تحويل الصورة المضغوطة بصيغة JPEG بجودة 70%
+    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+    // 1. تحديث الصورة في الشاشة فوراً
+    if (imgElement) imgElement.src = compressedBase64;
+
+    // 2. رفع الصورة المسجلة إلى قاعدة بيانات Firebase تحت مسار المستخدم
+    if (typeof db !== 'undefined') {
+      db.ref('users/' + userId).update({
+        avatar: compressedBase64
+      }).then(() => {
+        console.log('تم حفظ الصورة في السيرفر بنجاح!');
+      }).catch((err) => {
+        alert('حدث خطأ أثناء حفظ الصورة في السيرفر: ' + err.message);
+      });
+    }
+  };
+}
