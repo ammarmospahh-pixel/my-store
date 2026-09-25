@@ -1,5 +1,4 @@
 // ==========================================
-
 // 0. دالة الخلط العشوائي (Fisher-Yates Shuffle)
 // ==========================================
 function shuffleArray(array) {
@@ -12,10 +11,68 @@ function shuffleArray(array) {
 }
 
 // ==========================================
+// دالة تحويل روابط Google Drive إلى رابط صورة مباشر
+// ==========================================
+function formatImageUrl(url) {
+  if (!url) return '';
+  const trimmedUrl = url.trim();
+  
+  // التعامل مع صيغ روابط Google Drive المختلفة
+  const driveRegex = /https:\/\/drive\.google\.com\/(?:file\/d\/|open\?id=)([^\/\?]+)/;
+  const match = trimmedUrl.match(driveRegex);
+  
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+  }
+  
+  return trimmedUrl;
+}
+
+// ==========================================
 // 1. متغيرات النطاق العام (Global Scope)
 // ==========================================
 let productsArray = [];
 let activeProductId = null; 
+
+// 🔗 رابط Google Apps Script المحدث والمعتمد
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzstImEtArx34MLITcnLwxSc3FCRgKVYjzrMH98UBZ73EfxPU9LjLiiyzECWSIXxx3Xsw/exec";
+
+// ==========================================
+// دالة جلب المنتجات (تعتمد على الكاش للظهور الفوري)
+// ==========================================
+function loadProductsFromSheets() {
+  // 1. العرض الفوري من الـ localStorage إذا وُجدت بيانات مخزنة
+  const cachedData = localStorage.getItem('cached_products');
+  if (cachedData) {
+    try {
+      productsArray = JSON.parse(cachedData);
+      updateCategoryDropdowns(productsArray);
+      updateIdsDropdown(productsArray);   
+      updateNamesDropdown(productsArray); 
+      filterAndRenderProducts();
+    } catch (e) {
+      console.error("Error parsing cached products:", e);
+    }
+  }
+
+  // 2. تحديث البيانات صامتاً في الخلفية من Google Sheets
+  fetch(GOOGLE_SCRIPT_URL)
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        productsArray = data;
+        // حفظ النسخة الجديدة في التخزين المحلي
+        localStorage.setItem('cached_products', JSON.stringify(data));
+        
+        // تحديث الواجهة والقوائم
+        updateCategoryDropdowns(productsArray);
+        updateIdsDropdown(productsArray);   
+        updateNamesDropdown(productsArray); 
+        filterAndRenderProducts();
+      }
+    })
+    .catch(err => console.error("Error loading products from Sheets:", err));
+}
 
 // ==========================================
 // دالة عرض المنتجات المشابهة داخل النافذة المنبثقة
@@ -58,26 +115,16 @@ function renderRelatedProducts(category, currentProductId) {
   });
 }
 
-// // التحقق من تسجيل الدخول
-// const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-// if (!currentUser) {
-//   alert('يرجى تسجيل الدخول أولاً!');
-//   window.location.href = 'id.html';
-// }
-
 document.addEventListener('DOMContentLoaded', () => {
   const clientNameEl = document.getElementById('clien-name');
   const clientIdNumEl = document.getElementById('clien-id-num');
   const addBtn = document.getElementById('name-add-cart');
 
-  // جلب معلومات المستخدم بأمان
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
   if (clientNameEl) clientNameEl.textContent = currentUser ? currentUser.name : 'زائر';
   if (clientIdNumEl) clientIdNumEl.textContent = currentUser ? currentUser.id : '---';
 
-  // 🔒 إخفاء الزر بشكل قاطع للجميع، وإظهاره فقط للأدمن المسجل
   if (addBtn) {
     if (currentUser && currentUser.role === 'admin') {
       addBtn.style.setProperty('display', 'block', 'important');
@@ -94,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
       adminEditWrapper.style.setProperty('display', 'none', 'important');
     }
   }
-  // ... باقي الكود كما هو
 
   const modalForm = document.getElementById('add-1');
   const cancelBtn = document.querySelector('.btn-save-cancel');
@@ -104,23 +150,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('search-name');
   const categoryFilterSelect = document.getElementById('name-filter-cart');
 
-  const editDescBtn = document.getElementById('pro-add-to-cart-btn2');
-  const descText = document.getElementById('pro-description');
-  const editContainer = document.getElementById('edit-description-container');
-  const descInput = document.getElementById('pro-description-input');
-  const saveDescBtn = document.getElementById('save-description-btn');
-  const cancelDescBtn = document.getElementById('cancel-description-btn');
-
   const idInput = document.querySelector('.form-e input[type="number"]');
   const nameInput = document.querySelectorAll('.form-e input')[1];
   const categoryInput = document.querySelectorAll('.form-e input')[2];
   const priceInput = document.querySelectorAll('.form-e input')[3];
-  const fileInput = document.querySelector('.form-e input[type="file"]'); 
   const urlInput = document.querySelector('.form-e input[type="url"]'); 
 
-  let tempUploadedImage = '';
-
-  // 1. تجهيز Datalist لعرض الـ IDs الموجودة أثناء الكتابة
   let idsDatalist = document.getElementById('ids-list');
   if (!idsDatalist && idInput) {
     idsDatalist = document.createElement('datalist');
@@ -129,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
     idInput.setAttribute('list', 'ids-list');
   }
 
-  // 2. تجهيز Datalist لعرض أسماء المنتجات الموجودة أثناء الكتابة
   let namesDatalist = document.getElementById('names-list');
   if (!namesDatalist && nameInput) {
     namesDatalist = document.createElement('datalist');
@@ -138,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
     nameInput.setAttribute('list', 'names-list');
   }
 
-  // التفاعل عند كتابة أو اختيار الـ ID
   if (idInput) {
     idInput.addEventListener('input', () => {
       const typedId = idInput.value.trim();
@@ -146,14 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const existingProd = productsArray.find(p => String(p.id) === String(typedId));
       if (existingProd) {
-        fillFormFields(existingProd, false); // جلب البيانات للتعديل
+        fillFormFields(existingProd, false);
       } else {
         clearFormExceptId(); 
       }
     });
   }
 
-  // التفاعل عند كتابة أو اختيار الاسم للتأكد من المنتجات المتشابهة
   if (nameInput) {
     nameInput.addEventListener('input', () => {
       const typedName = nameInput.value.trim().toLowerCase();
@@ -161,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const existingProd = productsArray.find(p => (p.name || '').trim().toLowerCase() === typedName);
       if (existingProd) {
-        fillFormFieldsByName(existingProd); // ملء البيانات لو الاسم موجود وحابب تعدله
+        fillFormFieldsByName(existingProd);
       }
     });
   }
@@ -171,25 +203,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!includeId && nameInput) nameInput.value = prod.name || '';
     if (categoryInput) categoryInput.value = prod.category || '';
     if (priceInput) priceInput.value = prod.price || '';
-    if (urlInput) urlInput.value = (prod.image && !prod.image.startsWith('data:')) ? prod.image : '';
+    if (urlInput) urlInput.value = prod.image || '';
   }
 
   function fillFormFieldsByName(prod) {
     if (idInput) idInput.value = prod.id || '';
     if (categoryInput) categoryInput.value = prod.category || '';
     if (priceInput) priceInput.value = prod.price || '';
-    if (urlInput) urlInput.value = (prod.image && !prod.image.startsWith('data:')) ? prod.image : '';
-  }
-
-  if (fileInput) {
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => { tempUploadedImage = event.target.result; };
-        reader.readAsDataURL(file);
-      } else { tempUploadedImage = ''; }
-    });
+    if (urlInput) urlInput.value = prod.image || '';
   }
 
   if (addBtn && modalForm) {
@@ -208,110 +229,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (typeof db !== 'undefined') {
-    db.ref('products').on('value', (snapshot) => {
-      const data = snapshot.val();
-      productsArray = [];
-      if (data) {
-        Object.keys(data).forEach(key => { productsArray.push(data[key]); });
-      }
-      updateCategoryDropdowns(productsArray);
-      updateIdsDropdown(productsArray);   // تحديث قائمة الـ IDs
-      updateNamesDropdown(productsArray); // تحديث قائمة الأسماء
-      filterAndRenderProducts();
-    });
-  }
-
-  function updateIdsDropdown(products) {
-    if (idsDatalist) {
-      idsDatalist.innerHTML = products.map(p => `<option value="${p.id}">${p.name ? ' - ' + p.name : ''}</option>`).join('');
-    }
-  }
-
-  function updateNamesDropdown(products) {
-    if (namesDatalist) {
-      namesDatalist.innerHTML = products.map(p => `<option value="${p.name}">ID: ${p.id}</option>`).join('');
-    }
-  }
-
-  function updateCategoryDropdowns(products) {
-    const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
-    if (categoryFilterSelect) {
-      const currentSelected = categoryFilterSelect.value;
-      let optionsHTML = `<option value="all">اختر التصنيف</option>`;
-      categories.forEach(cat => { optionsHTML += `<option value="${cat}">${cat}</option>`; });
-      categoryFilterSelect.innerHTML = optionsHTML;
-      categoryFilterSelect.value = (currentSelected && categories.includes(currentSelected)) ? currentSelected : 'all';
-    }
-
-    let formDatalist = document.getElementById('categories-list');
-    if (!formDatalist && categoryInput) {
-      formDatalist = document.createElement('datalist');
-      formDatalist.id = 'categories-list';
-      document.body.appendChild(formDatalist);
-      categoryInput.setAttribute('list', 'categories-list');
-    }
-    if (formDatalist) {
-      formDatalist.innerHTML = categories.map(cat => `<option value="${cat}">`).join('');
-    }
-  }
-
-  function filterAndRenderProducts() {
-    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
-    const selectedCategory = categoryFilterSelect ? categoryFilterSelect.value : 'all';
-
-    const filtered = productsArray.filter(prod => {
-      const prodName = (prod.name || '').toString().toLowerCase();
-      const prodId = (prod.id || '').toString().toLowerCase();
-      const matchesSearch = prodName.includes(searchTerm) || prodId.includes(searchTerm);
-      const matchesCategory = (selectedCategory === 'all' || selectedCategory === 'اختر التصنيف') ? true : prod.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-
-    displayProducts(shuffleArray(filtered));
-  }
+  // تحميل المنتجات فورياً من الكاش
+  loadProductsFromSheets();
 
   if (searchInput) searchInput.addEventListener('input', filterAndRenderProducts);
   if (categoryFilterSelect) categoryFilterSelect.addEventListener('change', filterAndRenderProducts);
 
-  if (editDescBtn) {
-    editDescBtn.addEventListener('click', () => {
-      if (descInput && descText) {
-        const currentContent = descText.textContent.trim();
-        descInput.value = (currentContent === 'لا توجد تفاصيل إضافية مضافة لهذا المنتج.') ? '' : currentContent;
-        descText.style.display = 'none';
-        editContainer.style.display = 'block';
-      }
-    });
-  }
-
-  if (cancelDescBtn) {
-    cancelDescBtn.addEventListener('click', () => {
-      if (editContainer) editContainer.style.display = 'none';
-      if (descText) descText.style.display = 'block';
-    });
-  }
-
-  if (saveDescBtn) {
-    saveDescBtn.addEventListener('click', () => {
-      const newDescription = descInput.value.trim();
-      if (!activeProductId) {
-        alert('خطأ: لم يتم تحديد المنتج بشكل صحيح!');
-        return;
-      }
-      if (typeof db !== 'undefined') {
-        db.ref('products/' + activeProductId).update({ description: newDescription }).then(() => {
-          if (descText) descText.textContent = newDescription || 'لا توجد تفاصيل إضافية مضافة لهذا المنتج.';
-          const localProd = productsArray.find(p => String(p.id) === String(activeProductId));
-          if (localProd) localProd.description = newDescription;
-          if (editContainer) editContainer.style.display = 'none';
-          if (descText) descText.style.display = 'block';
-          alert('تم حفظ التفاصيل بنجاح!');
-        }).catch(err => { alert('حدث خطأ: ' + err.message); });
-      }
-    });
-  }
-
+  // ==========================================
+  // زر الحفظ (إضافة / تعديل)
+  // ==========================================
   if (saveBtn) {
     saveBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -319,7 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const nameVal = nameInput ? nameInput.value.trim() : '';
       const catVal = categoryInput ? categoryInput.value.trim() || 'أخرى' : 'أخرى';
       const priceVal = priceInput ? priceInput.value.trim() : '';
-      const urlVal = urlInput ? urlInput.value.trim() : '';
+      
+      const rawUrlVal = urlInput ? urlInput.value.trim() : '';
+      const urlVal = formatImageUrl(rawUrlVal);
 
       if (!idVal || !nameVal || !priceVal) {
         alert('يرجى ملء كافة البيانات الأساسية (ID، الاسم، السعر)');
@@ -327,36 +255,57 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const existingProd = productsArray.find(p => String(p.id) === String(idVal));
-      let finalImg = tempUploadedImage || urlVal || (existingProd ? existingProd.image : '');
+      let finalImg = urlVal || (existingProd ? existingProd.image : '');
 
-      if (typeof db !== 'undefined') {
-        db.ref('products/' + idVal).set({
-          id: idVal, 
-          name: nameVal, 
-          category: catVal, 
-          price: priceVal,
-          image: finalImg, 
-          description: existingProd ? (existingProd.description || '') : ''
-        }).then(() => { 
-          alert(existingProd ? 'تم تحديث بيانات المنتج بنجاح!' : 'تم إضافة المنتج الجديد بنجاح!'); 
-        });
-      }
-      if (modalForm) modalForm.classList.remove('active');
-      clearForm();
+      const payload = {
+        action: 'save',
+        id: idVal,
+        name: nameVal,
+        category: catVal,
+        price: priceVal,
+        imageUrl: finalImg
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).then(() => {
+        alert(existingProd ? 'تم تحديث البيانات بنجاح!' : 'تم حفظ الصنف بنجاح!');
+        if (modalForm) modalForm.classList.remove('active');
+        clearForm();
+        setTimeout(loadProductsFromSheets, 1200);
+      }).catch((err) => {
+        console.error("Google Sheets Sync Error:", err);
+      });
     });
   }
 
+  // ==========================================
+  // زر الحذف
+  // ==========================================
   if (deleteBtn) {
     deleteBtn.addEventListener('click', (e) => {
       e.preventDefault();
       const idVal = idInput ? idInput.value.trim() : '';
       if (!idVal) { alert('يرجى إدخال الـ ID'); return; }
+
       if (confirm('هل أنت متأكد من الحذف؟')) {
-        if (typeof db !== 'undefined') {
-          db.ref('products/' + idVal).remove().then(() => { alert('تم الحذف بنجاح!'); });
-        }
-        if (modalForm) modalForm.classList.remove('active');
-        clearForm();
+        const payload = { action: 'delete', id: idVal };
+        fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        }).then(() => {
+          alert('تم الحذف بنجاح!');
+          if (modalForm) modalForm.classList.remove('active');
+          clearForm();
+          setTimeout(loadProductsFromSheets, 1200);
+        }).catch((err) => {
+          console.error("Google Sheets Delete Error:", err);
+        });
       }
     });
   }
@@ -365,18 +314,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nameInput) nameInput.value = '';
     if (categoryInput) categoryInput.value = '';
     if (priceInput) priceInput.value = '';
-    if (fileInput) fileInput.value = '';
     if (urlInput) urlInput.value = '';
-    tempUploadedImage = '';
   }
 
   function clearFormExceptName() {
     if (idInput) idInput.value = '';
     if (categoryInput) categoryInput.value = '';
     if (priceInput) priceInput.value = '';
-    if (fileInput) fileInput.value = '';
     if (urlInput) urlInput.value = '';
-    tempUploadedImage = '';
   }
 
   function clearForm() {
@@ -386,7 +331,63 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// دالة عرض المنتجات بالكرت الرئيسي
+function updateIdsDropdown(products) {
+  let idsDatalist = document.getElementById('ids-list');
+  if (idsDatalist) {
+    idsDatalist.innerHTML = products.map(p => `<option value="${p.id}">${p.name ? ' - ' + p.name : ''}</option>`).join('');
+  }
+}
+
+function updateNamesDropdown(products) {
+  let namesDatalist = document.getElementById('names-list');
+  if (namesDatalist) {
+    namesDatalist.innerHTML = products.map(p => `<option value="${p.name}">ID: ${p.id}</option>`).join('');
+  }
+}
+
+function updateCategoryDropdowns(products) {
+  const categoryFilterSelect = document.getElementById('name-filter-cart');
+  const categoryInput = document.querySelectorAll('.form-e input')[2];
+
+  const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+  if (categoryFilterSelect) {
+    const currentSelected = categoryFilterSelect.value;
+    let optionsHTML = `<option value="all">اختر التصنيف</option>`;
+    categories.forEach(cat => { optionsHTML += `<option value="${cat}">${cat}</option>`; });
+    categoryFilterSelect.innerHTML = optionsHTML;
+    categoryFilterSelect.value = (currentSelected && categories.includes(currentSelected)) ? currentSelected : 'all';
+  }
+
+  let formDatalist = document.getElementById('categories-list');
+  if (!formDatalist && categoryInput) {
+    formDatalist = document.createElement('datalist');
+    formDatalist.id = 'categories-list';
+    document.body.appendChild(formDatalist);
+    categoryInput.setAttribute('list', 'categories-list');
+  }
+  if (formDatalist) {
+    formDatalist.innerHTML = categories.map(cat => `<option value="${cat}">`).join('');
+  }
+}
+
+function filterAndRenderProducts() {
+  const searchInput = document.getElementById('search-name');
+  const categoryFilterSelect = document.getElementById('name-filter-cart');
+
+  const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+  const selectedCategory = categoryFilterSelect ? categoryFilterSelect.value : 'all';
+
+  const filtered = productsArray.filter(prod => {
+    const prodName = (prod.name || '').toString().toLowerCase();
+    const prodId = (prod.id || '').toString().toLowerCase();
+    const matchesSearch = prodName.includes(searchTerm) || prodId.includes(searchTerm);
+    const matchesCategory = (selectedCategory === 'all' || selectedCategory === 'اختر التصنيف') ? true : prod.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  displayProducts(shuffleArray(filtered));
+}
+
 function displayProducts(products) {
   const mainContainer = document.querySelector('.cards-container');
   if (!mainContainer) return;
@@ -421,7 +422,6 @@ function displayProducts(products) {
   });
 }
 
-// الاستماع للنقر (فتح التفاصيل، أو إضافة للعربة عبر زر +، أو الإغلاق)
 document.addEventListener('click', function (e) {
   const btn = e.target.closest('.show-details-btn');
   if (btn) {
@@ -435,7 +435,6 @@ document.addEventListener('click', function (e) {
       const proCategory = document.getElementById('pro-category');
       const proPrice = document.getElementById('pro-price');
       const proDescription = document.getElementById('pro-description');
-      const editContainer = document.getElementById('edit-description-container');
       const modal = document.getElementById('propertes-cart');
 
       if (proImg) proImg.src = (foundProd.image && foundProd.image.trim().length > 5) ? foundProd.image.trim() : 'img/market.jpg';
@@ -444,22 +443,17 @@ document.addEventListener('click', function (e) {
       if (proPrice) proPrice.textContent = foundProd.price || '0';
       if (proDescription) proDescription.textContent = foundProd.description || 'لا توجد تفاصيل إضافية مضافة لهذا المنتج.';
 
-      if (editContainer) editContainer.style.display = 'none';
-      if (proDescription) proDescription.style.display = 'block';
-
       renderRelatedProducts(foundProd.category, foundProd.id);
 
       if (modal) modal.classList.add('active');
     }
   }
 
-  // إغلاق النافذة المنبثقة
   if (e.target.id === 'close-propertes' || e.target.classList.contains('close-propertes-btn') || e.target.id === 'propertes-cart') {
     const modal = document.getElementById('propertes-cart');
     if (modal) modal.classList.remove('active');
   }
 
-  // إضافة للعربة عبر زر (+)
   const addBtn = e.target.closest('.btn-add-to-cart');
   if (addBtn) {
     e.preventDefault();
@@ -469,7 +463,6 @@ document.addEventListener('click', function (e) {
     }
   }
 
-  // الإضافة من داخل نافذة التفاصيل
   if (e.target.id === 'pro-add-to-cart-btn') {
     e.preventDefault();
     if (activeProductId && typeof addToCart === 'function') {
@@ -478,95 +471,4 @@ document.addEventListener('click', function (e) {
       if (modal) modal.classList.remove('active');
     }
   }
-  
 });
-
-
-document.addEventListener('DOMContentLoaded', function () {
-  const userImg = document.getElementById('user-img');
-  const editLabel = document.querySelector('label[for="uploud-img-user"]');
-  const oldInput = document.getElementById('uploud-img-user');
-
-  // جلب بيانات العميل الحالي
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-  if (currentUser && currentUser.id) {
-    const userId = currentUser.id;
-
-    // 1. جلب الصورة المحفوظة في Firebase تلقائياً عند فتح الصفحة
-    if (typeof db !== 'undefined') {
-      db.ref('users/' + userId + '/avatar').on('value', (snapshot) => {
-        const savedImg = snapshot.val();
-        if (savedImg && userImg) {
-          userImg.src = savedImg;
-        }
-      });
-    }
-
-    if (userImg) {
-      userImg.style.cursor = 'pointer';
-
-      // 2. عند الضغط على الصورة: فتح نافذة اختيار ملف جديدة
-      userImg.addEventListener('click', function () {
-        const tempInput = document.createElement('input');
-        tempInput.type = 'file';
-        tempInput.accept = 'image/*';
-
-        tempInput.onchange = function (e) {
-          const file = e.target.files[0];
-          if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-
-            reader.onload = function (event) {
-              // ضغط الصورة ثم رفعها إلى Firebase
-              compressAndSaveToFirebase(event.target.result, userId, userImg);
-            };
-
-            reader.readAsDataURL(file);
-          }
-        };
-
-        tempInput.click();
-      });
-    }
-  } else {
-    // حالة الزائر
-    if (userImg) userImg.style.cursor = 'default';
-    if (oldInput) oldInput.disabled = true;
-    if (editLabel) editLabel.style.display = 'none';
-  }
-});
-
-// دالة ضغط الصورة ورفعها مباشرة لـ Firebase
-function compressAndSaveToFirebase(base64Str, userId, imgElement) {
-  const img = new Image();
-  img.src = base64Str;
-  img.onload = function () {
-    const canvas = document.createElement('canvas');
-    const MAX_WIDTH = 300; // تقليل الحجم لسرعة الرفع والتحميل في السيرفر
-    const scaleFactor = MAX_WIDTH / img.width;
-
-    canvas.width = MAX_WIDTH;
-    canvas.height = img.height * scaleFactor;
-
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-    // تحويل الصورة المضغوطة بصيغة JPEG بجودة 70%
-    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-    // 1. تحديث الصورة في الشاشة فوراً
-    if (imgElement) imgElement.src = compressedBase64;
-
-    // 2. رفع الصورة المسجلة إلى قاعدة بيانات Firebase تحت مسار المستخدم
-    if (typeof db !== 'undefined') {
-      db.ref('users/' + userId).update({
-        avatar: compressedBase64
-      }).then(() => {
-        console.log('تم حفظ الصورة في السيرفر بنجاح!');
-      }).catch((err) => {
-        alert('حدث خطأ أثناء حفظ الصورة في السيرفر: ' + err.message);
-      });
-    }
-  };
-}
