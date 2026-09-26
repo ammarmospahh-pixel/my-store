@@ -1,0 +1,214 @@
+/* ==========================================
+   كود شامل وعام لكل عناصر الموقع (Dark Mode)
+   ========================================== */
+
+/* 1. جعل خلفية الصفحة داكنة */
+body.dark-mode {
+  background-color: #121214 !important;
+  color: #ffffff !important;
+}
+
+/* 2. إلغاء أي توهج أو ظل أبيض من أي عنصر في الصفحة */
+body.dark-mode *,
+body.dark-mode *::before,
+body.dark-mode *::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* 3. تحويل أي مربع/كارت/نافذة/مودال/خلفية إلى اللون الداكن مع ظل أسود */
+body.dark-mode div,
+body.dark-mode section,
+body.dark-mode article,
+body.dark-mode main,
+body.dark-mode header,
+body.dark-mode footer,
+body.dark-mode nav,
+body.dark-mode aside,
+body.dark-mode [class*="modal"],
+body.dark-mode [class*="popup"],
+body.dark-mode [class*="dialog"],
+body.dark-mode [class*="card"],
+body.dark-mode [class*="container"],
+body.dark-mode [class*="wrapper"],
+body.dark-mode [class*="box"] {
+  background-color: #1e1f23 !important;
+  color: #ffffff !important;
+}
+
+/* إضافة حدود وظل أسود للعناصر المنفصلة والنوافذ المنبثقة */
+body.dark-mode [class*="modal"],
+body.dark-mode [class*="popup"],
+body.dark-mode [class*="dialog"],
+body.dark-mode [class*="card"],
+body.dark-mode header,
+body.dark-mode nav {
+  border: 1px solid #2a2b30 !important;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.85) !important;
+}
+
+/* 4. إجبار كافة النصوص والعناوين على الظهور باللون الأبيض */
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
+body.dark-mode h4, body.dark-mode h5, body.dark-mode h6, 
+body.dark-mode p, body.dark-mode span, body.dark-mode a, 
+body.dark-mode label, body.dark-mode li, body.dark-mode td {
+  color: #ffffff !important;
+}
+
+/* 5. حقول الإدخال والبحث */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #161719 !important;
+  color: #ffffff !important;
+  border: 1px solid #2d2e33 !important;
+  box-shadow: inset 0px 3px 8px rgba(0, 0, 0, 0.8) !important;
+}
+
+body.dark-mode input::placeholder {
+  color: #888b94 !important;
+}
+
+/* 6. الأزرار وأزرار التفاعل */
+body.dark-mode button,
+body.dark-mode [class*="btn"],
+body.dark-mode a[class*="button"] {
+  background-color: #26272c !important;
+  color: #3897f0 !important;
+  border: 1px solid #32343a !important;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.dark-mode button:hover,
+body.dark-mode [class*="btn"]:hover {
+  background-color: #2e3036 !important;
+  color: #00d2ff !important;
+}
+
+/* 7. زر التبديل الثابت (الشمس / القمر) */
+.theme-toggle-btn {
+  position: fixed;
+  bottom: 85px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background-color: #e6ecf0;
+  color: #f39c12;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 9999;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.dark-mode .theme-toggle-btn {
+  background-color: #26272c !important;
+  color: #f1c40f !important;
+  border: 1px solid #32343a !important;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.9) !important;
+}
+/* ==========================================
+   إصلاح شريط الملاحة والأزرار البيضاء (Dark Mode)
+   ========================================== */
+
+/* 1. الصفحة العامة */
+body.dark-mode {
+  background-color: #121214 !important;
+  color: #ffffff !important;
+}
+
+/* 2. إلغاء أي ظلال أو توهج أبيض نهائياً */
+body.dark-mode *,
+body.dark-mode *::before,
+body.dark-mode *::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* 3. الحاويات والكروت والنوافذ المنبثقة */
+body.dark-mode header,
+body.dark-mode nav,
+body.dark-mode section,
+body.dark-mode article,
+body.dark-mode [class*="card"],
+body.dark-mode [class*="modal"],
+body.dark-mode [class*="popup"],
+body.dark-mode [class*="wrapper"],
+body.dark-mode [class*="container"] {
+  background-color: #1e1f23 !important;
+  color: #ffffff !important;
+  border: 1px solid #2a2b30 !important;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* 4. إصلاح الأزرار والروابط في الشريط السفلي (حل المشكلة في الصورة) */
+body.dark-mode a,
+body.dark-mode button,
+body.dark-mode [class*="btn"],
+body.dark-mode [class*="nav"],
+body.dark-mode [class*="link"] {
+  background-color: #28292e !important; /* لون رمادي داكن بدلاً من الأبيض */
+  color: #ffffff !important;           /* نص أبيض واضح */
+  border: 1px solid #363840 !important;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* تأثير التمرير/الضغط على الأزرار */
+body.dark-mode a:hover,
+body.dark-mode button:hover,
+body.dark-mode [class*="nav"]:hover {
+  background-color: #32343b !important;
+  color: #4da6ff !important;            /* تغيير اللون للأزرق عند التفاعل */
+}
+
+/* 5. العناوين والنصوص */
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
+body.dark-mode h4, body.dark-mode h5, body.dark-mode h6,
+body.dark-mode p, body.dark-mode span, body.dark-mode label {
+  color: #ffffff !important;
+}
+
+/* 6. حقول الإدخال والبحث */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #161719 !important;
+  color: #ffffff !important;
+  border: 1px solid #2d2e33 !important;
+  box-shadow: inset 0px 3px 8px rgba(0, 0, 0, 0.8) !important;
+}
+
+body.dark-mode input::placeholder {
+  color: #888b94 !important;
+}
+
+/* 7. زر تبديل الوضع (الشمس / القمر) */
+.theme-toggle-btn {
+  position: fixed;
+  bottom: 85px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background-color: #e6ecf0;
+  color: #f39c12;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 9999;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.dark-mode .theme-toggle-btn {
+  background-color: #28292e !important;
+  color: #f1c40f !important;
+  border: 1px solid #363840 !important;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.9) !important;
+}

@@ -9,6 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="wight dark/wight darl.css" />
   </head>
   <body>
     <header>
@@ -20,11 +21,11 @@
           <div class="clien-Details">
             <div class="img-iduser">
               <span
-                ><img
-                  src="img/2.png"
-                  alt="صوره شغصيه"
-                  id="user-img"
-                  style="cursor: pointer"
+              ><img
+              src="img/2.png"
+              alt="صوره شغصيه"
+              id="user-img"
+              style="cursor: pointer"
               /></span>
               <input
               type="url"
@@ -35,7 +36,7 @@
               />
             </div>
             <span class="clien-id">الاسم:<span id="clien-name"></span></span>
-
+            
             <span class="clien-id" >ID: <span id="clien-id-num"></span></span>
             <span class="clien-id2" >عنوان: <span id="clien-id-num2"></span></span>
             <span class="clien-id3">نسبه الخصم: <span id="clien-id-num3"></span></span>
@@ -51,12 +52,12 @@
           <!-- البحث: 50% -->
           <div class="search-cart">
             <input
-              type="text"
-              id="search-name"
-              placeholder="ابحث باسم الصنف أو الـ ID..."
+            type="text"
+            id="search-name"
+            placeholder="ابحث باسم الصنف أو الـ ID..."
             />
           </div>
-
+          
           <!-- التصنيف: 30% -->
           <div class="filter-cart">
             <select name="catt" id="name-filter-cart">
@@ -76,8 +77,11 @@
       <a href="index.html">المتجر</a>
       <a href="cart.html">السله</a>
       <a href="contact.html">تواصل معنا</a>
+      <!-- زر تبديل الوضع الداكن -->
     </nav>
-
+    <nav class="links2">
+    <button id="theme-toggle" class="theme-toggle-btn" title="تبديل الوضع">🌙</button>
+    </nav>
     <!-- المنتجات -->
     <main>
       <div class="cards-container">
@@ -238,5 +242,6 @@
     <script src="cart.js"></script>
     <script src="index.js"></script>
     <script src="header.js"></script>
+    <script src="wight dark/wight darl.js"></script>
   </body>
 </html>
