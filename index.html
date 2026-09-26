@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>متجر الكتروني</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
@@ -12,16 +15,31 @@
       <div class="longo-name">
         <img src="img/market.jpg" alt="logo" />
         <h3>مرحبا بكم</h3>
+        <!-- داتا الهميل ف الهدر -->
         <div class="name-clien">
+          <div class="clien-Details">
+            <div class="img-iduser">
+              <span
+                ><img
+                  src="img/2.png"
+                  alt="صوره شغصيه"
+                  id="user-img"
+                  style="cursor: pointer"
+              /></span>
+              <input
+              type="url"
+              class="img-id"
+              id="uploud-img-user"
+              accept="image/*"
+              style="display: none"
+              />
+            </div>
+            <span class="clien-id">الاسم:<span id="clien-name"></span></span>
 
-          <div class="img-iduser">
-          <span><img src="img/2.png" alt="صوره شغصيه" id="user-img" style="cursor: pointer;"></span>
-          <input type="file" class="img-id" id="uploud-img-user" accept="image/*" style="display: none;">
-          
-</div>
-          <h2 id="clien-name">اسم العميل</h2>
-          
-          <span class="clien-id">ID: <span id="clien-id-num">1024</span> </span>
+            <span class="clien-id" >ID: <span id="clien-id-num"></span></span>
+            <span class="clien-id2" >عنوان: <span id="clien-id-num2"></span></span>
+            <span class="clien-id3">نسبه الخصم: <span id="clien-id-num3"></span></span>
+          </div>
         </div>
       </div>
       <div class="name-add">
@@ -32,7 +50,11 @@
         <div class="search-filter">
           <!-- البحث: 50% -->
           <div class="search-cart">
-            <input type="text" id="search-name" placeholder="ابحث باسم الصنف أو الـ ID..." />
+            <input
+              type="text"
+              id="search-name"
+              placeholder="ابحث باسم الصنف أو الـ ID..."
+            />
           </div>
 
           <!-- التصنيف: 30% -->
@@ -44,7 +66,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- <div class="longout">
         <a href="index.html"> تسجيل خروج</a>
       </div> -->
@@ -89,8 +111,7 @@
 
           <label for="">رابط الصوره</label>
           <!-- <input type="file" /> -->
-          <input type="url">
-          
+          <input type="url" />
         </div>
       </div>
       <div class="btn-card">
@@ -103,18 +124,20 @@
     <!-- تفاصيل الكرت -->
     <section id="propertes-cart" class="propertes-cart-modal">
       <div class="propertes-cart-content">
-        <button type="button" class="close-propertes-btn" id="close-propertes">&times;</button>
-        
+        <button type="button" class="close-propertes-btn" id="close-propertes">
+          &times;
+        </button>
+
         <div class="propertes-main-grid">
           <!-- صورة البند (على اليمين) -->
           <div class="pro-cart-img">
-            <img id="pro-img" src="" alt="صورة المنتج" /> 
+            <img id="pro-img" src="" alt="صورة المنتج" />
           </div>
 
           <!-- بيانات البند والتفاصيل (على الشمال) -->
           <div class="pro-card-pro">
             <h2 id="pro-title" class="pro-title">اسم الصنف</h2>
-            
+
             <div class="pro-info-list">
               <p><strong>التصنيف:</strong> <span id="pro-category"></span></p>
               <p><strong>السعر:</strong> <span id="pro-price"></span> ج.م</p>
@@ -123,38 +146,88 @@
             <!-- مساحة كبيرة للتفاصيل -->
             <div class="pro-details-box">
               <h3>تفاصيل المنتج:</h3>
-              <p id="pro-description">لا توجد تفاصيل إضافية مضافة لهذا المنتج.</p>
-              
+              <p id="pro-description">
+                لا توجد تفاصيل إضافية مضافة لهذا المنتج.
+              </p>
+
               <!-- نموذج التعديل المباشر (مخفي افتراضياً) -->
-              <div id="edit-description-container" style="display: none; margin-top: 10px;">
-                <textarea id="pro-description-input" rows="3" style="width: 100%; border-radius: 8px; padding: 8px; border: 1px solid #ccc; resize: vertical; font-family: inherit; box-sizing: border-box;"></textarea>
-                <div style="display: flex; gap: 8px; margin-top: 8px;">
-                  <button type="button" id="save-description-btn" style="background-color: #2b82fb; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">حفظ</button>
-                  <button type="button" id="cancel-description-btn" style="background-color: #888; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer;">إلغاء</button>
+              <div
+                id="edit-description-container"
+                style="display: none; margin-top: 10px"
+              >
+                <textarea
+                  id="pro-description-input"
+                  rows="3"
+                  style="
+                    width: 100%;
+                    border-radius: 8px;
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    resize: vertical;
+                    font-family: inherit;
+                    box-sizing: border-box;
+                  "
+                ></textarea>
+                <div style="display: flex; gap: 8px; margin-top: 8px">
+                  <button
+                    type="button"
+                    id="save-description-btn"
+                    style="
+                      background-color: #2b82fb;
+                      color: #fff;
+                      border: none;
+                      padding: 6px 14px;
+                      border-radius: 6px;
+                      cursor: pointer;
+                      font-weight: bold;
+                    "
+                  >
+                    حفظ
+                  </button>
+                  <button
+                    type="button"
+                    id="cancel-description-btn"
+                    style="
+                      background-color: #888;
+                      color: #fff;
+                      border: none;
+                      padding: 6px 14px;
+                      border-radius: 6px;
+                      cursor: pointer;
+                    "
+                  >
+                    إلغاء
+                  </button>
                 </div>
               </div>
             </div>
 
             <!-- أزرار التحكم -->
             <div class="pro-cart-pnt">
-              <button type="button" id="pro-add-to-cart-btn">إضافة للعربة</button>
+              <button type="button" id="pro-add-to-cart-btn">
+                إضافة للعربة
+              </button>
             </div>
 
             <!-- حاوية زر التعديل (تظهر فقط للأدمن) -->
-            <div id="admin-edit-wrapper" style="display: none;">
-              <button type="button" id="pro-add-to-cart-btn2">كتابه / تعديل التفاصيل</button>
+            <div id="admin-edit-wrapper" style="display: none">
+              <button type="button" id="pro-add-to-cart-btn2">
+                كتابه / تعديل التفاصيل
+              </button>
             </div>
           </div>
         </div>
 
-        <hr class="modal-divider">
+        <hr class="modal-divider" />
 
         <!-- سكشن المنتجات المشابهة -->
         <div class="related-products-section">
           <h3>منتجات من نفس التصنيف</h3>
-          <div class="related-cards-container" id="related-products-container"></div>
+          <div
+            class="related-cards-container"
+            id="related-products-container"
+          ></div>
         </div>
-
       </div>
     </section>
 
@@ -164,5 +237,6 @@
     <script src="firebase-config.js"></script>
     <script src="cart.js"></script>
     <script src="index.js"></script>
+    <script src="header.js"></script>
   </body>
 </html>

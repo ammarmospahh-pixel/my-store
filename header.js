@@ -1,128 +1,85 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+// ستاسو نوی اجرا شوی لینک
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqz8dWhu2tXYVCoNhAVAimExlOji5PjkSQ6FuLsEDCNr9-PMCnByc69SPZMmS_pWY8Fg/exec';
 
-  if (!currentUser) {
-    alert('يرجى تسجيل الدخول أولاً!');
-    window.location.href = 'id.html';
-    return;
-  }
+document.addEventListener('DOMContentLoaded', async () => {
+  let currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-  const clientNameEl = document.getElementById('clien-name');
-  const clientIdNumEl = document.getElementById('clien-id-num');
-  const addBtn = document.getElementById('name-add-cart');
-
-  if (clientNameEl) clientNameEl.textContent = currentUser.name;
-  if (clientIdNumEl) clientIdNumEl.textContent = currentUser.id;
-
-  if (currentUser.role === 'client' && addBtn) {
-    addBtn.style.display = 'none';
-  } else if (currentUser.role === 'admin' && addBtn) {
-    addBtn.style.display = 'block';
-  }
-});
-document.addEventListener('DOMContentLoaded', () => {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {
-    id: '',
-    name: 'زائر',
-    role: 'guest'
-  };
+  if (!currentUser || !currentUser.id) return;
 
   const clientNameEl = document.getElementById('clien-name');
   const clientIdNumEl = document.getElementById('clien-id-num');
-  const addBtn = document.getElementById('name-add-cart');
+  const clientAddressEl = document.getElementById('clien-id-num2');
+  const clientDiscountEl = document.getElementById('clien-id-num3');
+  const userImgEl = document.getElementById('user-img');
 
-  // 1. تحديث اسم العميل والـ ID في الهيدر
-  if (clientNameEl) clientNameEl.textContent = currentUser.name || 'زائر';
-  if (clientIdNumEl) {
-    if (currentUser.id) {
-      clientIdNumEl.parentElement.style.display = 'inline';
-      clientIdNumEl.textContent = currentUser.id;
-    } else {
-      // إخفاء الـ ID إذا كان زائرًا
-      clientIdNumEl.parentElement.style.display = 'none';
-    }
-  }
+  // د محلي ډېټا ښودل
+  if (clientNameEl) clientNameEl.textContent = currentUser.name || '';
+  if (clientIdNumEl) clientIdNumEl.textContent = currentUser.id || '';
+  if (clientAddressEl) clientAddressEl.textContent = currentUser.address || '';
+  if (clientDiscountEl) clientDiscountEl.textContent = (currentUser.discount !== undefined) ? currentUser.discount + '%' : '0%';
+  if (userImgEl && currentUser.image) userImgEl.src = currentUser.image;
 
-  // 2. التحكم في زر إضافة المنتج (للأدمن فقط)
-  if (addBtn) {
-    if (currentUser.role === 'admin') {
-      addBtn.style.display = 'block';
-    } else {
-      addBtn.style.display = 'none';
-    }
-  }
+  // له جوجل شیت څخه مستقیمې انلاین ډېټا راخیستل
+  try {
+    const response = await fetch(SCRIPT_URL);
+    const usersData = await response.json();
+    const freshUserData = usersData[currentUser.id];
 
-  // 3. تعديل رابط "تواصل معنا" إلى "تسجيل دخول" لو كان زائرًا
-  const linksNav = document.querySelector('.links');
-  if (linksNav) {
-    const contactLink = Array.from(linksNav.querySelectorAll('a')).find(
-      a => a.getAttribute('href') === 'contact.html' || a.textContent.trim().includes('تواصل')
-    );
-
-    if (contactLink && (!currentUser.id || currentUser.role === 'guest')) {
-      contactLink.href = 'id.html';
-      contactLink.textContent = 'تسجيل دخول';
-    }
-  }
-});
-const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-// إذا كان العميل زائرًا (لا يوجد ID أو الـ role هو guest)
-if (!currentUser || !currentUser.id || currentUser.role === 'guest') {
-  const logoutBtn = document.querySelector('.longout a');
-  if (logoutBtn) {
-    logoutBtn.textContent = 'تسجيل دخول';
-  }
-}
-document.addEventListener('DOMContentLoaded', () => {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-
-  // فحص هل العميل زائر أم لا (إذا لم تكن هناك بيانات أو الـ ID فارغ أو الرتبة guest)
-  const isGuest = !currentUser || !currentUser.id || currentUser.role === 'guest';
-
-  const clientNameEl = document.getElementById('clien-name');
-  const clientIdNumEl = document.getElementById('clien-id-num');
-  const logoutBtn = document.querySelector('.longout a');
-
-  if (isGuest) {
-    // 1. تغيير الاسم في الهيدر إلى "زائر"
-    if (clientNameEl) clientNameEl.textContent = 'زائر';
-
-    // 2. إخفاء الـ ID بالكامل
-    if (clientIdNumEl) {
-      if (clientIdNumEl.parentElement) {
-        clientIdNumEl.parentElement.style.display = 'none';
-      } else {
-        clientIdNumEl.textContent = '';
+    if (freshUserData) {
+      currentUser.address = freshUserData.address || '';
+      currentUser.discount = freshUserData.discount !== undefined ? freshUserData.discount : 0;
+      if (freshUserData.image) {
+        currentUser.image = freshUserData.image;
       }
-    }
 
-    // 3. تغيير زر الهيدر ليصبح "تسجيل دخول"
-    if (logoutBtn) {
-      logoutBtn.textContent = 'تسجيل دخول';
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+      if (clientAddressEl) clientAddressEl.textContent = currentUser.address;
+      if (clientDiscountEl) clientDiscountEl.textContent = currentUser.discount + '%';
+      if (userImgEl && currentUser.image) userImgEl.src = currentUser.image;
     }
-  } else {
-    // إذا كان عميل مسجل بـ ID
-    if (clientNameEl) clientNameEl.textContent = currentUser.name;
-    if (clientIdNumEl) {
-      if (clientIdNumEl.parentElement) {
-        clientIdNumEl.parentElement.style.display = 'inline';
+  } catch (error) {
+    console.error('د ډېټا په راخیستلو کې تېروتنه:', error);
+  }
+
+  // پر انځور د کلیک کولو په صورت کې د عکس د لینک بدلول
+  if (userImgEl) {
+    userImgEl.onclick = async () => {
+      const inputUrl = prompt('د عکس نوی لینک یا د Google Drive لینک ورکړئ:', currentUser.image || '');
+
+      if (inputUrl && inputUrl.trim() !== '') {
+        const trimmedUrl = inputUrl.trim();
+
+        try {
+          await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify({
+              id: currentUser.id,
+              imageData: trimmedUrl
+            })
+          });
+
+          alert('لینک په بریا سره په شیت کې خوندي شو!');
+
+          // له پورته کولو وروسته د مستقیم انځور سملاسي زېرمه کول
+          setTimeout(async () => {
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            if (data[currentUser.id] && data[currentUser.id].image) {
+              currentUser.image = data[currentUser.id].image;
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+              userImgEl.src = currentUser.image;
+            }
+          }, 1500);
+
+        } catch (err) {
+          console.error('په پروسه کې تېروتنه:', err);
+        }
       }
-      clientIdNumEl.textContent = currentUser.id;
-    }
-    if (logoutBtn) {
-      logoutBtn.textContent = 'تسجيل خروج';
-    }
+    };
   }
 });
-// التثبيت التلقائي لحساب الزائر في حال عدم وجود جلسة دخول سابقة
-(function initGuestUser() {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  if (!currentUser || !currentUser.id) {
-    localStorage.setItem('currentUser', JSON.stringify({
-      id: '',
-      name: 'زائر',
-      role: 'guest'
-    }));
-  }
-})();

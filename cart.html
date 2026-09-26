@@ -1,74 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="cart.css">
-</head>
-<body>
+    <link rel="stylesheet" href="cart.css" />
+  </head>
+  <body>
     <header>
-        <div class="longo-name">
-            <img src="img/market.jpg" alt="logo">
-            <h3>مرحبا بكم</h3>
-            <div class="name-clien">
-            
-            <h2 id="clien-name">اسم العميل</h2>
-            <span class="clien-id">ID: <span id="clien-id-num">1024</span></span>
-        </div>
-        </div>
-        <div class="longout">
-            <a href="id.html"> تسجيل خروج</a>
-        </div>
-        
+      <div class="longo-name">
+        <img src="img/market.jpg" alt="logo" />
+        <h3>مرحبا بكم</h3>
+      </div>
+      <div class="clien-Details">
+        <span class="clien-id">الاسم:<span id="clien-name"></span></span>
+
+        <span class="clien-id">ID: <span id="clien-id-num"></span></span>
+        <span class="clien-id2">عنوان: <span id="clien-id-num2"></span></span>
+        <span class="clien-id3"
+          >نسبه الخصم: <span id="clien-id-num3"></span
+        ></span>
+      </div>
+      <div class="longout">
+        <a href="id.html"> تسجيل خروج</a>
+      </div>
     </header>
     <nav class="links">
-       <a href="index.html">المتجر</a>
-       <a href="cart.html">السله</a>
-       <a href="contact.html">تواصل معنا</a>
+      <a href="index.html">المتجر</a>
+      <a href="cart.html">السله</a>
+      <a href="contact.html">تواصل معنا</a>
     </nav>
     <main>
-        <div class="cart-page-container">
+      <div class="cart-page-container">
         <div class="cart-header-title">
-            <h2>سلة التسوق</h2>
-            <a href="index.html" class="back-to-shop">← العودة للمتجر</a>
+          <h2>سلة التسوق</h2>
+          <a href="index.html" class="back-to-shop">← العودة للمتجر</a>
         </div>
 
         <!-- عرض المنتجات -->
         <div class="cart-items-wrapper" id="cart-items-container"></div>
 
         <!-- قسم كود الخصم المعتمد على حساب العميل -->
-       
+
         <div id="coupon-message" class="coupon-msg"></div>
 
         <!-- ملخص الحساب -->
         <div class="cart-summary">
-            <div>
-                <h3>الإجمالي:</h3>
-                <span id="discount-note" style="font-size: 12px; color: #28a745; display: none;">(تم تطبيق الخصم)</span>
-            </div>
-            <h3 id="total-price" style="color: #28a745;">0 ج.م</h3>
-            <div class="nam-clain">
-    <h3>ادخل رقم الهاتف</h3>
-    <input type="checkbox" class="ckecknameder">
-    <input type="tel" id="phone-input" placeholder="01xxxxxxxxx">
-</div>
+          <div>
+            <h3>الإجمالي:</h3>
+            <span
+              id="discount-note"
+              style="font-size: 12px; color: #28a745; display: none"
+              >(تم تطبيق الخصم)</span
+            >
+          </div>
+          <h3 id="total-price" style="color: #28a745">0 ج.م</h3>
+          <div class="nam-clain">
+            <h3>ادخل رقم الهاتف</h3>
+            <input type="checkbox" class="ckecknameder" />
+            <input type="tel" id="phone-input" placeholder="01xxxxxxxxx" />
+          </div>
         </div>
 
-        <button class="checkout-btn" id="checkout-btn" onclick="handleCheckout()">إتمام الطلب</button>
+        <button
+          class="checkout-btn"
+          id="checkout-btn"
+          onclick="handleCheckout()"
+        >
+          إتمام الطلب
+        </button>
 
         <!-- سجل الفواتير السابقة -->
         <div class="history-section">
-            <h3 class="history-title">سجل الفواتير والطلبات السابقة</h3>
-            <div id="history-container"></div>
+          <h3 class="history-title">سجل الفواتير والطلبات السابقة</h3>
+          <div id="history-container"></div>
         </div>
-    </div>
+      </div>
     </main>
     <script src="header.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="cart.js"></script>
-<!-- 2. ملف الاتصال الموحد -->
-<script src="firebase-config.js"></script>
-</body>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="cart.js"></script>
+    <!-- 2. ملف الاتصال الموحد -->
+    <script src="firebase-config.js"></script>
+  </body>
 </html>
