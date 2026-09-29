@@ -60,7 +60,7 @@
           <span class="clien-id">الاسم:<span id="clien-name"></span></span>
 
           <span class="clien-id">ID: <span id="clien-id-num"></span></span>
-          <span class="clien-id2">رصيد: <span id="clien-id-num2"></span></span>
+          <!-- <span class="clien-id2">رصيد: <span id="clien-id-num2"></span></span> -->
           <span class="clien-id3"
             >نسبه الخصم: <span id="clien-id-num3"></span
           ></span>
@@ -103,13 +103,13 @@
                         <option value="all">الكل</option>
                         <option value="delivered">مكتمل</option>
                         <option value="processing">قيد الانتظار</option>
-                        <option value="failed">ملغى</option>
+                        
                     </select>
                 </div>
 
                 <div class="filter-group">
-                    <label>من تاريخ</label>
-                    <input type="datetime-local" id="fromDate" class="filter-input" onchange="filterInvoices()">
+                    <label>بحث </label>
+                    <input type="text" id="fromDate" class="filter-input" onchange="filterInvoices()">
                 </div>
 
                 <!-- <div class="filter-group">
@@ -126,16 +126,17 @@
       <h3>سجل الفواتير والطلبات</h3>
       
         <div class="clien-total-order2-container-item">
+
           <span>رقم الطلب</span>
-          <h3>رقم الطلب</h3>
+         
           <span>تاريخ الطلب</span>
-          <h3>رقم الطلب</h3>
+          
           <span>المنتجات </span>
-          <h3>رقم الطلب</h3>
+         
           <span>اجمالي الملغ </span>
-          <h3>رقم الطلب</h3>
+         
           <span>حاله الطلب</span>
-          <h3>رقم الطلب</h3>
+         
          
         </div>
       </div>
@@ -156,10 +157,10 @@
         <button type="submit">إرسال</button>
       </form>
     </div>
-    <!-- ------------------ تسجيل الخروج -->
+    <!-- ------------------ تسجيل الخروج
     <div class="longout">
       <a href="id.html"> تسجيل خروج</a>
-    </div>
+    </div> -->
     <!-- ------------------- -->
     <script src="header.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
