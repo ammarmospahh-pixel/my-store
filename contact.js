@@ -2,7 +2,7 @@
 // 1. الإعدادات والمتغيرات الرئيسية
 // ==========================================
 const MY_WHATSAPP_NUMBER = '201501893345';
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzFaMA5IrXkuljsgR3U3tfO1ji9v9pw4_mGCveYqRMRupRpM3qU_7X8fano07DYfFC4vQ/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPVHikzUab0n7EqKgDaE1sZ7pqZ0Q7AL3LJeUTQrdKPy6qRzzpkSxxjJjWSmurGNW8Tg/exec';
 
 // جلب ID العميل الحالي
 function getCurrentUserId() {
@@ -66,54 +66,70 @@ function setupImageUpload() {
 }
 
 // ==========================================
-// 3. جلب جميع الفواتير من Google Sheets و LocalStorage
+// 3. جلب البيانات من الذاكرة المحلية أولاً ثم من الشيت
 // ==========================================
-async function getClientInvoices() {
+function getLocalInvoices() {
   const userId = String(getCurrentUserId());
-  
-  // أ) البيانات المخزنة محلياً
-  let allInvoices = JSON.parse(localStorage.getItem(`invoicesHistory_${userId}`)) || [];
+  const storageKey = `invoicesHistory_${userId}`;
+  return JSON.parse(localStorage.getItem(storageKey)) || [];
+}
 
-  // ب) جلب كل الفواتير مباشرة من Google Apps Script (Google Sheets)
+async function fetchInvoicesFromSheet() {
+  const userId = String(getCurrentUserId());
+  const storageKey = `invoicesHistory_${userId}`;
+
   try {
-    const response = await fetch(`${GOOGLE_SCRIPT_URL}?userId=${encodeURIComponent(userId)}&_t=${Date.now()}`);
+    const fetchUrl = `${GOOGLE_SCRIPT_URL}?userId=${encodeURIComponent(userId)}&_t=${Date.now()}`;
+    const response = await fetch(fetchUrl, { redirect: 'follow' });
+    
     if (response.ok) {
       const sheetInvoices = await response.json();
 
       if (Array.isArray(sheetInvoices)) {
-        sheetInvoices.forEach(sheetInv => {
-          const invCode = sheetInv.invoiceCode || sheetInv.kwd_alfatwra || sheetInv['كود الفاتورة'];
-          const exists = allInvoices.some(i => String(i.invoiceCode) === String(invCode));
-          if (!exists) {
-            allInvoices.push({
-              invoiceCode: invCode || '---',
-              date: sheetInv.date || sheetInv.tarykh_altsjyl || sheetInv['تاريخ و وقت التسجيل'] || '',
-              itemsString: sheetInv.itemsString || sheetInv.tsfyl_almtlbat || sheetInv['تفاصيل الطلبات والمجموعات'] || '',
-              totalPrice: sheetInv.totalPrice || sheetInv.almsrofat || sheetInv['السعر الإجمالي'] || 0,
-              status: sheetInv.status || sheetInv.halat_al3mlyl || sheetInv['حالة الطلب'] || 'processing'
-            });
+        const localInvoices = getLocalInvoices();
+
+        const freshInvoices = sheetInvoices.map(sheetInv => {
+          const invCode = String(sheetInv.invoiceCode || '---').trim();
+          
+          const existingLocal = localInvoices.find(l => String(l.invoiceCode).trim() === invCode);
+          let rawStatus = existingLocal ? existingLocal.status : String(sheetInv.status || 'processing').trim();
+          
+          if (!rawStatus || rawStatus === '') {
+            rawStatus = 'processing';
           }
+
+          return {
+            invoiceCode: invCode,
+            date: sheetInv.date || '',
+            itemsString: sheetInv.itemsString || 'منتجات المتجر',
+            totalPrice: parseFloat(sheetInv.totalPrice || 0),
+            status: rawStatus
+          };
         });
+        
+        if (JSON.stringify(localInvoices) !== JSON.stringify(freshInvoices)) {
+          localStorage.setItem(storageKey, JSON.stringify(freshInvoices));
+          renderOrderTracking();
+          renderInvoicesTable();
+        }
       }
     }
   } catch (err) {
-    console.error("خطأ أثناء جلب البيانات من Google Sheets:", err);
+    console.warn("الاعتماد على النسخة المحلية لعدم توفر اتصال بالإنترنت:", err);
   }
-
-  return allInvoices;
 }
 
 // ==========================================
 // 4. عرض وتتبع الطلبات الأحدث (متابعة الطلب)
 // ==========================================
-async function renderOrderTracking() {
-  const invoices = await getClientInvoices();
+function renderOrderTracking() {
+  const invoices = getLocalInvoices();
   const trackingContainer = document.querySelector('.clien-total-order');
   if (!trackingContainer) return;
 
   const activeOrder = invoices.find(inv => {
     const status = String(inv.status || 'processing').trim();
-    return status === 'processing' || status === 'قيد الانتظار' || status === 'قيد التجهيز';
+    return status !== 'delivered' && status !== 'تم الاستلام' && status !== 'مكتمل' && status !== 'failed' && status !== 'ملغى';
   });
 
   if (!activeOrder) {
@@ -135,16 +151,14 @@ async function renderOrderTracking() {
 }
 
 // ==========================================
-// 5. دالة تفكيك التاريخ واستخراج الوقت بمرونة
+// 5. دالة تفكيك التاريخ واستخراج الوقت
 // ==========================================
 function parseInvoiceDate(dateStr) {
   if (!dateStr) return null;
-
   const numbers = String(dateStr).match(/\d+/g);
   if (!numbers || numbers.length < 3) return null;
 
   let year, month, day;
-
   if (numbers[0].length === 4) {
     year = parseInt(numbers[0], 10);
     month = parseInt(numbers[1], 10) - 1;
@@ -160,42 +174,44 @@ function parseInvoiceDate(dateStr) {
   return new Date(year, month, day).getTime();
 }
 
+// تخزين الفواتير المفلترة الحالية للاستخدام في الطباعة
+let currentFilteredInvoices = [];
+
 // ==========================================
-// 6. عرض سجل الفواتير والطلبات (يشمل البحث المباشر والفلترة)
+// 6. عرض سجل الفواتير والطلبات (مع البحث والفلتر بدقة)
 // ==========================================
-async function renderInvoicesTable() {
-  const invoices = await getClientInvoices();
+function renderInvoicesTable() {
+  const invoices = getLocalInvoices();
   const container = document.querySelector('.clien-total-order2');
   if (!container) return;
 
-  const statusFilter = document.getElementById('statusFilter')?.value || 'all';
-  const fromDateVal = document.getElementById('fromDate')?.value;
-  const toDateVal = document.getElementById('toDate')?.value;
+  // جلب عناصر الفلتر والبحث من الصفحة ديناميكياً
+  const selects = document.querySelectorAll('select');
+  const inputs = document.querySelectorAll('input[type="text"], input:not([type])');
 
-  // جلب حقل البحث بجميع احتمالات الـ IDs الممكّنة
-  const searchEl = document.getElementById('searchInput') || document.getElementById('fromDate');
-  const searchQuery = searchEl ? searchEl.value.trim().toLowerCase() : '';
-
-  let fromTime = null;
-  let toTime = null;
-
-  if (fromDateVal && fromDateVal.includes('-')) {
-    const cleanFrom = fromDateVal.split('T')[0];
-    const [fY, fM, fD] = cleanFrom.split('-').map(Number);
-    fromTime = new Date(fY, fM - 1, fD, 0, 0, 0).getTime();
+  let statusFilter = 'all';
+  if (selects.length > 0) {
+    for (let sel of selects) {
+      if (sel.closest('.clien-total-order2-header') || sel.parentElement.textContent.includes('حالة الطلب') || sel.options.length > 1) {
+        const val = sel.value.trim();
+        if (val === 'مكتمل' || val === 'delivered') statusFilter = 'delivered';
+        else if (val === 'قيد التجهيز' || val === 'processing') statusFilter = 'processing';
+        break;
+      }
+    }
   }
 
-  if (toDateVal && toDateVal.includes('-')) {
-    const cleanTo = toDateVal.split('T')[0];
-    const [tY, tM, tD] = cleanTo.split('-').map(Number);
-    toTime = new Date(tY, tM - 1, tD, 23, 59, 59).getTime();
+  let searchQuery = '';
+  for (let inp of inputs) {
+    if (inp.type !== 'date' && inp.type !== 'file' && inp.id !== 'fromDate' && inp.id !== 'toDate' && !inp.closest('.clien-total-container')) {
+      searchQuery = inp.value.trim().toLowerCase();
+      break;
+    }
   }
 
-  // فلترة الفواتير مع استبعاد الملغى ومطابقة البحث مع (كود الفاتورة، المنتجات، التاريخ)
-  let filteredInvoices = invoices.filter(inv => {
+  currentFilteredInvoices = invoices.filter(inv => {
     let invStatus = String(inv.status || 'processing').trim();
     
-    // إخفاء الفواتير الملغاة
     if (invStatus === 'failed' || invStatus === 'ملغى' || invStatus === 'تم الإلغاء') {
       return false;
     }
@@ -203,25 +219,12 @@ async function renderInvoicesTable() {
     if (statusFilter === 'delivered' && invStatus !== 'delivered' && invStatus !== 'تم الاستلام' && invStatus !== 'مكتمل') return false;
     if (statusFilter === 'processing' && invStatus !== 'processing' && invStatus !== 'قيد الانتظار' && invStatus !== 'قيد التجهيز') return false;
 
-    if (fromTime !== null || toTime !== null) {
-      const invTime = parseInvoiceDate(inv.date);
-      if (invTime !== null) {
-        if (fromTime !== null && invTime < fromTime) return false;
-        if (toTime !== null && invTime > toTime) return false;
-      }
-    }
-
-    // مطابقة البحث النصي (رقم الفاتورة - تفاصيل المنتج - التاريخ)
     if (searchQuery !== '') {
       const invCode = String(inv.invoiceCode || '').toLowerCase();
-      const itemsStr = String(inv.itemsString || (inv.items ? inv.items.map(i => i.name).join(' ') : '')).toLowerCase();
+      const itemsStr = String(inv.itemsString || '').toLowerCase();
       const invDate = String(inv.date || '').toLowerCase();
 
-      const matchesCode = invCode.includes(searchQuery);
-      const matchesItems = itemsStr.includes(searchQuery);
-      const matchesDate = invDate.includes(searchQuery);
-
-      if (!matchesCode && !matchesItems && !matchesDate) {
+      if (!invCode.includes(searchQuery) && !itemsStr.includes(searchQuery) && !invDate.includes(searchQuery)) {
         return false;
       }
     }
@@ -231,19 +234,19 @@ async function renderInvoicesTable() {
 
   let htmlContent = `<h3>سجل الفواتير والطلبات</h3>`;
   
-  if (filteredInvoices.length === 0) {
-    htmlContent += `<div style="padding: 20px; text-align: center; color: #64748b;">لا توجد فواتير مطابقة.</div>`;
+  if (currentFilteredInvoices.length === 0) {
+    htmlContent += `<div style="padding: 20px; text-align: center; color: #64748b;">لا توجد فواتير مطابقة للبحث.</div>`;
   } else {
-    filteredInvoices.forEach(inv => {
-      const itemsStr = inv.itemsString || (inv.items ? inv.items.map(i => `${i.name} (${i.quantity}x)`).join(' - ') : 'منتجات المتجر');
+    currentFilteredInvoices.forEach(inv => {
+      const itemsStr = inv.itemsString || 'منتجات المتجر';
       const invStatus = String(inv.status || 'processing').trim();
 
-      let statusText = 'قيد الانتظار/التجهيز';
-      let actionHtml = `<button onclick="markAsReceived('${inv.invoiceCode}')">تم الاستلام</button>`;
+      let statusText = 'مكتمل';
+      let actionHtml = `<span style="color: #16a34a; font-weight: bold;">تم تسليمه</span>`;
 
-      if (invStatus === 'delivered' || invStatus === 'تم الاستلام' || invStatus === 'مكتمل') {
-        statusText = 'مكتمل';
-        actionHtml = `<span style="color: #16a34a; font-weight: bold;">تم تسليمه</span>`;
+      if (invStatus !== 'delivered' && invStatus !== 'تم الاستلام' && invStatus !== 'مكتمل') {
+        statusText = 'قيد الانتظار/التجهيز';
+        actionHtml = `<button onclick="markAsReceived('${inv.invoiceCode}')">تم الاستلام</button>`;
       }
       
       htmlContent += `
@@ -260,77 +263,102 @@ async function renderInvoicesTable() {
   }
 
   container.innerHTML = htmlContent;
-  calculateStats(filteredInvoices);
+  calculateStats(currentFilteredInvoices);
+}
+
+// تفعيل أحداث التغيير للبحث والفلتر والطباعة فورياً
+function setupSearchAndFilters() {
+  document.querySelectorAll('input, select').forEach(element => {
+    element.addEventListener('input', () => renderInvoicesTable());
+    element.addEventListener('change', () => renderInvoicesTable());
+  });
+
+  // ربط زر طباعة كشف الحساب
+  const printButtons = document.querySelectorAll('button, a');
+  printButtons.forEach(btn => {
+    if (btn.textContent.includes('طباعة') || btn.innerHTML.includes('طباعة')) {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        printAccountStatement();
+      });
+    }
+  });
 }
 
 // ==========================================
-// 7. دالة زر "تم الاستلام"
+// 7. دالة طباعة كشف الحساب
 // ==========================================
-async function markAsReceived(invoiceCode) {
-  const userId = String(getCurrentUserId());
-  let localHistory = JSON.parse(localStorage.getItem(`invoicesHistory_${userId}`)) || [];
+function printAccountStatement() {
+  const clientName = document.querySelector('#clien-name')?.textContent || 'عميل';
+  const clientId = getCurrentUserId();
+  
+  let printWindow = window.open('', '_blank');
+  let rowsHtml = '';
+  let totalSum = 0;
 
-  const invIndex = localHistory.findIndex(i => String(i.invoiceCode) === String(invoiceCode));
-  if (invIndex > -1) {
-    localHistory[invIndex].status = 'delivered';
-    localStorage.setItem(`invoicesHistory_${userId}`, JSON.stringify(localHistory));
-  } else {
-    localHistory.push({ invoiceCode: invoiceCode, status: 'delivered' });
-    localStorage.setItem(`invoicesHistory_${userId}`, JSON.stringify(localHistory));
-  }
+  currentFilteredInvoices.forEach(inv => {
+    totalSum += parseFloat(inv.totalPrice || 0);
+    rowsHtml += `
+      <tr>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${inv.invoiceCode}</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${inv.date}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${inv.itemsString || 'منتجات المتجر'}</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${parseFloat(inv.totalPrice || 0).toFixed(2)} ج.م</td>
+        <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${inv.status}</td>
+      </tr>
+    `;
+  });
 
-  // إرسال تحديث الحالة إلى Google Sheets
-  try {
-    fetch(`${GOOGLE_SCRIPT_URL}?action=updateStatus&invoiceCode=${encodeURIComponent(invoiceCode)}&status=delivered`, { mode: 'no-cors' });
-  } catch (err) {
-    console.error("خطأ أثناء التحديث في Google Sheets:", err);
-  }
-
-  // فتح الواتساب للإشعار بالاستلام
-  const message = `تم استلام الاوردر علي رقم ${MY_WHATSAPP_NUMBER} (طلب رقم: ${invoiceCode})`;
-  const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-  window.open(whatsappUrl, '_blank');
-
-  // إعادة تحديث الواجهة
-  renderOrderTracking();
-  renderInvoicesTable();
+  printWindow.document.write(`
+    <html lang="ar" dir="rtl">
+    <head>
+      <meta charset="UTF-8">
+      <title>كشف حساب العميل - ${clientName}</title>
+      <style>
+        body { font-family: Tahoma, sans-serif; padding: 20px; color: #333; }
+        h2 { text-align: center; color: #2563eb; }
+        .info { margin-bottom: 20px; font-size: 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #f3f4f6; border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .total { margin-top: 20px; font-size: 18px; font-weight: bold; text-align: left; }
+      </style>
+    </head>
+    <body>
+      <h2>كشف حساب الطلبات والفواتير</h2>
+      <div class="info">
+        <p><strong>اسم العميل:</strong> ${clientName}</p>
+        <p><strong>كود العميل:</strong> ${clientId}</p>
+        <p><strong>تاريخ التقرير:</strong> ${new Date().toLocaleDateString('ar-EG')}</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>رقم الطلب</th>
+            <th>اسم العميل/ورقم الهاتف</th>
+            <th>المنتجات</th>
+            <th>الإجمالي</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+      <div class="total">
+        إجمالي المشتريات: ${totalSum.toFixed(2)} ج.م
+      </div>
+      <script>
+        window.onload = function() { window.print(); window.close(); }
+      </script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
 
 // ==========================================
-// 8. دالة إلغاء الطلب والحذف النهائي
+// 8. حساب الإحصائيات
 // ==========================================
-async function cancelOrder(invoiceCode) {
-  if (!confirm('هل أنت متأكد من إلغاء هذا الطلب وحذفه نهائياً من المنصة وجوجل شيت؟')) return;
-
-  const userId = String(getCurrentUserId());
-
-  // 1. حذف الفاتورة فوراً من ذاكرة المتصفح المحلية (localStorage)
-  let localHistory = JSON.parse(localStorage.getItem(`invoicesHistory_${userId}`)) || [];
-  localHistory = localHistory.filter(i => String(i.invoiceCode) !== String(invoiceCode));
-  localStorage.setItem(`invoicesHistory_${userId}`, JSON.stringify(localHistory));
-
-  // 2. إرسال أمر الحذف المباشر إلى Google Sheets
-  try {
-    fetch(`${GOOGLE_SCRIPT_URL}?action=delete&invoiceCode=${encodeURIComponent(invoiceCode)}&userId=${encodeURIComponent(userId)}`, { mode: 'no-cors' });
-  } catch (err) {
-    console.error("خطأ أثناء حذف الفاتورة من Google Sheets:", err);
-  }
-
-  // 3. إرسال إشعار الإلغاء عبر الواتساب
-  const message = `طلب إلغاء وحذف أوردر برقم: ${invoiceCode}`;
-  const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-  window.open(whatsappUrl, '_blank');
-
-  // 4. إخفاء شريط التتبع وإعادة تحديث الجدول لإخفاء الفاتورة تماماً
-  const trackingContainer = document.querySelector('.clien-total-order');
-  if (trackingContainer) {
-    trackingContainer.style.display = 'none';
-  }
-
-  renderOrderTracking();
-  renderInvoicesTable();
-}
-
 function calculateStats(invoices) {
   let totalPurchases = 0;
   let totalOrdersCount = invoices.length;
@@ -355,16 +383,74 @@ function calculateStats(invoices) {
   }
 }
 
-function filterInvoices() {
-  renderInvoicesTable();
-}
+// ==========================================
+// 9. دالة زر "تم الاستلام"
+// ==========================================
+async function markAsReceived(invoiceCode) {
+  const userId = String(getCurrentUserId());
+  const storageKey = `invoicesHistory_${userId}`;
+  
+  let localHistory = JSON.parse(localStorage.getItem(storageKey)) || [];
+  const invIndex = localHistory.findIndex(i => String(i.invoiceCode) === String(invoiceCode));
+  
+  if (invIndex > -1) {
+    localHistory[invIndex].status = 'delivered';
+  } else {
+    localHistory.push({ invoiceCode: invoiceCode, status: 'delivered' });
+  }
+  localStorage.setItem(storageKey, JSON.stringify(localHistory));
 
-function printStatement() {
-  window.print();
+  renderOrderTracking();
+  renderInvoicesTable();
+
+  try {
+    const updateUrl = `${GOOGLE_SCRIPT_URL}?action=updateStatus&invoiceCode=${encodeURIComponent(invoiceCode)}&status=delivered`;
+    fetch(updateUrl, { mode: 'no-cors' });
+  } catch (err) {
+    console.error("خطأ أثناء التحديث:", err);
+  }
+
+  const message = `تم استلام الاوردر علي رقم ${MY_WHATSAPP_NUMBER} (طلب رقم: ${invoiceCode})`;
+  const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, '_blank');
 }
 
 // ==========================================
-// 9. تقديم الشكوى وتحويل الرسالة إلى واتساب
+// 10. دالة إلغاء الطلب والحذف اللحظي
+// ==========================================
+async function cancelOrder(invoiceCode) {
+  if (!confirm('هل أنت متأكد من إلغاء هذا الطلب وحذفه نهائياً؟')) return;
+
+  const userId = String(getCurrentUserId());
+  const storageKey = `invoicesHistory_${userId}`;
+
+  let localHistory = JSON.parse(localStorage.getItem(storageKey)) || [];
+  localHistory = localHistory.filter(i => String(i.invoiceCode) !== String(invoiceCode));
+  localStorage.setItem(storageKey, JSON.stringify(localHistory));
+
+  const trackingContainer = document.querySelector('.clien-total-order');
+  if (trackingContainer) {
+    trackingContainer.style.display = 'none';
+  }
+
+  renderOrderTracking();
+  renderInvoicesTable();
+
+  try {
+    const deleteUrl = `${GOOGLE_SCRIPT_URL}?action=delete&invoiceCode=${encodeURIComponent(invoiceCode)}&userId=${encodeURIComponent(userId)}`;
+    const img = new Image();
+    img.src = deleteUrl;
+  } catch (err) {
+    console.error("خطأ أثناء الحذف من الشيت:", err);
+  }
+
+  const message = `طلب إلغاء وحذف أوردر برقم: ${invoiceCode}`;
+  const whatsappUrl = `https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, '_blank');
+}
+
+// ==========================================
+// 11. تقديم الشكوى وتحويل الرسالة إلى واتساب
 // ==========================================
 function setupContactForm() {
   const form = document.getElementById('contact-form');
@@ -393,12 +479,17 @@ function setupContactForm() {
 }
 
 // ==========================================
-// 10. التهيئة عند تحميل الصفحة
+// 12. التهيئة عند تحميل الصفحة
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   updateHeaderAndProfile();
   setupImageUpload();
+  
   renderOrderTracking();
   renderInvoicesTable();
+  setupSearchAndFilters(); // تفعيل البحث، الفلتر، والطباعة فوراً
+  
+  fetchInvoicesFromSheet();
+  
   setupContactForm();
 });

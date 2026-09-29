@@ -438,7 +438,12 @@ header {
   background-color: #f8fafc;
   color: #1e293b;
 }
-
+/* سكرول بتاعت اجمالي الفواتير */
+.clien-total-order2 {
+  max-height: 250px; /* يمكنك تقليل أو زيادة الارتفاع حسب رغبتك */
+  overflow-y: auto;   /* لإظهار شريط التمرير الرأسي تلقائياً عند زيادة الطلبات */
+  padding-right: 5px; /* مسافة بسيطة حتى لا يلتصق السكرول بالمحتوى */
+}
 #contact-form textarea {
   resize: vertical;
   min-height: 100px;
