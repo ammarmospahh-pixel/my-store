@@ -1,13 +1,19 @@
-/* 1. إعدادات عامة للصفحة */
+/* =========================================
+   1. إعدادات عامة للصفحة
+   ========================================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 body {
-  background-color: #e6ecf0; /* لون الخلفية الموحد لتأثير الـ 3D */
+  background-color: #e6ecf0; /* لون الخلفية الموحد */
+  color: #1e293b;
+  padding-bottom: 90px;
+  direction: rtl;
+  width: 100%;
 }
 
 /* 2. تنسيق الهيدر الرئيسي */
@@ -150,4 +156,351 @@ header {
 .links a:hover {
   color: #2b82fb;
   box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff;
+}
+/* =========================================
+   3. تعريف العميل (ملء الشاشة وصورة مربعة)
+   ========================================= */
+.clien-Details2 {
+  width: 98%; /* توسيع بعرض الشاشة */
+  max-width: 1400px;
+  margin: 10px auto 20px auto;
+}
+
+.contact-section1 {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 20px 25px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f2f5;
+}
+
+.contact-section1 .clien-Details2 {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px 25px;
+  margin: 0;
+}
+
+/* جعل صورة العميل مربعة */
+#user-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px; /* جعل الصورة مربعة بحواف ناعمة بسيطة */
+  object-fit: cover;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.12);
+  border: 2px solid #2b82fb;
+  transition: transform 0.2s ease;
+}
+
+#user-img:hover {
+  transform: scale(1.05);
+}
+
+.contact-section1 hr {
+  border: 0;
+  height: 1px;
+  background-color: #e2e8f0;
+  margin-top: 15px;
+}
+
+/* =========================================
+   4. كروت الإجمالي (ملء الشاشة وجنباً إلى جنب)
+   ========================================= */
+.clien-total-container {
+  width: 98%; /* توسيع بعرض الشاشة */
+  max-width: 1400px;
+  margin: 0 auto 20px auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) !important; /* تجبر الكروت تظهر جنب بعضها بصف واحد */
+  gap: 20px;
+}
+
+.clien-total, .clien-tota2, .clien-tota2-coun {
+  background-color: #ffffff;
+  padding: 22px 20px;
+  border-radius: 16px;
+  text-align: center;
+  font-size: 15px;
+  color: #586574;
+  font-weight: bold;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f2f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 0.2s ease;
+}
+
+.clien-total span, .clien-tota2 span, .clien-tota2-coun span {
+  font-size: 26px;
+  font-weight: 800;
+  color: #2b82fb;
+}
+
+/* =========================================
+   5. شريط تتابع الطلب (Order Tracking)
+   ========================================= */
+.clien-total-order {
+  width: 98%; /* توسيع بعرض الشاشة */
+  max-width: 1400px;
+  margin: 0 auto 20px auto;
+  background-color: #ffffff;
+  padding: 20px 25px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f2f5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.clien-total-order label {
+  flex: 1;
+  text-align: center;
+}
+
+.clien-total-order label span {
+  display: block;
+  padding: 12px 14px;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.clien-total-order label:first-child span {
+  background-color: #dbeafe;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+/* =========================================
+   6. سجل الفواتير والطلبات + الفلتر (ملء الشاشة)
+   ========================================= */
+.table-header {
+  width: 98%; /* توسيع بعرض الشاشة */
+  max-width: 1400px;
+  margin: 0 auto 25px auto;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 22px 25px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f2f5;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.table-title {
+  font-size: 17px;
+  font-weight: bold;
+  color: #2b3a4e;
+  border-bottom: 2px solid #f0f2f5;
+  padding-bottom: 10px;
+}
+
+.filters-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  background-color: #f8fafc;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filter-group label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: bold;
+}
+
+.filter-input, .filter-select {
+  padding: 9px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+.btn-print {
+  background-color: #10b981;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  height: 38px;
+}
+
+.clien-total-order2 {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.clien-total-order2 h3 {
+  display: none;
+}
+
+.clien-total-order2-container-item {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  align-items: center;
+  padding: 14px 16px;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: #1e293b;
+  gap: 10px;
+}
+
+.clien-total-order2-container-item button {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* =========================================
+   7. نموذج تقديم الشكاوى (ملء الشاشة)
+   ========================================= */
+.contact-container {
+  width: 98%; /* توسيع بعرض الشاشة */
+  max-width: 1400px;
+  margin: 0 auto 30px auto;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 22px 25px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f2f5;
+}
+
+.contact-container h2 {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 18px;
+  color: #2b3a4e;
+  border-bottom: 2px solid #f0f2f5;
+  padding-bottom: 10px;
+}
+
+#contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#contact-form label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #64748b;
+}
+
+#contact-form input,
+#contact-form textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+#contact-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+#contact-form button[type="submit"] {
+  background-color: #2b82fb;
+  color: #ffffff;
+  border: none;
+  padding: 11px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  align-self: flex-start;
+}
+/* ==========================================
+   تنسيقات الطباعة - كشف الحساب وسجل الفواتير فقط
+   ========================================== */
+@media print {
+  /* 1. إخفاء جميع عناصر الموقع الافتراضية */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* 2. إظهار قسم سجل الفواتير وما داخله فقط */
+  .clien-total-order2, 
+  .clien-total-order2 * {
+    visibility: visible !important;
+  }
+
+  /* 3. إعادة ضبط مكان قسم الفواتير ليكون في أعلى الصفحة المطبوعة */
+  .clien-total-order2 {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* 4. إخفاء الأزرار أو حقول الفلترة إذا كانت داخل القسم أثناء الطباعة */
+  .clien-total-order2 button,
+  .filters-bar,
+  .btn-print {
+    display: none !important;
+  }
+
+  /* 5. تنسيق صفوف الفواتير لتظهر بشكل مرتب في الورقة */
+  .clien-total-order2-container-item {
+    border-bottom: 1px solid #ddd !important;
+    padding: 8px 0 !important;
+    page-break-inside: avoid !important;
+  }
+}
+@media print {
+  .clien-total-order2 {
+    max-height: none !important; /* إلغاء تحديد الارتفاع في الطباعة لتظهر كل الفواتير */
+    overflow: visible !important; /* إلغاء السكرول في الطباعة */
+  }
 }

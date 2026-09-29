@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="contact.css" />
+    <link rel="stylesheet" href="wight dark/wight darl.css" />
   </head>
   <body>
     <header>
@@ -13,10 +14,10 @@
         <h3>مرحبا بكم</h3>
       </div>
       <div class="clien-Details">
-        <span class="clien-id">الاسم:<span id="clien-name"></span></span>
+        <span class="clien-id">الاسم:<span id="clien-name"></span>//</span>
 
-        <span class="clien-id">ID: <span id="clien-id-num"></span></span>
-        <span class="clien-id2">عنوان: <span id="clien-id-num2"></span></span>
+        <span class="clien-id">ID: <span id="clien-id-num"></span>//</span>
+        <span class="clien-id2">رصيد: <span id="clien-id-num2"></span>//</span>
         <span class="clien-id3"
           >نسبه الخصم: <span id="clien-id-num3"></span
         ></span>
@@ -25,17 +26,148 @@
         <a href="id.html"> تسجيل خروج</a>
       </div>
     </header>
+    <!-- -------------------- تنقلات الصفح-->
     <nav class="links">
       <a href="index.html">المتجر</a>
       <a href="cart.html">السله</a>
       <a href="contact.html">تواصل معنا</a>
     </nav>
-    <main></main>
+    <!-- -------------------------- اسود/ابيض-->
+    <nav class="links2">
+      <button id="theme-toggle" class="theme-toggle-btn" title="تبديل الوضع">
+        🌙
+      </button>
+    </nav>
+    <!-- ----------------------- تعريف العميل -->
+    <div class="clien-Details2">
+      <section class="contact-section1">
+        <div class="clien-Details2">
+          <span
+            ><img
+              src="img/2.png"
+              alt="صوره شغصيه"
+              id="user-img"
+              style="cursor: pointer"
+          /></span>
+          <input
+            type="url"
+            class="img-id"
+            id="uploud-img-user"
+            accept="image/*"
+            style="display: none"
+          />
+          <br />
+          <span class="clien-id">الاسم:<span id="clien-name"></span></span>
+
+          <span class="clien-id">ID: <span id="clien-id-num"></span></span>
+          <span class="clien-id2">رصيد: <span id="clien-id-num2"></span></span>
+          <span class="clien-id3"
+            >نسبه الخصم: <span id="clien-id-num3"></span
+          ></span>
+        </div>
+        <hr />
+      </section>
+    </div>
+    <!-- -------------------------- اجمالي الشراء والطلبات -->
+    <div class="clien-total-container">
+      <span class="clien-total"
+        >اجمالي الشراء <span id="clien-id-num">0</span></span
+      >
+      <span class="clien-tota2"
+        >اجمالي الطلبات <span id="clien-id-num">0</span></span
+      >
+      <span class="clien-tota2-coun"
+        >اجمالي النقاط <span id="clien-id-num">0</span></span
+      >
+    </div>
+    <!-- -------------------------- تتابع الاردر-->
+     <div class="clien-total-order">
+
+      <label for=""><span>رقم الطلب</span> </label>
+      <label for=""><span>تم الطلب</span> </label>
+      <label for=""><span>يتم التجهيز</span> </label>
+      <label for=""><span>خرج للتوصيل </span> </label>
+      <label for=""> <button>تم اسلاتم</button> </label>
+      <label for=""> <button>الغاء الطلب</button> </label>
+      
+    </div>
+    <!-- ------------------------------فلتر سجل الفواتير والطلبات -->
+     <div class="table-header">
+            <div class="table-title">سجل الفواتير والطلبات</div>
+
+            <!-- أدوات التصفية والفلترة -->
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <label>حالة الطلب</label>
+                    <select id="statusFilter" class="filter-select" onchange="filterInvoices()">
+                        <option value="all">الكل</option>
+                        <option value="delivered">مكتمل</option>
+                        <option value="processing">قيد الانتظار</option>
+                        <option value="failed">ملغى</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>من تاريخ</label>
+                    <input type="datetime-local" id="fromDate" class="filter-input" onchange="filterInvoices()">
+                </div>
+
+                <!-- <div class="filter-group">
+                    <label>إلى تاريخ</label>
+                    <input type="date" id="toDate" class="filter-input" onchange="filterInvoices()">
+                </div> -->
+
+                <button class="btn-print" onclick="printStatement()">🖨️ طباعة كشف الحساب</button>
+            </div>
+  
+
+    <!-- --------------------------سجل الفواتير والطلبات -->
+    <div class="clien-total-order2">
+      <h3>سجل الفواتير والطلبات</h3>
+      
+        <div class="clien-total-order2-container-item">
+          <span>رقم الطلب</span>
+          <h3>رقم الطلب</h3>
+          <span>تاريخ الطلب</span>
+          <h3>رقم الطلب</h3>
+          <span>المنتجات </span>
+          <h3>رقم الطلب</h3>
+          <span>اجمالي الملغ </span>
+          <h3>رقم الطلب</h3>
+          <span>حاله الطلب</span>
+          <h3>رقم الطلب</h3>
+         
+        </div>
+      </div>
+        </div>
+    <!-- --------------------------- تواصل معنا -->
+    <div class="contact-container">
+      <h2> تقديم شكوى او اقتراح</h2>
+      <form id="contact-form">
+        <label for="name">الاسم:</label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="namber">رقم الهاتف :</label>
+        <input type="tel" id="namber" name="namber" required />
+
+        <label for="message">الرسالة:</label>
+        <textarea id="message" name="message" required></textarea>
+
+        <button type="submit">إرسال</button>
+      </form>
+    </div>
+    <!-- ------------------ تسجيل الخروج -->
+    <div class="longout">
+      <a href="id.html"> تسجيل خروج</a>
+    </div>
+    <!-- ------------------- -->
     <script src="header.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <!-- 2. ملف الاتصال الموحد -->
     <script src="firebase-config.js"></script>
+    <script src="wight dark/wight darl.js"></script>
+    <script src="contact.js"></script>
   </body>
 </html>
