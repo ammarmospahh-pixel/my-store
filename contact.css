@@ -504,3 +504,70 @@ header {
     overflow: visible !important; /* إلغاء السكرول في الطباعة */
   }
 }
+/* ==========================================
+   تنسيقات شاشات الهواتف المحمولة (Responsive Design)
+   ========================================== */
+
+@media screen and (max-width: 768px) {
+  
+  /* 1. منع التداخل وإلغاء الأبعاد الثابتة */
+  * {
+    box-sizing: border-box;
+  }
+
+  body, html {
+    overflow-x: hidden; /* منع التمرير الأفقي الشاذ */
+    width: 100%;
+  }
+
+  /* 2. تحويل كروت البيانات والفلترة إلى عمود واحد */
+  .clien-total-container,
+  .filter-group,
+  .clien-total-order {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  /* 3. تعديل عناصر الجدول/الطلبات لتناسب العرض */
+  .clien-total-order2-container-item {
+    display: flex;
+    flex-direction: column; /* جعل تفاصيل الفاتورة رأسيّة لتجنب التداخل */
+    align-items: flex-start;
+    padding: 12px;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .clien-total-order2-container-item span {
+    width: 100% !important;
+    text-align: right;
+    font-size: 14px;
+    white-space: normal !important; /* السماح بالتفاف النص وعدم خروجه عن الشاشة */
+    word-break: break-word;
+  }
+
+  /* 4. تعديل مدخلات البحث والفلترة لتناسب العرض الكامل */
+  .filter-input, 
+  select, 
+  input[type="text"], 
+  input[type="date"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* 5. ضبط حاوية التمرير للفواتير */
+  .clien-total-order2 {
+    max-height: 450px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 5px;
+  }
+
+  /* 6. تعديل الأزرار لتكون سهلة الضغط في الهواتف */
+  button {
+    width: 100% !important;
+    padding: 10px !important;
+    margin-top: 5px;
+  }
+}

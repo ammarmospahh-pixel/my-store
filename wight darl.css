@@ -1,0 +1,101 @@
+/* ==========================================
+   وضع داكن ناعم وبدون أي خطوط/حدود نهائياً
+   ========================================== */
+
+/* 1. خلفية الصفحة الرئيسية */
+body.dark-mode {
+  background-color: #121214 !important;
+  color: #ffffff !important;
+}
+
+/* 2. إلغاء كافة الحدود (Borders)، الظلال، والتخطيطات الخارجية من الصفحة بالكامل */
+body.dark-mode,
+body.dark-mode *,
+body.dark-mode *::before,
+body.dark-mode *::after {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+/* 3. تطبيق خلفية الكروت والأقسام الكبيرة مع الحفاظ على عدم وجود خطوط */
+body.dark-mode main,
+body.dark-mode section,
+body.dark-mode header,
+body.dark-mode footer,
+body.dark-mode nav,
+body.dark-mode article,
+body.dark-mode div,
+body.dark-mode [class*="card"],
+body.dark-mode [class*="container"],
+body.dark-mode [class*="box"],
+body.dark-mode [class*="wrapper"],
+body.dark-mode [class*="item"] {
+  background-color: #1e1f23 !important;
+  color: #ffffff !important;
+}
+
+/* 4. إعطاء خلفية شفافة تماماً لعناصر النصوص حتى لا تظهر بمربعات منفصلة */
+body.dark-mode span,
+body.dark-mode p,
+body.dark-mode label,
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
+body.dark-mode h4, body.dark-mode h5, body.dark-mode h6,
+body.dark-mode ul, body.dark-mode li, body.dark-mode td {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+/* 5. ضبط حقول الإدخال بدون حدود حادة */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #161719 !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+}
+
+body.dark-mode input::placeholder {
+  color: #888b94 !important;
+}
+
+/* 6. ضبط الأزرار لتكون بظل داكن خفيف بدلاً من الحدود */
+body.dark-mode button,
+body.dark-mode a[class*="btn"],
+body.dark-mode .btn {
+  background-color: #28292e !important;
+  color: #ffffff !important;
+  border-radius: 6px !important;
+}
+
+body.dark-mode button:hover,
+body.dark-mode a[class*="btn"]:hover {
+  background-color: #32343c !important;
+  color: #3897f0 !important;
+}
+
+/* 7. زر تبديل الوضع (الشمس / القمر) */
+.theme-toggle-btn {
+  position: fixed;
+  bottom: 85px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none !important;
+  background-color: #e6ecf0;
+  color: #f39c12;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 9999;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.dark-mode .theme-toggle-btn {
+  background-color: #28292e !important;
+  color: #f1c40f !important;
+}
