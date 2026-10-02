@@ -12,7 +12,20 @@ function getCurrentUserId() {
   }
   return 'guest';
 }
+// -------------للادمن فقط
+document.addEventListener('DOMContentLoaded', () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const adminLinks = document.querySelectorAll('a[href="admin.html"]');
 
+  // تحقق مما إذا كان المستخدم هو الأدمن
+  const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.id === 'رقم_ايدي_الادمن');
+
+  adminLinks.forEach(link => {
+    if (!isAdmin) {
+      link.style.display = 'none'; // إخفاء الرابط تماماً إذا لم يكن أدمن
+    }
+  });
+});
 // ==========================================
 // 2. تحديث الهيدر والبيانات بجميع الكروت
 // ==========================================

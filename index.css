@@ -618,6 +618,26 @@ main {
   color: #2b82fb;
   box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff;
 }
+.links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: #e6ecf0;
+  border-radius: 50%;
+  text-decoration: none;
+  color: #586574;
+  font-weight: bold;
+  font-size: 12px;
+  box-shadow: 4px 4px 8px #c2c8cc, -4px -4px 8px #ffffff;
+  transition: all 0.3s ease;
+}
+
+.links a:hover {
+  color: #2b82fb;
+  box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff;
+}
 /* ==========================================
    تنسيق الموبايل: عرض كارتين جنب بعض (2 في كل صف)
    ========================================== */

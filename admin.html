@@ -4,8 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="contact.css" />
+    <link rel="stylesheet" href="admin.css" />
     <link rel="stylesheet" href="wight dark/wight darl.css" />
+    <script>
+  // التحقق من بيانات المستخدم المسجل
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  
+  // ضع هنا شروط الأدمن (مثلاً: التأكد من أن الـ ID أو الصلاحية تخص الأدمن)
+  // يمكنك تغيير 'admin' أو رقم الـ ID الخاص بك حسب النظام لديك
+  const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.id === 'رقم_ايدي_الادمن');
+
+  if (!isAdmin) {
+    alert('عذراً، هذه الصفحة خاصة بلوحة تحكم الإدارة فقط!');
+    window.location.href = 'index.html'; // أو توجيهه لصفحة تسجيل الدخول id.html
+  }
+</script>
   </head>
   <body>
     <header>
@@ -40,7 +53,7 @@
       </button>
     </nav>
     <!-- ----------------------- تعريف العميل -->
-    <div class="clien-Details2">
+    <!-- <div class="clien-Details2">
       <section class="contact-section1">
         <div class="clien-Details2">
           <span
@@ -61,18 +74,18 @@
           <span class="clien-id">الاسم:<span id="clien-name"></span></span>
 
           <span class="clien-id">ID: <span id="clien-id-num"></span></span>
-          <!-- <span class="clien-id2">رصيد: <span id="clien-id-num2"></span></span> -->
+          <span class="clien-id2">رصيد: <span id="clien-id-num2"></span></span>
           <span class="clien-id3"
             >نسبه الخصم: <span id="clien-id-num3"></span
           ></span>
         </div>
         <hr />
       </section>
-    </div>
+    </div> -->
     <!-- -------------------------- اجمالي الشراء والطلبات -->
     <div class="clien-total-container">
       <span class="clien-total"
-        >اجمالي الشراء <span id="clien-id-num">0</span></span
+        >اجمالي المبيعات <span id="clien-id-num">0</span></span
       >
       <span class="clien-tota2"
         >اجمالي الطلبات <span id="clien-id-num">0</span></span
@@ -82,16 +95,19 @@
       >
     </div>
     <!-- -------------------------- تتابع الاردر-->
-     <div class="clien-total-order">
+    <!-- -------------------------- تتابع الاردر-->
+     <!-- <div class="clien-total-order">
 
       <label for=""><span>رقم الطلب</span> </label>
-      <label for=""><span>تم الطلب</span> </label>
-      <label for=""><span>يتم التجهيز</span> </label>
-      <label for=""><span>خرج للتوصيل </span> </label>
-      <label for=""> <button>تم اسلاتم</button> </label>
-      <label for=""> <button>الغاء الطلب</button> </label>
+      <label for=""><button id="label-ordered">تم الطلب</button> </label>
+      <label for=""><button id="label-preparing" onclick="adminUpdateOrderStatus('رقم_الفاتورة_هنا', 'يتم التجهيز')">يتم التجهيز</button> </label>
+      <label for=""><button id="label-shipping" onclick="adminUpdateOrderStatus('رقم_الفاتورة_هنا', 'خرج للتوصيل')">خرج للتوصيل </button> </label>
       
-    </div>
+      
+      <label for=""> <button id="label-cancelled2"> الغاء الطلب</button> </label>
+     
+      
+    </div> -->
     <!-- ------------------------------فلتر سجل الفواتير والطلبات -->
      <div class="table-header">
             <div class="table-title">سجل الفواتير والطلبات</div>
@@ -107,17 +123,16 @@
                         
                     </select>
                 </div>
-
-                <!-- <div class="filter-group">
-                    <label>بحث </label>
-                    <input type="text" id="fromDate" class="filter-input" onchange="filterInvoices()">
-                </div> -->
-
-                <!-- <div class="filter-group">
-                    <label>إلى تاريخ</label>
-                    <input type="date" id="toDate" class="filter-input" onchange="filterInvoices()">
-                </div> -->
-
+                <!-- <input type="date" id="dateFilter" class="filter-select" onchange="filterInvoices()">
+                <button class="btn-clear" onclick="clearFilters()">مسح الفلاتر</button> -->
+                <input
+        type="text"
+      placeholder="ابحث باسم العميل أو رقم الطلب..."
+      id="searchInput">
+      
+      <!-- <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px; color: #64748b; font-weight: bold;">
+        <input type="checkbox" id="todayFilter" onchange="renderInvoicesTable()"> فواتير انهرده بس -->
+      </label>
                 <button class="btn-print" onclick="printStatement()">🖨️ طباعة كشف الحساب</button>
             </div>
   
@@ -131,6 +146,7 @@
           <span>رقم الطلب</span>
          
           <span>اسم العميل/ورقم الهاتف</span>
+          <span>التاريخ</span>
           
           <span>المنتجات </span>
          
@@ -164,12 +180,8 @@
     </div> -->
     <!-- ------------------- -->
     <script src="header.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <!-- 2. ملف الاتصال الموحد -->
-    <script src="firebase-config.js"></script>
+    
     <script src="wight dark/wight darl.js"></script>
-    <script src="contact.js"></script>
+    <script src="admin.js"></script>
   </body>
 </html>

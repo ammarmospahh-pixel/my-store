@@ -1,4 +1,5 @@
 // ==========================================
+
 // 0. دالة الخلط العشوائي (Fisher-Yates Shuffle)
 // ==========================================
 function shuffleArray(array) {
@@ -9,7 +10,20 @@ function shuffleArray(array) {
   }
   return shuffled;
 }
+// -------------للادمن فقط
+document.addEventListener('DOMContentLoaded', () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const adminLinks = document.querySelectorAll('a[href="admin.html"]');
 
+  // تحقق مما إذا كان المستخدم هو الأدمن
+  const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.id === 'رقم_ايدي_الادمن');
+
+  adminLinks.forEach(link => {
+    if (!isAdmin) {
+      link.style.display = 'none'; // إخفاء الرابط تماماً إذا لم يكن أدمن
+    }
+  });
+});
 // ==========================================
 // دالة تحويل روابط Google Drive إلى رابط صورة مباشر
 // ==========================================
