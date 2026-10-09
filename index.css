@@ -747,3 +747,34 @@ main {
     font-size: 10px !important;
   }
 }
+/* تنسيق خاص بالشاشات الصغيرة والموبايل */
+@media (max-width: 600px) {
+  .cards-container {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* عرض كرتين بجانب بعض */
+    gap: 10px !important; /* مسافة مناسبة بين الكروت */
+    padding: 8px !important;
+  }
+
+  .card {
+    width: 100% !important;
+    padding: 8px !important;
+  }
+
+  .card-img {
+    height: 110px !important; /* تصغير ارتفاع الصورة ليلائم الشاشة */
+  }
+
+  .name-name {
+    font-size: 13px !important; /* ضبط حجم الخط للموبايل */
+  }
+
+  .name-prise {
+    font-size: 13px !important;
+  }
+
+  .card-properts button {
+    padding: 6px !important;
+    font-size: 11px !important;
+  }
+}
