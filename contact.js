@@ -12,7 +12,8 @@ function getCurrentUserId() {
   }
   return 'guest';
 }
-// -------------للادمن فقط
+
+// ------------- للادمن فقط
 document.addEventListener('DOMContentLoaded', () => {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
   const adminLinks = document.querySelectorAll('a[href="admin.html"]');
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
 // ==========================================
 // 2. تحديث الهيدر والبيانات بجميع الكروت
 // ==========================================
@@ -104,8 +106,8 @@ async function fetchInvoicesFromSheet() {
         const freshInvoices = sheetInvoices.map(sheetInv => {
           const invCode = String(sheetInv.invoiceCode || '---').trim();
           
-          const existingLocal = localInvoices.find(l => String(l.invoiceCode).trim() === invCode);
-          let rawStatus = existingLocal ? existingLocal.status : String(sheetInv.status || 'processing').trim();
+          // الاعتماد على حالة الفاتورة من جوجل شيت فور تغييرها
+          let rawStatus = String(sheetInv.status || 'processing').trim();
           
           if (!rawStatus || rawStatus === '') {
             rawStatus = 'processing';
@@ -141,7 +143,7 @@ function renderOrderTracking() {
   if (!trackingContainer) return;
 
   const activeOrder = invoices.find(inv => {
-    const status = String(inv.status || 'processing').trim();
+    const status = String(inv.status || 'processing').trim().toLowerCase();
     return status !== 'delivered' && status !== 'تم الاستلام' && status !== 'مكتمل' && status !== 'failed' && status !== 'ملغى';
   });
 
@@ -158,7 +160,6 @@ function renderOrderTracking() {
     <label><span style="background-color: #dbeafe; color: #2563eb;">تم الطلب</span></label>
     <label><span style="background-color: #fef08a; color: #ca8a04;">يتم التجهيز</span></label>
     <label><span>خرج للتوصيل</span></label>
-    <label><button type="button" onclick="markAsReceived('${orderCode}')" style="background-color: #22c55e; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">تم الاستلام</button></label>
     <label><button type="button" onclick="cancelOrder('${orderCode}')" style="background-color: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">إلغاء الطلب</button></label>
   `;
 }
@@ -206,7 +207,7 @@ function renderInvoicesTable() {
   if (selects.length > 0) {
     for (let sel of selects) {
       if (sel.closest('.clien-total-order2-header') || sel.parentElement.textContent.includes('حالة الطلب') || sel.options.length > 1) {
-        const val = sel.value.trim();
+        const val = sel.value.trim().toLowerCase();
         if (val === 'مكتمل' || val === 'delivered') statusFilter = 'delivered';
         else if (val === 'قيد التجهيز' || val === 'processing') statusFilter = 'processing';
         break;
@@ -223,14 +224,16 @@ function renderInvoicesTable() {
   }
 
   currentFilteredInvoices = invoices.filter(inv => {
-    let invStatus = String(inv.status || 'processing').trim();
+    let invStatus = String(inv.status || 'processing').trim().toLowerCase();
     
     if (invStatus === 'failed' || invStatus === 'ملغى' || invStatus === 'تم الإلغاء') {
       return false;
     }
 
-    if (statusFilter === 'delivered' && invStatus !== 'delivered' && invStatus !== 'تم الاستلام' && invStatus !== 'مكتمل') return false;
-    if (statusFilter === 'processing' && invStatus !== 'processing' && invStatus !== 'قيد الانتظار' && invStatus !== 'قيد التجهيز') return false;
+    const isDelivered = invStatus === 'delivered' || invStatus === 'تم الاستلام' || invStatus === 'مكتمل';
+
+    if (statusFilter === 'delivered' && !isDelivered) return false;
+    if (statusFilter === 'processing' && isDelivered) return false;
 
     if (searchQuery !== '') {
       const invCode = String(inv.invoiceCode || '').toLowerCase();
@@ -252,15 +255,14 @@ function renderInvoicesTable() {
   } else {
     currentFilteredInvoices.forEach(inv => {
       const itemsStr = inv.itemsString || 'منتجات المتجر';
-      const invStatus = String(inv.status || 'processing').trim();
+      const invStatus = String(inv.status || 'processing').trim().toLowerCase();
 
-      let statusText = 'مكتمل';
-      let actionHtml = `<span style="color: #16a34a; font-weight: bold;">تم تسليمه</span>`;
+      const isDelivered = invStatus === 'delivered' || invStatus === 'تم الاستلام' || invStatus === 'مكتمل';
 
-      if (invStatus !== 'delivered' && invStatus !== 'تم الاستلام' && invStatus !== 'مكتمل') {
-        statusText = 'قيد الانتظار/التجهيز';
-        actionHtml = `<button onclick="markAsReceived('${inv.invoiceCode}')">تم الاستلام</button>`;
-      }
+      let statusText = isDelivered ? 'مكتمل' : 'قيد الانتظار/التجهيز';
+      let actionHtml = isDelivered 
+        ? `<span style="color: #16a34a; font-weight: bold;">تم تسليمه</span>`
+        : `<span style="color: #ca8a04; font-weight: bold;">قيد التجهيز</span>`;
       
       htmlContent += `
         <div class="clien-total-order2-container-item" style="margin-bottom: 10px;">
@@ -377,7 +379,7 @@ function calculateStats(invoices) {
   let totalOrdersCount = invoices.length;
 
   invoices.forEach(inv => {
-    const status = String(inv.status || '').trim();
+    const status = String(inv.status || '').trim().toLowerCase();
     if (status !== 'failed' && status !== 'ملغى' && status !== 'تم الإلغاء') {
       totalPurchases += parseFloat(inv.totalPrice || 0);
     }
