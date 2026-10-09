@@ -2,9 +2,12 @@
 // الإعدادات والمتغيرات الرئيسية
 // ==========================================
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyWSdlXcpRC3-UhWks_6a1r4ts-JwsSMrPb2cQ-Y3MNKdk4PFasw5r11qB6hh3W4QwVQ/exec';
+const MY_WHATSAPP_NUMBER = '201501893345'; // ⬅️ غير هذا الرقم إلى رقم الواتساب الخاص بك بالرمز الدولي (مثال: 201234567890)
+
 let allGlobalInvoices = [];
+
 // ==========================================
-// 2. تحديث الهيدر والبيانات بجميع الكروت
+// 1. تحديث الهيدر والبيانات بجميع الكروت
 // ==========================================
 function updateHeaderAndProfile() {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -46,7 +49,8 @@ function setupImageUpload() {
         reader.onload = function (event) {
           const newImgSrc = event.target.result;
           userImg.src = newImgSrc;
-          const userId = getCurrentUserId();
+          const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+          const userId = currentUser.id || 'guest';
           localStorage.setItem(`user_profile_img_${userId}`, newImgSrc);
         };
         reader.readAsDataURL(file);
@@ -56,7 +60,7 @@ function setupImageUpload() {
 }
 
 // ==========================================
-// 1. جلب البيانات وتخزينها
+// 2. جلب البيانات وتخزينها
 // ==========================================
 async function fetchInvoicesFromSheet() {
   const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
@@ -90,18 +94,16 @@ async function fetchInvoicesFromSheet() {
 }
 
 // ==========================================
-// 2. دالة فلترة وعرض الطلبات (مصححة لتعمل مع "قيد الانتظار" تماماً)
+// 3. دالة فلترة وعرض الطلبات
 // ==========================================
 function filterAndRenderInvoices() {
   const container = document.querySelector('.clien-total-order2');
   if (!container) return;
 
-  // جلب قيمة فلتر الحالة بدقة من عناصر الـ select
   const selects = document.querySelectorAll('select');
   let statusFilter = 'all';
   for (let sel of selects) {
     const val = sel.value.trim();
-    // التحقق من قيم الفلتر المختلفة (سواء نصية أو برمجية)
     if (val === 'مكتمل' || val === 'delivered' || val === 'قيد الانتظار/التجهيز' || val === 'قيد الانتظار' || val === 'processing') {
       statusFilter = val;
       break;
@@ -112,21 +114,18 @@ function filterAndRenderInvoices() {
     }
   }
 
-  // جلب قيمة نص البحث
   const inputs = document.querySelectorAll('input[type="text"], input:not([type])');
   let searchQuery = '';
   for (let inp of inputs) {
-    if (!inp.closest('.clien-total-container')) {
+    if (!inp.closest('.clien-total-container') && inp.id !== 'name') {
       searchQuery = inp.value.trim().toLowerCase();
       break;
     }
   }
 
-  // تطبيق شروط البحث والفلترة
   const filtered = allGlobalInvoices.filter(inv => {
     const status = String(inv.status || 'processing').trim();
     
-    // فلتر الحالة
     if (statusFilter !== 'all' && statusFilter !== 'الكل' && statusFilter !== '') {
       if (statusFilter === 'مكتمل' || statusFilter === 'delivered') {
         if (status !== 'delivered' && status !== 'تم الاستلام' && status !== 'مكتمل') return false;
@@ -135,7 +134,6 @@ function filterAndRenderInvoices() {
       }
     }
 
-    // فلتر البحث
     if (searchQuery !== '') {
       const clientName = String(inv.clientName || '').toLowerCase();
       const clientId = String(inv.clientId || '').toLowerCase();
@@ -150,8 +148,7 @@ function filterAndRenderInvoices() {
     return true;
   });
 
-  // رسم الجدول
-  let htmlContent = `<h3></h3>`;
+  let htmlContent = `<h3>سجل الفواتير والطلبات</h3>`;
   
   if (filtered.length === 0) {
     htmlContent += `<div style="padding: 20px; text-align: center; color: #64748b;">لا توجد أي طلبات مطابقة للبحث أو الفلتر.</div>`;
@@ -169,7 +166,7 @@ function filterAndRenderInvoices() {
 
       if (status !== 'delivered' && status !== 'تم الاستلام' && status !== 'مكتمل') {
         statusText = 'قيد الانتظار/التجهيز';
-        actionHtml = `<button type="button" onclick="markAsReceived('${invoiceCode}')" style="background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">تم الاستلام</button>`;
+        actionHtml = `<button type="button" class="btn-receive" onclick="markAsReceived('${invoiceCode}')">تم الاستلام</button>`;
       }
 
       htmlContent += `
@@ -182,9 +179,10 @@ function filterAndRenderInvoices() {
           <div style="flex: 2; color: #334155; font-size: 14px;">${items}</div>
           <div style="flex: 1; font-weight: bold; color: #0f172a;">${totalPrice} ج.م</div>
           <div style="flex: 1; color: #0f172a;">${statusText}</div>
-          <div style="flex: 1.2; text-align: left; display: flex; gap: 8px; align-items: center; justify-content: flex-end;">
+          <div style="flex: 1.5; text-align: left; display: flex; gap: 6px; align-items: center; justify-content: flex-end;">
             ${actionHtml}
-            <button type="button" onclick="cancelOrder('${invoiceCode}')" style="background-color: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">حذف</button>
+            <button type="button" class="btn-print" onclick="printSingleInvoice('${invoiceCode}')">🖨️ طباعة</button>
+            <button type="button" class="btn-delete" onclick="cancelOrder('${invoiceCode}')" style="background-color: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">حذف</button>
           </div>
         </div>
       `;
@@ -195,10 +193,7 @@ function filterAndRenderInvoices() {
 }
 
 // ==========================================
-// 3. تحديث الإحصائيات العامة (إجمالي المبيعات والطلبات والنقاط)
-// ==========================================
-// ==========================================
-// تحديث الإحصائيات العامة (إجمالي المبيعات، الطلبات، ونظام النقاط: نقطة لكل 100 ج.م)
+// 4. تحديث الإحصائيات العامة
 // ==========================================
 function calculateGlobalStats(invoices) {
   let totalPurchases = 0;
@@ -206,38 +201,38 @@ function calculateGlobalStats(invoices) {
 
   invoices.forEach(inv => {
     const status = String(inv.status || '').trim();
-    // حساب المبيعات للطلبات غير الملغاة فقط
     if (status !== 'failed' && status !== 'ملغى' && status !== 'تم الإلغاء') {
       totalPurchases += parseFloat(inv.totalPrice || 0);
     }
   });
 
-  // حساب النقاط: نقطة واحدة لكل 100 جنيه
   let totalPoints = Math.floor(totalPurchases / 100);
 
   const container = document.querySelector('.clien-total-container');
   if (container) {
     const cards = container.querySelectorAll('span span');
     if (cards.length >= 3) {
-      cards[0].textContent = totalPurchases.toFixed(2) + ' ج.م'; // إجمالي المبيعات
-      cards[1].textContent = totalOrdersCount;                   // إجمالي الطلبات
-      cards[2].textContent = totalPoints + ' نقطة';               // إجمالي النقاط (نقطة لكل 100 ج.م)
+      cards[0].textContent = totalPurchases.toFixed(2) + ' ج.م';
+      cards[1].textContent = totalOrdersCount;
+      cards[2].textContent = totalPoints + ' نقطة';
     }
   }
 }
 
 // ==========================================
-// 4. ربط أحداث البحث والفلترة
+// 5. ربط أحداث البحث والفلترة
 // ==========================================
 function setupSearchAndFilters() {
   document.querySelectorAll('input, select').forEach(element => {
-    element.addEventListener('input', () => filterAndRenderInvoices());
-    element.addEventListener('change', () => filterAndRenderInvoices());
+    if (element.id !== 'name' && element.id !== 'namber' && element.id !== 'message') {
+      element.addEventListener('input', () => filterAndRenderInvoices());
+      element.addEventListener('change', () => filterAndRenderInvoices());
+    }
   });
 }
 
 // ==========================================
-// 5. تحديث حالة الطلب إلى مكتمل
+// 6. تحديث حالة الطلب إلى مكتمل
 // ==========================================
 async function markAsReceived(invoiceCode) {
   allGlobalInvoices = JSON.parse(localStorage.getItem('all_customers_invoices')) || [];
@@ -259,7 +254,7 @@ async function markAsReceived(invoiceCode) {
 }
 
 // ==========================================
-// 6. حذف الطلب نهائياً
+// 7. حذف الطلب نهائياً
 // ==========================================
 async function cancelOrder(invoiceCode) {
   if (!confirm('هل أنت متأكد من حذف هذا الطلب نهائياً؟')) return;
@@ -281,20 +276,63 @@ async function cancelOrder(invoiceCode) {
 }
 
 // ==========================================
-// 7. التهيئة عند التحميل
+// 8. طباعة فاتورة واحدة مفردة
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-  allGlobalInvoices = JSON.parse(localStorage.getItem('all_customers_invoices')) || [];
-  if (allGlobalInvoices.length > 0) {
-    filterAndRenderInvoices();
-    calculateGlobalStats(allGlobalInvoices);
+function printSingleInvoice(invoiceCode) {
+  const invoice = allGlobalInvoices.find(inv => String(inv.invoiceCode) === String(invoiceCode));
+
+  if (!invoice) {
+    alert('تعذر العثور على بيانات الفاتورة!');
+    return;
   }
-  
-  setupSearchAndFilters();
-  fetchInvoicesFromSheet();
-});8
+
+  const clientName = invoice.clientName || 'عميل غير معروف';
+  const clientId = invoice.clientId || '---';
+  const items = invoice.itemsString || 'منتجات المتجر';
+  const totalPrice = parseFloat(invoice.totalPrice || 0).toFixed(2);
+  const date = invoice.date || new Date().toLocaleDateString('ar-EG');
+  const status = (invoice.status === 'delivered' || invoice.status === 'تم الاستلام' || invoice.status === 'مكتمل') ? 'مكتمل' : 'قيد الانتظار';
+
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html dir="rtl" lang="ar">
+    <head>
+      <meta charset="UTF-8">
+      <title>فاتورة رقم ${invoiceCode}</title>
+      <style>
+        body { font-family: Tahoma, sans-serif; padding: 25px; direction: rtl; color: #1e293b; }
+        .box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; max-width: 500px; margin: auto; }
+        .h { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+        .row { display: flex; justify-content: space-between; margin: 10px 0; }
+        .items { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 5px; margin-top: 10px; }
+        .tot { font-weight: bold; color: #16a34a; font-size: 16px; margin-top: 15px; text-align: left; }
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        <div class="h"><h2>فاتورة شراء</h2><p>رقم: <strong>${invoiceCode}</strong></p></div>
+        <div class="row"><span><strong>العميل:</strong> ${clientName}</span><span><strong>ID:</strong> ${clientId}</span></div>
+        <div class="row"><span><strong>التاريخ:</strong> ${date}</span><span><strong>الحالة:</strong> ${status}</span></div>
+        <div class="items"><strong>المنتجات:</strong><br>${items}</div>
+        <div class="tot">الإجمالي: ${totalPrice} ج.م</div>
+      </div>
+      <script>window.onload = function() { window.print(); window.close(); };</script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
 // ==========================================
-// 11. تقديم الشكوى وتحويل الرسالة إلى واتساب
+// 9. دالة طباعة كشف الحساب بالكامل
+// ==========================================
+function printAccountStatement() {
+  window.print();
+}
+
+// ==========================================
+// 10. تقديم الشكوى وتحويل الرسالة إلى واتساب
 // ==========================================
 function setupContactForm() {
   const form = document.getElementById('contact-form');
@@ -321,82 +359,88 @@ function setupContactForm() {
     window.open(whatsappUrl, '_blank');
   });
 }
-// ==========================================
-// دالة طباعة كشف الحساب أو الطلبات الحالية
-// ==========================================
-function printAccountStatement() {
-  // يمكننا طباعة الحاوية المخصصة للطلبات أو الصفحة ككل
-  const printContent = document.querySelector('.clien-total-order2')?.innerHTML;
-  
-  if (!printContent) {
-    window.print(); // طباعة الصفحة بشكل إفتراضي إذا لم يتم العثور على الحاوية
-    return;
-  }
 
-  const originalContent = document.body.innerHTML;
-  
-  // إنشاء نافذة أو محتوى مخصص للطباعة
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <html dir="rtl" lang="ar">
-      <head>
-        <title>كشف حساب العملاء والطلبات</title>
-        <style>
-          body { font-family: Tahoma, sans-serif; padding: 20px; color: #333; }
-          h3 { text-align: center; margin-bottom: 20px; }
-          .clien-total-order2-container-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #ddd;
-            font-size: 14px;
-          }
-          button { display: none; } /* إخفاء الأزرار مثل الحذف والاستلام عند الطباعة */
-        </style>
-      </head>
-      <body>
-        <h3>سجل فواتير وطلبات العملاء</h3>
-        ${printContent}
-        <script>
-          window.onload = function() {
-            window.print();
-            window.close();
-          };
-        </script>
-      </body>
-    </html>
-  `);
-  printWindow.document.close();
-}
-
-// ربط زر طباعة كشف الحساب تلقائياً عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', () => {
-  const printBtn = document.querySelector('button, .btn'); // حدد الزر الخاص بالطباعة بناءً على الكلاس أو النص
-  // أو البحث عن الزر الذي يحتوي على كلمة "طباعة"
-  const allButtons = document.querySelectorAll('button, a');
-  allButtons.forEach(btn => {
-    if (btn.textContent.includes('طباعة') || btn.textContent.includes('كشف الحساب')) {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        printAccountStatement();
-      });
-    }
-  });
-});
 // ==========================================
-// 12. التهيئة عند تحميل الصفحة
+// 11. التهيئة الرئيسية عند تحميل الصفحة
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   updateHeaderAndProfile();
   setupImageUpload();
   
-  renderOrderTracking();
-  renderInvoicesTable();
-  setupSearchAndFilters(); // تفعيل البحث، الفلتر، والطباعة فوراً
+  allGlobalInvoices = JSON.parse(localStorage.getItem('all_customers_invoices')) || [];
+  if (allGlobalInvoices.length > 0) {
+    filterAndRenderInvoices();
+    calculateGlobalStats(allGlobalInvoices);
+  }
   
+  setupSearchAndFilters();
   fetchInvoicesFromSheet();
-  
   setupContactForm();
 });
+// ==========================================
+// دالة طباعة كشف الحساب وسجل الفواتير بالكامل
+// ==========================================
+function printStatement() {
+  const container = document.querySelector('.clien-total-order2');
+  
+  if (!container || !container.innerHTML.trim()) {
+    alert('لا يوجد محتوى في سجل الفواتير لطباعته!');
+    return;
+  }
+
+  // فتح نافذة جديدة للطباعة
+  const printWindow = window.open('', '_blank');
+  
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html dir="rtl" lang="ar">
+    <head>
+      <meta charset="UTF-8">
+      <title>طباعة سجل الفواتير والطلبات</title>
+      <style>
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          padding: 20px;
+          direction: rtl;
+          color: #1e293b;
+          background: #ffffff;
+        }
+        h2 {
+          text-align: center;
+          color: #0f172a;
+          margin-bottom: 20px;
+          border-bottom: 2px solid #2563eb;
+          padding-bottom: 10px;
+        }
+        .clien-total-order2-container-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 14px;
+          margin-bottom: 8px;
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          font-size: 13px;
+          page-break-inside: avoid;
+        }
+        /* إخفاء أزرار التحكم والعمليات أثناء الطباعة الورقية */
+        button, .btn-print, .btn-receive, .btn-delete {
+          display: none !important;
+        }
+      </style>
+    </head>
+    <body>
+      <h2>سجل الفواتير والطلبات</h2>
+      ${container.innerHTML}
+      <script>
+        window.onload = function() {
+          window.print();
+          window.close();
+        };
+      </script>
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+}

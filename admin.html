@@ -24,16 +24,14 @@
     <header>
       <div class="longo-name">
         <img src="img/market.jpg" alt="logo" />
-        <h3>مرحبا بكم</h3>
+        <h3>AM_TD </h3>
       </div>
       <div class="clien-Details">
-        <span class="clien-id">الاسم:<span id="clien-name"></span>//</span>
+        <span class="clien-id">الاسم:<span id="clien-name"></span></span>
 
-        <span class="clien-id">ID: <span id="clien-id-num"></span>//</span>
-        <span class="clien-id2">رصيد: <span id="clien-id-num2"></span>//</span>
-        <span class="clien-id3"
-          >نسبه الخصم: <span id="clien-id-num3"></span
-        ></span>
+        <!-- <span class="clien-id">ID: <span id="clien-id-num"></span>//</span> -->
+        <!-- <span class="clien-id2">رصيد: <span id="clien-id-num2"></span>//</span> -->
+        <!-- <span class="clien-id3">نسبه الخصم: <span id="clien-id-num3"></span ></span> -->
       </div>
       <div class="longout">
         <a href="id.html"> تسجيل خروج</a>
@@ -133,31 +131,39 @@
       <!-- <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px; color: #64748b; font-weight: bold;">
         <input type="checkbox" id="todayFilter" onchange="renderInvoicesTable()"> فواتير انهرده بس -->
       </label>
-                <button class="btn-print" onclick="printStatement()">🖨️ طباعة كشف الحساب</button>
+               <!-- في ملف admin.html -->
+<button class="btn-print" onclick="printAccountStatement()">🖨️ طباعة كشف الحساب</button>
             </div>
   
 
-    <!-- --------------------------سجل الفواتير والطلبات -->
-    <div class="clien-total-order2">
-      <h3>سجل الفواتير والطلبات</h3>
-      
-        <div class="clien-total-order2-container-item">
+  <!-- قسم سجل الفواتير والطلبات كما هو لديك مع إضافة الأزرار الثابتة -->
+<div class="clien-total-order2">
+  <h3>سجل الفواتير والطلبات</h3>
+  
+  <div class="clien-total-order2-container-item">
+    <span>رقم الطلب</span>
+    <span>اسم العميل/ورقم الهاتف</span>
+    <span>التاريخ</span>
+    <span>المنتجات</span>
+    <span>اجمالي المبلغ</span>
+    <span>حاله الطلب</span>
 
-          <span>رقم الطلب</span>
-         
-          <span>اسم العميل/ورقم الهاتف</span>
-          <span>التاريخ</span>
-          
-          <span>المنتجات </span>
-         
-          <span>اجمالي الملغ </span>
-         
-          <span>حاله الطلب</span>
-         
-         
-        </div>
-      </div>
-        </div>
+    <!-- الأزرار الثابتة في HTML -->
+    <div class="action-buttons">
+      <button type="button" class="btn-receive" onclick="markAsReceived('INVOICE_CODE')">
+        تم الاستلام
+      </button>
+
+      <button type="button" class="btn-print" onclick="printSingleInvoice('INVOICE_CODE')">
+        🖨️ طباعة
+      </button>
+
+      <button type="button" class="btn-delete" onclick="cancelOrder('INVOICE_CODE')">
+        حذف
+      </button>
+    </div>
+  </div>
+</div>
     <!-- --------------------------- تواصل معنا -->
     <div class="contact-container">
       <h2> تقديم شكوى او اقتراح</h2>

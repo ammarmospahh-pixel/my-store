@@ -638,99 +638,112 @@ main {
   color: #2b82fb;
   box-shadow: inset 3px 3px 6px #c2c8cc, inset -3px -3px 6px #ffffff;
 }
+
 /* ==========================================
-   تنسيق الموبايل: عرض كارتين جنب بعض (2 في كل صف)
+   تنسيق شريط البحث المدمج الموحد (مثل أمازون)
    ========================================== */
+
+.name-add {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0 !important;
+  width: 100% !important;
+  max-width: 800px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 4px 4px 10px #c2c8cc, -4px -4px 10px #ffffff !important;
+}
+
+.search-filter {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  flex: 1 !important;
+  gap: 0 !important;
+  align-items: center !important;
+}
+
+/* 1. التصنيف: حجم صغير محدد على اليمين */
+.filter-cart {
+  flex: 0 0 90px !important;
+  width: 90px !important;
+}
+
+.filter-cart select {
+  width: 100% !important;
+  height: 38px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  background-color: #dce3e8 !important;
+  box-shadow: none !important;
+}
+
+/* 2. البحث: يأخذ المساحة الكبرى بالكامل في المنتصف */
+.search-cart {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.search-cart input {
+  width: 100% !important;
+  height: 38px !important;
+  padding: 0 10px !important;
+  font-size: 12px !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  border-right: 1px solid #c2c8cc !important;
+  border-left: 1px solid #c2c8cc !important;
+  box-shadow: inset 2px 2px 4px #c2c8cc, inset -2px -2px 4px #ffffff !important;
+}
+
+/* 3. إضافة صنف: زر صغير مدمج على اليسار */
+.name-add-cart {
+  flex: 0 0 auto !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  font-size: 11px !important;
+  white-space: nowrap !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background-color: #2b82fb !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* تعديل الموبايل للشاشات الصغيرة */
 @media (max-width: 768px) {
-  /* 1. ضبط الهيدر وشريط البحث */
   header {
-    flex-direction: column;
-    padding: 12px 10px;
-    gap: 12px;
-  }
-
-  .longo-name {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .name-add {
-    max-width: 100%;
-    width: 100%;
-    margin: 0;
-    flex-direction: column;
-  }
-
-  .search-filter {
-    flex-direction: column;
-    width: 100%;
+    flex-direction: column !important;
+    padding: 8px 5px !important;
+    gap: 8px !important;
   }
 
   .filter-cart {
-    flex: 1 0 100%;
-    width: 100%;
+    flex: 0 0 70px !important;
+    width: 70px !important;
   }
 
-  /* 2. جعل المنتجات كارتين جنب بعض */
-  .cards-container {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* تقشيم الشاشة لعمودين متساويين */
-    gap: 10px !important; /* مسافة صغيرة ومناسبة بين الكارتين */
-    padding: 0 8px !important;
+  .filter-cart select {
+    font-size: 10px !important;
+    padding: 0 2px !important;
   }
 
-  .card {
-    width: 100% !important; /* يملأ نصف الشاشة المخصص له */
-    padding: 8px !important;
+  .search-cart input {
+    font-size: 11px !important;
+    padding: 0 6px !important;
   }
 
-  /* تصغير حجم صورة المنتجات للتناسب مع حجم الكارت الجديد */
-  .card img {
-    height: 120px !important;
-    object-fit: contain;
-  }
-
-  /* تصغير الخطوط والعناصر داخل الكارت ليظهر كل شيء بوضوح */
-  .card h3 {
-    font-size: 0.85rem !important;
-    height: 2.4em; /* حصر العنوان في سطرين */
-    overflow: hidden;
-  }
-
-  .card .price {
-    font-size: 0.8rem !important;
-  }
-
-  .card button {
-    font-size: 0.75rem !important;
-    padding: 6px 4px !important;
-  }
-
-  /* 3. ضبط نافذة التفاصيل (Modal) لتناسب الموبايل */
-  .propertes-cart-modal {
-    padding: 10px !important;
-  }
-
-  .propertes-cart-content {
-    width: 95% !important;
-    max-height: 90vh !important;
-    padding: 15px 10px !important;
-  }
-
-  .propertes-main-grid {
-    flex-direction: column !important;
-    align-items: center !important;
-  }
-
-  .pro-cart-img {
-    width: 100% !important;
-  }
-
-  .pro-cart-img img {
-    max-height: 180px !important;
-  }
-
-  .pro-card-pro {
-    width: 100% !important;
+  .name-add-cart {
+    padding: 0 6px !important;
+    font-size: 10px !important;
   }
 }
