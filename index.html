@@ -128,7 +128,29 @@
         <button class="btn-save-cancel">الغاء</button>
       </div>
     </section>
+<div id="timer-container" style="text-align: center; font-family: Arial, sans-serif; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-block;">
+    <h3 style="margin-top: 0; color: #333;">العد التنازلي</h3>
+    <div id="countdown" style="font-size: 40px; font-weight: bold; color: #007bff;">25</div>
+</div>
 
+<script>
+    (function() {
+        let timeLeft = 10;
+        const container = document.getElementById('timer-container');
+        const el = document.getElementById('countdown');
+        
+        const timer = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                // إخفاء الصندوق بالكامل بمجرد انتهاء الوقت
+                container.style.display = 'none';
+            } else {
+                el.textContent = timeLeft;
+                timeLeft--;
+            }
+        }, 1000);
+    })();
+</script>
     <!-- تفاصيل الكرت -->
     <section id="propertes-cart" class="propertes-cart-modal">
       <div class="propertes-cart-content">
