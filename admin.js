@@ -2,7 +2,7 @@
 // الإعدادات والمتغيرات الرئيسية
 // ==========================================
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyWSdlXcpRC3-UhWks_6a1r4ts-JwsSMrPb2cQ-Y3MNKdk4PFasw5r11qB6hh3W4QwVQ/exec';
-const MY_WHATSAPP_NUMBER = '201501893345'; // ⬅️ غير هذا الرقم إلى رقم الواتساب الخاص بك بالرمز الدولي (مثال: 201234567890)
+const MY_WHATSAPP_NUMBER = '201012750891'; // ⬅️ غير هذا الرقم إلى رقم الواتساب الخاص بك بالرمز الدولي (مثال: 201234567890)
 
 let allGlobalInvoices = [];
 
